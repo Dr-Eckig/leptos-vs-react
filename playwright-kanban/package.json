@@ -1,0 +1,14 @@
+{
+  "name": "kanban-performance-runner",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "performance:collect": "playwright test --config playwright.config.ts",
+    "performance:collect:react": "PERFORMANCE_TARGETS=react playwright test --config playwright.config.ts",
+    "performance:collect:leptos": "PERFORMANCE_TARGETS=leptos playwright test --config playwright.config.ts"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.61.0",
+    "@types/node": "^26.0.0"
+  }
+}
