@@ -1,0 +1,30 @@
+@use "./bulma/sass" with (
+  $danger: #c1121f,
+);
+
+@use "./board_title.scss";
+@use "./drag_and_drop.scss";
+@use "./sidebar.scss";
+@use "./task_card.scss";
+
+.page-height {
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.full-height {
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.scrollable {
+  overflow-y: auto;
+}
+
+.is-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: white;
+}
