@@ -1,4 +1,4 @@
-# Generate: python3 mock_data/generate_mock_board.py
+# Generate: python3 generate_mock_board.py
 """Generate deterministic Kanban mock boards for local development."""
 
 from __future__ import annotations
@@ -9,7 +9,11 @@ from datetime import date, timedelta
 from pathlib import Path
 
 
-OUTPUT_FILE = Path(__file__).with_name("mock_board.json")
+PROJECT_ROOT = Path(__file__).resolve().parent
+OUTPUT_FILES = (
+    PROJECT_ROOT / "react-kanban" / "mock_data" / "mock_board.json",
+    PROJECT_ROOT / "leptos-kanban" / "mock_data" / "mock_board.json",
+)
 COLUMN_TYPES = ("todo", "in_progress", "done")
 PRIORITIES = ("Low", "Medium", "High")
 ID_NAMESPACE = uuid.UUID("12345678-1234-5678-1234-567812345678")
@@ -71,7 +75,11 @@ def main() -> None:
         "currentBoardId": boards[0]["id"] if boards else None,
     }
 
-    OUTPUT_FILE.write_text(json.dumps(data, indent=2, ensure_ascii=True) + "\n")
+    content = json.dumps(data, indent=2, ensure_ascii=True) + "\n"
+
+    for output_file in OUTPUT_FILES:
+        output_file.parent.mkdir(parents=True, exist_ok=True)
+        output_file.write_text(content, encoding="utf-8")
 
 
 if __name__ == "__main__":
