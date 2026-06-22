@@ -73,12 +73,7 @@ function TaskModalForm({ task, columnType, isOpen }: TaskModalFormProps) {
   }, [task, isOpen]);
 
   const closeModal = () => {
-    const finishMeasurement = startPerformanceMeasurement(
-      PerformanceAction.ModalClose,
-      performanceContextFromBoard(currentBoard),
-    );
     modalActions.setTask(null);
-    finishMeasurement();
   };
 
   const saveTask = () => {

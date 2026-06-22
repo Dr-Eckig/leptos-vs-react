@@ -48,13 +48,8 @@ export function TaskCard({
   const dropdownDataTestId = `${columnType}-task-dropdown-${taskIndex}`;
 
   const editTask = () => {
-    const finishMeasurement = startPerformanceMeasurement(
-      PerformanceAction.ModalOpen,
-      performanceContextFromBoard(currentBoard),
-    );
     modals.setTask(openTaskModalWithTask(columnType, task));
     setIsDropdownVisible(false);
-    finishMeasurement();
   };
 
   const deleteTask = () => {

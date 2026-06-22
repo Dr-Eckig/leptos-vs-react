@@ -1,15 +1,9 @@
 import { useEffect, useState } from "react";
 import {
   useBoardsActions,
-  useBoardsState,
   useModalsActions,
   useModalsState,
 } from "../../../hooks";
-import {
-  PerformanceAction,
-  performanceContextFromBoard,
-  start as startPerformanceMeasurement,
-} from "../../../performance";
 import type { Board } from "../../../types/state";
 import { validateBoard } from "../../../types/validation";
 import { Input } from "../../ui/Input";
@@ -30,7 +24,6 @@ type BoardModalFormProps = {
 
 function BoardModalForm({ board, isOpen }: BoardModalFormProps) {
   const boards = useBoardsActions();
-  const { currentBoard } = useBoardsState();
   const modalActions = useModalsActions();
   const [title, setTitle] = useState(board?.title ?? "");
   const [titleError, setTitleError] = useState<string | undefined>();
@@ -45,12 +38,7 @@ function BoardModalForm({ board, isOpen }: BoardModalFormProps) {
   }, [board, isOpen]);
 
   const closeModal = () => {
-    const finishMeasurement = startPerformanceMeasurement(
-      PerformanceAction.ModalClose,
-      performanceContextFromBoard(currentBoard),
-    );
     modalActions.setBoard(null);
-    finishMeasurement();
   };
 
   const saveBoard = () => {
@@ -65,11 +53,6 @@ function BoardModalForm({ board, isOpen }: BoardModalFormProps) {
       return;
     }
 
-    const finishMeasurement = startPerformanceMeasurement(
-      board ? PerformanceAction.BoardEdit : PerformanceAction.BoardCreate,
-      performanceContextFromBoard(currentBoard),
-    );
-
     if (board) {
       boards.updateBoardTitle(board.id, result.board.title);
     } else {
@@ -77,7 +60,6 @@ function BoardModalForm({ board, isOpen }: BoardModalFormProps) {
     }
 
     modalActions.setBoard(null);
-    finishMeasurement();
   };
 
   return (

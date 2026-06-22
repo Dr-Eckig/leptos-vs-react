@@ -99,12 +99,7 @@ pub fn TaskColumn(column: ColumnState) -> impl IntoView {
                             size=Size::Small
                             aria_label="Edit column"
                             on_click=move || {
-                                let measurement = performance::start(
-                                    PerformanceAction::ModalOpen,
-                                    PerformanceContext::from_board(app.boards.current_board()),
-                                );
                                 app.modals.column.set(Some(OpenColumnModal::new_with_column(column)));
-                                (measurement)();
                             }
                         />
                         <IconButton
@@ -115,12 +110,7 @@ pub fn TaskColumn(column: ColumnState) -> impl IntoView {
                             aria_label="Add task"
                             data_test_id=Signal::derive(move || format!("add-task-button-{}", column.column_type.name()))
                             on_click=move || {
-                                let measurement = performance::start(
-                                    PerformanceAction::ModalOpen,
-                                    PerformanceContext::from_board(app.boards.current_board()),
-                                );
                                 app.modals.task.set(Some(OpenTaskModal::new(Some(column.column_type))));
-                                (measurement)();
                             }
                         />
                     </div>
@@ -131,12 +121,7 @@ pub fn TaskColumn(column: ColumnState) -> impl IntoView {
                     key=|task| task.id
                     children={move |index, task| {
                         let on_edit = Callback::new(move |_| {
-                            let measurement = performance::start(
-                                PerformanceAction::ModalOpen,
-                                PerformanceContext::from_board(app.boards.current_board()),
-                            );
                             app.modals.task.set(Some(OpenTaskModal::new_with_task(column.column_type, task)));
-                            (measurement)();
                         });
 
                         let on_delete = Callback::new(move |_| {

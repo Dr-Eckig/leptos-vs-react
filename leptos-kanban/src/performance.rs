@@ -26,33 +26,23 @@ thread_local! {
 
 #[derive(Clone, Copy, Debug)]
 pub enum PerformanceAction {
-    BoardCreate,
-    BoardEdit,
     BoardSwitch,
-    ColumnEdit,
     TaskCreate,
     TaskEdit,
     TaskDelete,
     TaskMoveWithinColumn,
     TaskMoveBetweenColumns,
-    ModalOpen,
-    ModalClose,
 }
 
 impl PerformanceAction {
     fn as_str(self) -> &'static str {
         match self {
-            Self::BoardCreate => "board-create",
-            Self::BoardEdit => "board-edit",
             Self::BoardSwitch => "board-switch",
-            Self::ColumnEdit => "column-edit",
             Self::TaskCreate => "task-create",
             Self::TaskEdit => "task-edit",
             Self::TaskDelete => "task-delete",
             Self::TaskMoveWithinColumn => "task-move-within-column",
             Self::TaskMoveBetweenColumns => "task-move-between-columns",
-            Self::ModalOpen => "modal-open",
-            Self::ModalClose => "modal-close",
         }
     }
 }

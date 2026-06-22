@@ -22,7 +22,7 @@ type SidebarItemProps = {
 };
 
 export function Sidebar() {
-  const { boards, currentBoard, currentBoardId } = useBoardsState();
+  const { boards, currentBoardId } = useBoardsState();
   const boardActions = useBoardsActions();
   const modalActions = useModalsActions();
 
@@ -35,12 +35,7 @@ export function Sidebar() {
           isActive={false}
           dataTestId="add-board-button"
           onClick={() => {
-            const finishMeasurement = startPerformanceMeasurement(
-              PerformanceAction.ModalOpen,
-              performanceContextFromBoard(currentBoard),
-            );
             modalActions.setBoard(openBoardModal());
-            finishMeasurement();
           }}
         />
       </ul>
@@ -67,12 +62,7 @@ export function Sidebar() {
               finishMeasurement();
             }}
             onEdit={() => {
-              const finishMeasurement = startPerformanceMeasurement(
-                PerformanceAction.ModalOpen,
-                performanceContextFromBoard(currentBoard),
-              );
               modalActions.setBoard(openBoardModalWithBoard(board));
-              finishMeasurement();
             }}
           />
         ))}

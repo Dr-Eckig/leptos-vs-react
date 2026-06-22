@@ -20,12 +20,7 @@ pub fn Sidebar() -> impl IntoView {
                     is_active=false
                     data_test_id="add-board-button"
                     on_click=Callback::new(move |_| {
-                        let measurement = performance::start(
-                            PerformanceAction::ModalOpen,
-                            PerformanceContext::from_board(app.boards.current_board()),
-                        );
                         app.modals.board.set(Some(OpenBoardModal::new()));
-                        (measurement)();
                     })
                 />
             </ul>
@@ -41,12 +36,7 @@ pub fn Sidebar() -> impl IntoView {
                         let is_active = Signal::derive(move || app.boards.current_board_id.get() == Some(id));
 
                         let on_edit = Callback::new(move |_| {
-                            let measurement = performance::start(
-                                PerformanceAction::ModalOpen,
-                                PerformanceContext::from_board(app.boards.current_board()),
-                            );
                             app.modals.board.set(Some(OpenBoardModal::new_with_board(board)));
-                            (measurement)();
                         });
 
                         let on_click = Callback::new(move |_| {

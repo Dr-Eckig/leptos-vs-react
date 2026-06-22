@@ -23,20 +23,7 @@ pub fn TaskModal() -> impl IntoView {
     let task = Signal::derive(move || data.get().task);
     let column_id = Signal::derive(move || data.get().column_id);
 
-    let close_modal_without_measurement = move || app.modals.task.set(None);
-    let close_modal = move || {
-        if !is_open.get_untracked() {
-            app.modals.task.set(None);
-            return;
-        }
-
-        let measurement = performance::start(
-            PerformanceAction::ModalClose,
-            PerformanceContext::from_board(app.boards.current_board()),
-        );
-        app.modals.task.set(None);
-        (measurement)();
-    };
+    let close_modal = move || app.modals.task.set(None);
 
     let is_edit = move || task.get().is_some();
 
@@ -107,7 +94,7 @@ pub fn TaskModal() -> impl IntoView {
                     task_state.description.set(new_task.description().cloned());
                     task_state.due_date.set(new_task.due_date().cloned());
                     task_state.priority.set(new_task.priority().clone());
-                    close_modal_without_measurement();
+                    close_modal();
                     (measurement)();
                 }
                 None => {
@@ -128,7 +115,7 @@ pub fn TaskModal() -> impl IntoView {
                     description.set(String::new());
                     priority.set(String::from("Medium"));
                     due_date.set(String::new());
-                    close_modal_without_measurement();
+                    close_modal();
 
                     if let Some(measurement) = measurement {
                         (measurement)();

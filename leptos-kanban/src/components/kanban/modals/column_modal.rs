@@ -2,7 +2,6 @@ use leptos::prelude::*;
 
 use crate::{
     components::{Input, Modal},
-    performance::{self, PerformanceAction, PerformanceContext},
     types::{
         app_context::AppContext,
         serialize::ColumnType,
@@ -17,20 +16,7 @@ pub fn ColumnModal() -> impl IntoView {
 
     let column = Signal::derive(move || app.modals.column.get().map(|modal| modal.column));
     let is_open = Signal::derive(move || app.modals.column.get().is_some());
-    let close_modal_without_measurement = move || app.modals.column.set(None);
-    let close_modal = move || {
-        if !is_open.get_untracked() {
-            app.modals.column.set(None);
-            return;
-        }
-
-        let measurement = performance::start(
-            PerformanceAction::ModalClose,
-            PerformanceContext::from_board(app.boards.current_board()),
-        );
-        app.modals.column.set(None);
-        (measurement)();
-    };
+    let close_modal = move || app.modals.column.set(None);
 
     let column_title = Signal::derive(move || {
         column
@@ -80,17 +66,12 @@ pub fn ColumnModal() -> impl IntoView {
         match user_column.validate() {
             Ok(new_column) => {
                 if let Some(column_state) = column.get() {
-                    let measurement = performance::start(
-                        PerformanceAction::ColumnEdit,
-                        PerformanceContext::from_board(app.boards.current_board()),
-                    );
                     column_state
                         .wip_limit
                         .set(new_column.wip_limit().to_owned());
-                    close_modal_without_measurement();
-                    (measurement)();
+                    close_modal();
                 } else {
-                    close_modal_without_measurement();
+                    close_modal();
                 }
             }
             Err(ColumnValidationError::InvalidWipLimit) => {

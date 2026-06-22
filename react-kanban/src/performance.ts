@@ -5,17 +5,12 @@ let currentPerformanceLogFileName: string | null = null;
 let performanceLogEntries: PerformanceLogEntry[] = [];
 
 export enum PerformanceAction {
-  BoardCreate = "board-create",
-  BoardEdit = "board-edit",
   BoardSwitch = "board-switch",
-  ColumnEdit = "column-edit",
   TaskCreate = "task-create",
   TaskEdit = "task-edit",
   TaskDelete = "task-delete",
   TaskMoveWithinColumn = "task-move-within-column",
   TaskMoveBetweenColumns = "task-move-between-columns",
-  ModalOpen = "modal-open",
-  ModalClose = "modal-close",
 }
 
 export type PerformanceContext = {

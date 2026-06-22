@@ -94,12 +94,7 @@ export function TaskColumn({ column }: ColumnProps) {
               color="warning"
               size="small"
               onClick={() => {
-                const finishMeasurement = startPerformanceMeasurement(
-                  PerformanceAction.ModalOpen,
-                  performanceContextFromBoard(currentBoard),
-                );
                 modals.setColumn(openColumnModalWithColumn(column));
-                finishMeasurement();
               }}
               ariaLabel="Edit column"
             />
@@ -109,12 +104,7 @@ export function TaskColumn({ column }: ColumnProps) {
               size="small"
               state={isWipLimitReached ? "disabled" : "normal"}
               onClick={() => {
-                const finishMeasurement = startPerformanceMeasurement(
-                  PerformanceAction.ModalOpen,
-                  performanceContextFromBoard(currentBoard),
-                );
                 modals.setTask(openTaskModal(column.columnType));
-                finishMeasurement();
               }}
               ariaLabel="Add task"
               dataTestId={`add-task-button-${column.columnType}`}

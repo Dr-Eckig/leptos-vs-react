@@ -1,15 +1,9 @@
 import { useEffect, useState } from "react";
 import {
   useBoardsActions,
-  useBoardsState,
   useModalsActions,
   useModalsState,
 } from "../../../hooks";
-import {
-  PerformanceAction,
-  performanceContextFromBoard,
-  start as startPerformanceMeasurement,
-} from "../../../performance";
 import { columnDisplayNames, type Column } from "../../../types/state";
 import { validateColumn } from "../../../types/validation";
 import { Input } from "../../ui/Input";
@@ -30,7 +24,6 @@ type ColumnModalFormProps = {
 
 function ColumnModalForm({ column, isOpen }: ColumnModalFormProps) {
   const boards = useBoardsActions();
-  const { currentBoard } = useBoardsState();
   const modalActions = useModalsActions();
   const [wipLimit, setWipLimit] = useState("");
   const [limitError, setLimitError] = useState<string | undefined>();
@@ -45,12 +38,7 @@ function ColumnModalForm({ column, isOpen }: ColumnModalFormProps) {
   }, [column, isOpen]);
 
   const closeModal = () => {
-    const finishMeasurement = startPerformanceMeasurement(
-      PerformanceAction.ModalClose,
-      performanceContextFromBoard(currentBoard),
-    );
     modalActions.setColumn(null);
-    finishMeasurement();
   };
 
   const saveColumn = () => {
@@ -69,13 +57,8 @@ function ColumnModalForm({ column, isOpen }: ColumnModalFormProps) {
       return;
     }
 
-    const finishMeasurement = startPerformanceMeasurement(
-      PerformanceAction.ColumnEdit,
-      performanceContextFromBoard(currentBoard),
-    );
     boards.updateColumnWipLimit(column.id, result.column.wipLimit);
     modalActions.setColumn(null);
-    finishMeasurement();
   };
 
   return (
