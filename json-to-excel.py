@@ -23,7 +23,7 @@ MAX_EXCEL_COLUMNS = 16_384
 MAX_CELL_TEXT_LENGTH = 32_767
 MAX_HEADER_TEXT_LENGTH = 255
 RESULT_SHEET_NAME = "Results"
-RESULT_COLUMNS = ["run", "framework", "browser", "action", "zeit"]
+RESULT_COLUMNS = ["run", "framework", "browser", "action", "board", "zeit"]
 
 
 @dataclass
@@ -137,6 +137,7 @@ def format_result_row(row: dict[str, Any]) -> dict[str, Any]:
         "framework": row.get("framework"),
         "browser": row.get("browser"),
         "action": row.get("action"),
+        "board": row.get("board"),
         "zeit": parse_time_ms(
             first_existing(row, ["zeit", "performance", "time", "duration", "duration_ms"]),
         ),
