@@ -109,9 +109,13 @@ export function start(
 
 function afterNextPaint(callback: () => void) {
   window.requestAnimationFrame(() => {
-    window.setTimeout(() => {
+    const channel = new MessageChannel();
+
+    channel.port1.onmessage = () => {
       callback();
-    }, 0);
+    };
+
+    channel.port2.postMessage(undefined);
   });
 }
 

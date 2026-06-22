@@ -1,16 +1,13 @@
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::time::Duration;
 
 use leptos::{
-    leptos_dom::{
-        helpers::{request_animation_frame, set_timeout},
-        logging::console_log,
-    },
+    leptos_dom::{helpers::request_animation_frame, logging::console_log},
     prelude::GetUntracked,
 };
 use serde::Serialize;
+use wasm_bindgen::{JsCast, JsValue, closure::Closure};
 use web_sys::js_sys;
 
 use crate::types::state::BoardState;
@@ -151,7 +148,17 @@ pub fn start(
 
 fn after_next_paint(callback: impl FnOnce() + 'static) {
     request_animation_frame(move || {
-        set_timeout(callback, Duration::ZERO);
+        let Ok(channel) = web_sys::MessageChannel::new() else {
+            callback();
+            return;
+        };
+
+        let on_message = Closure::once_into_js(callback);
+        channel
+            .port1()
+            .set_onmessage(Some(on_message.unchecked_ref()));
+
+        let _ = channel.port2().post_message(&JsValue::UNDEFINED);
     });
 }
 
