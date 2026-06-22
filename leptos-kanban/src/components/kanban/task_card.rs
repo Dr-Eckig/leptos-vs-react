@@ -2,19 +2,23 @@ use leptos::prelude::*;
 
 use crate::components::icons::FontawesomeIcon;
 use crate::components::{Dropdown, IconText, Tag};
+use crate::performance::{self, PerformanceAction, PerformanceContext};
+use crate::types::app_context::AppContext;
 use crate::types::format_date_to_display;
-use crate::types::ui::{Alignment, Color};
-use crate::types::state::TaskState;
 use crate::types::serialize::Priority;
+use crate::types::state::TaskState;
+use crate::types::ui::{Alignment, Color};
 
 #[component]
 pub fn TaskCard(
     task: TaskState,
     task_index: ReadSignal<usize>,
     #[prop(into)] column_name: Signal<String>,
-    on_edit: Callback<()>, 
-    on_delete: Callback<()>, 
+    on_edit: Callback<()>,
+    on_delete: Callback<()>,
 ) -> impl IntoView {
+    let app: AppContext = expect_context();
+
     let title = move || task.title.get();
     let description = move || task.description.get();
     let due_date = Signal::derive(move || task.due_date.get());
@@ -41,7 +45,9 @@ pub fn TaskCard(
         Priority::High => "border-color-danger",
     });
 
-    let dropdown_data_test_id = Signal::derive(move || format!("{}-task-dropdown-{}", column_name.get(), task_index.get()));
+    let dropdown_data_test_id = Signal::derive(move || {
+        format!("{}-task-dropdown-{}", column_name.get(), task_index.get())
+    });
 
     view! {
         <div class=move || format!("card m-4 {}", card_border.get())>
@@ -85,8 +91,13 @@ pub fn TaskCard(
                         class="dropdown-item"
                         data-testid=move || format!("{}-delete", dropdown_data_test_id.get())
                         on:click=move |_| {
-                            dropdown_visible.set(false);
+                            let measurement = performance::start(
+                                PerformanceAction::TaskDelete,
+                                PerformanceContext::from_board(app.boards.current_board()),
+                            );
                             on_delete.run(());
+                            dropdown_visible.set(false);
+                            (measurement)();
                         }
                     >
                         <IconText

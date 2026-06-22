@@ -72,7 +72,18 @@ function TaskModalForm({ task, columnType, isOpen }: TaskModalFormProps) {
     setDueDateError(undefined);
   }, [task, isOpen]);
 
+  const resetForm = () => {
+    setTitle("");
+    setDescription("");
+    setPriority(Priority.Medium);
+    setDueDate("");
+    setTitleError(undefined);
+    setPriorityError(undefined);
+    setDueDateError(undefined);
+  };
+
   const closeModal = () => {
+    resetForm();
     modalActions.setTask(null);
   };
 
@@ -116,6 +127,7 @@ function TaskModalForm({ task, columnType, isOpen }: TaskModalFormProps) {
       boardActions.addTaskToCurrentBoard(columnType, result.task);
     }
 
+    resetForm();
     modalActions.setTask(null);
     finishMeasurement?.();
   };

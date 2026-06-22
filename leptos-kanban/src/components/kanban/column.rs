@@ -125,12 +125,7 @@ pub fn TaskColumn(column: ColumnState) -> impl IntoView {
                         });
 
                         let on_delete = Callback::new(move |_| {
-                            let measurement = performance::start(
-                                PerformanceAction::TaskDelete,
-                                PerformanceContext::from_board(app.boards.current_board()),
-                            );
                             app.boards.delete_task_from_current_board(&task.id);
-                            (measurement)();
                         });
 
                         let on_drop_before_task = Callback::new(move |dragged_item: DraggableItemDto| {

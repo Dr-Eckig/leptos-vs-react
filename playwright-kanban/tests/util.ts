@@ -9,9 +9,9 @@
 // npx playwright test tests/move-task-between-col.test.ts
 // npx playwright test tests/board-switch.test.ts
 
-// npx playwright test --project=chromium --workers=1
-// npx playwright test --project=firefox --workers=1
-// npx playwright test --project=webkit --workers=1
+// npx playwright test --project=chromium
+// npx playwright test --project=firefox
+// npx playwright test --project=webkit
 
 import { expect, type Locator, type Page, type TestInfo } from '@playwright/test';
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -19,7 +19,7 @@ import path from 'node:path';
 
 export const resultsDir = path.resolve('results');
 export const runs = 50;
-export const performanceTestTimeout = 600_000;
+export const performanceTestTimeout = 1_000_000;
 const performanceLogTimeout = 30_000;
 
 export type PerformanceTarget = {
