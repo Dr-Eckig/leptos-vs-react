@@ -14,12 +14,12 @@ import {
 
 test.setTimeout(performanceTestTimeout);
 
-for (const target of performanceTargets) {
+for (const framework of performanceTargets) {
   for (const scenario of boardScenarios) {
     test(
-      `${target.framework}: add one task to ${scenario.title} repeatedly`,
+      `${framework.framework}: add one task to ${scenario.title} repeatedly`,
       async ({ page }, testInfo) => {
-        await addOneTaskToBoardRepeatedly(page, testInfo, target, scenario);
+        await addOneTaskToBoardRepeatedly(page, testInfo, framework, scenario);
       },
     );
   }

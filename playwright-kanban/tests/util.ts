@@ -4,6 +4,7 @@
 // npx playwright test tests/add-task.test.ts
 // npx playwright test tests/edit-task.test.ts
 // npx playwright test tests/delete-task.test.ts
+
 // npx playwright test tests/move-task-within-col.test.ts
 // npx playwright test tests/move-task-between-col.test.ts
 // npx playwright test tests/board-switch.test.ts
@@ -17,7 +18,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 export const resultsDir = path.resolve('results');
-export const runs = 10;
+export const runs = 50;
 export const performanceTestTimeout = 600_000;
 const performanceLogTimeout = 30_000;
 
