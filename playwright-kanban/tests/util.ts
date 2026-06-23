@@ -262,19 +262,24 @@ export function taskDropdownTestId(columnType: ColumnType, taskIndex: number) {
   return `${columnType}-task-dropdown-${taskIndex}`;
 }
 
+function taskDraggableTestId(columnType: ColumnType, taskIndex: number) {
+  return `${columnType}-task-draggable-${taskIndex}`;
+}
+
+function taskDropTargetTestId(columnType: ColumnType, taskIndex: number) {
+  return `${columnType}-task-drop-target-${taskIndex}`;
+}
+
+function columnDropZoneTestId(columnType: ColumnType) {
+  return `${columnType}-column-drop-zone`;
+}
+
 function taskDraggable(
   page: Page,
   columnType: ColumnType,
   taskIndex: number,
 ): Locator {
-  return page
-    .locator(
-      `.kanban-draggable-item:has([data-testid="${taskDropdownTestId(
-        columnType,
-        taskIndex,
-      )}"])`,
-    )
-    .first();
+  return page.getByTestId(taskDraggableTestId(columnType, taskIndex));
 }
 
 function taskDropTarget(
@@ -282,21 +287,11 @@ function taskDropTarget(
   columnType: ColumnType,
   taskIndex: number,
 ): Locator {
-  return page
-    .locator(
-      `.kanban-task-drop-target:has([data-testid="${taskDropdownTestId(
-        columnType,
-        taskIndex,
-      )}"])`,
-    )
-    .first();
+  return page.getByTestId(taskDropTargetTestId(columnType, taskIndex));
 }
 
 function columnDropZone(page: Page, columnType: ColumnType): Locator {
-  return page
-    .locator(`.column:has([data-testid="add-task-button-${columnType}"])`)
-    .locator('.kanban-column-drop-zone')
-    .first();
+  return page.getByTestId(columnDropZoneTestId(columnType));
 }
 
 function parsePerformanceLog(

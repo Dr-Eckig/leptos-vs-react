@@ -75,6 +75,7 @@ export function TaskColumn({ column }: ColumnProps) {
     <div className="column is-flex is-flex-direction-column">
       <DropZone
         className="kanban-column-drop-zone box is-radiusless full-height scrollable p-0"
+        dataTestId={`${column.columnType}-column-drop-zone`}
         onDrop={moveTaskToColumnEnd}
         dropAllowed={dropAllowed}
       >
@@ -116,6 +117,7 @@ export function TaskColumn({ column }: ColumnProps) {
           <DropZone
             key={task.id}
             className="kanban-task-drop-target"
+            dataTestId={`${column.columnType}-task-drop-target-${taskIndex}`}
             onDrop={(droppedItem) => {
               const action =
                 droppedItem.sourceColumnType === column.columnType
@@ -142,6 +144,7 @@ export function TaskColumn({ column }: ColumnProps) {
           >
             <DraggableItem
               data={createDraggableItemDto(task.id, column.columnType)}
+              dataTestId={`${column.columnType}-task-draggable-${taskIndex}`}
             >
               <TaskCard
                 task={task}

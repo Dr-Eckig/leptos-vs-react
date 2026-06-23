@@ -7,6 +7,7 @@ use crate::types::drag_and_drop::{
 #[component]
 pub fn DropZone(
     #[prop(into, optional)] class: String,
+    #[prop(into, optional)] data_test_id: Signal<String>,
     on_drop: Callback<DraggableItemDto>,
     #[prop(default = Signal::from(true))] drop_allowed: Signal<bool>,
     children: Children,
@@ -91,6 +92,7 @@ pub fn DropZone(
     view! {
         <div
             class=html_class
+            data-testid=data_test_id
             on:dragenter=handle_drag_enter
             on:dragover=handle_drag_over
             on:dragleave=handle_drag_leave

@@ -80,6 +80,9 @@ pub fn TaskColumn(column: ColumnState) -> impl IntoView {
         <div class="column is-flex is-flex-direction-column">
             <DropZone
                 class="kanban-column-drop-zone box is-radiusless full-height scrollable p-0"
+                data_test_id=Signal::derive(move || {
+                    format!("{}-column-drop-zone", column.column_type.name())
+                })
                 on_drop=move_task_to_column_end
                 drop_allowed
             >
@@ -149,14 +152,34 @@ pub fn TaskColumn(column: ColumnState) -> impl IntoView {
                         });
 
                         view! {
-                            <DropZone class="kanban-task-drop-target" on_drop=on_drop_before_task drop_allowed>
-                                <DraggableItem data=DraggableItemDto::new(task.id, column.column_type)>
-                                    <TaskCard 
-                                        task 
+                            <DropZone
+                                class="kanban-task-drop-target"
+                                data_test_id=Signal::derive(move || {
+                                    format!(
+                                        "{}-task-drop-target-{}",
+                                        column.column_type.name(),
+                                        index.get(),
+                                    )
+                                })
+                                on_drop=on_drop_before_task
+                                drop_allowed
+                            >
+                                <DraggableItem
+                                    data=DraggableItemDto::new(task.id, column.column_type)
+                                    data_test_id=Signal::derive(move || {
+                                        format!(
+                                            "{}-task-draggable-{}",
+                                            column.column_type.name(),
+                                            index.get(),
+                                        )
+                                    })
+                                >
+                                    <TaskCard
+                                        task
                                         column_name
-                                        task_index=index 
+                                        task_index=index
                                         on_edit
-                                        on_delete 
+                                        on_delete
                                     />
                                 </DraggableItem>
                             </DropZone>

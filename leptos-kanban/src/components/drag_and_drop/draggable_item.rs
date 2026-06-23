@@ -6,7 +6,11 @@ use crate::types::{
 };
 
 #[component]
-pub fn DraggableItem(data: DraggableItemDto, children: Children) -> impl IntoView {
+pub fn DraggableItem(
+    data: DraggableItemDto,
+    #[prop(into, optional)] data_test_id: Signal<String>,
+    children: Children,
+) -> impl IntoView {
     let app: AppContext = expect_context();
     let is_dragging = RwSignal::new(false);
 
@@ -40,6 +44,7 @@ pub fn DraggableItem(data: DraggableItemDto, children: Children) -> impl IntoVie
         <div
             class=html_class
             draggable="true"
+            data-testid=data_test_id
             on:dragstart=handle_drag_start
             on:dragend=handle_drag_end
         >

@@ -8,6 +8,7 @@ import {
 
 type DropZoneProps = {
   className?: string;
+  dataTestId?: string;
   onDrop: (draggedItem: DraggableItemDto) => void;
   dropAllowed?: boolean;
   children: ReactNode;
@@ -15,6 +16,7 @@ type DropZoneProps = {
 
 export function DropZone({
   className = "",
+  dataTestId,
   onDrop,
   dropAllowed = true,
   children,
@@ -76,6 +78,7 @@ export function DropZone({
   return (
     <div
       className={htmlClass}
+      data-testid={dataTestId}
       onDragEnter={handleDragEnter}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}

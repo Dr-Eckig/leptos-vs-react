@@ -9,10 +9,15 @@ import {
 
 type DraggableItemProps = {
   data: DraggableItemDto;
+  dataTestId?: string;
   children: ReactNode;
 };
 
-export function DraggableItem({ data, children }: DraggableItemProps) {
+export function DraggableItem({
+  data,
+  dataTestId,
+  children,
+}: DraggableItemProps) {
   const { setDraggedItem } = useDragAndDropActions();
   const [isDragging, setIsDragging] = useState(false);
 
@@ -40,6 +45,7 @@ export function DraggableItem({ data, children }: DraggableItemProps) {
     <div
       className={htmlClass}
       draggable
+      data-testid={dataTestId}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
