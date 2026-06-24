@@ -1,5 +1,6 @@
 import { expect, test, type Page, type TestInfo } from '@playwright/test';
 import {
+  addJsHeapToLatestEntry,
   boardScenariosWithTasks,
   collectPerformanceLogEntries,
   moveTaskBeforeTask,
@@ -7,6 +8,7 @@ import {
   performanceTargets,
   performanceTestTimeout,
   runs,
+  shouldMeasureJsHeap,
   writePerformanceResults,
   type BoardScenario,
   type PerformanceTarget,
@@ -31,10 +33,13 @@ async function moveOneTaskWithinColumnRepeatedly(
   target: PerformanceTarget,
   scenario: BoardScenario,
 ) {
+  const action = 'task-move-within-column';
+  const resultFileName = `move-task-within-col-on-${scenario.resultSlug}.json`;
   const taskMoveWithinColumnLog = collectPerformanceLogEntries(page, target, {
-    action: 'task-move-within-column',
+    action,
     board: scenario.boardLabel,
   });
+  const shouldMeasureHeap = shouldMeasureJsHeap(testInfo);
 
   for (let i = 1; i <= runs; i++) {
     const previousEntryCount = taskMoveWithinColumnLog.entries.length;
@@ -42,13 +47,17 @@ async function moveOneTaskWithinColumnRepeatedly(
     await openBoard(page, target, scenario);
     await moveTaskBeforeTask(page, 'todo', 1, 'todo', 0);
     await taskMoveWithinColumnLog.waitForNextEntry(previousEntryCount, i);
+
+    if (shouldMeasureHeap) {
+      await addJsHeapToLatestEntry(page, taskMoveWithinColumnLog.entries, i);
+    }
   }
 
   await writePerformanceResults(
     testInfo,
     target,
     'move-task-within-col',
-    `move-task-within-col-on-${scenario.resultSlug}.json`,
+    resultFileName,
     taskMoveWithinColumnLog.entries,
   );
 

@@ -1,5 +1,6 @@
 import { expect, test, type Page, type TestInfo } from '@playwright/test';
 import {
+  addJsHeapToLatestEntry,
   boardScenariosWithTasks,
   collectPerformanceLogEntries,
   moveTaskToColumnEnd,
@@ -7,6 +8,7 @@ import {
   performanceTargets,
   performanceTestTimeout,
   runs,
+  shouldMeasureJsHeap,
   writePerformanceResults,
   type BoardScenario,
   type PerformanceTarget,
@@ -36,10 +38,13 @@ async function moveOneTaskBetweenColumnsRepeatedly(
   target: PerformanceTarget,
   scenario: BoardScenario,
 ) {
+  const action = 'task-move-between-columns';
+  const resultFileName = `move-task-between-cols-on-${scenario.resultSlug}.json`;
   const taskMoveBetweenColumnsLog = collectPerformanceLogEntries(page, target, {
-    action: 'task-move-between-columns',
+    action,
     board: scenario.boardLabel,
   });
+  const shouldMeasureHeap = shouldMeasureJsHeap(testInfo);
 
   for (let i = 1; i <= runs; i++) {
     const previousEntryCount = taskMoveBetweenColumnsLog.entries.length;
@@ -47,13 +52,17 @@ async function moveOneTaskBetweenColumnsRepeatedly(
     await openBoard(page, target, scenario);
     await moveTaskToColumnEnd(page, 'todo', 0, 'in_progress');
     await taskMoveBetweenColumnsLog.waitForNextEntry(previousEntryCount, i);
+
+    if (shouldMeasureHeap) {
+      await addJsHeapToLatestEntry(page, taskMoveBetweenColumnsLog.entries, i);
+    }
   }
 
   await writePerformanceResults(
     testInfo,
     target,
     'move-task-between-col',
-    `move-task-between-cols-on-${scenario.resultSlug}.json`,
+    resultFileName,
     taskMoveBetweenColumnsLog.entries,
   );
 

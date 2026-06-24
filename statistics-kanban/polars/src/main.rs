@@ -20,6 +20,8 @@ struct Measurement {
     #[serde(default)]
     board: String,
     performance: Value,
+    #[serde(default, rename = "jsHeap")]
+    js_heap: Option<Value>,
 }
 
 #[derive(Debug, Serialize)]
@@ -28,6 +30,7 @@ struct Summary {
     browser: String,
     action: String,
     board: String,
+    unit: String,
     min: f64,
     max: f64,
     mean: f64,
@@ -66,7 +69,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     let summaries = json_files
         .iter()
         .map(|json_file| summarize_file(json_file))
-        .collect::<Result<Vec<_>, _>>()?;
+        .collect::<Result<Vec<_>, _>>()?
+        .into_iter()
+        .flatten()
+        .collect::<Vec<_>>();
 
     if let Some(parent) = output_path.parent() {
         fs::create_dir_all(parent)?;
@@ -126,26 +132,85 @@ fn is_json_file(path: &Path) -> bool {
         .is_some_and(|extension| extension.eq_ignore_ascii_case("json"))
 }
 
-fn summarize_file(path: &Path) -> Result<Summary, Box<dyn Error>> {
+fn summarize_file(path: &Path) -> Result<Vec<Summary>, Box<dyn Error>> {
     let input = File::open(path)?;
     let measurements = serde_json::from_reader::<_, Vec<Measurement>>(input)
         .map_err(|err| format!("Could not parse {}: {err}", path.display()))?;
     let first_measurement = measurements
         .first()
         .ok_or_else(|| format!("Cannot summarize empty file: {}", path.display()))?;
-    let performance_ms = measurements
-        .iter()
-        .map(|measurement| parse_performance_ms(&measurement.performance, path))
-        .collect::<Result<Vec<_>, _>>()?;
 
-    let data_frame = df!("performance_ms" => performance_ms)?;
-    let values = data_frame.column("performance_ms")?.f64()?;
+    if is_memory_action(&first_measurement.action) {
+        return Ok(Vec::new());
+    }
+
+    let mut summaries = vec![summarize_metric(
+        path,
+        first_measurement,
+        &measurements,
+        &first_measurement.action,
+        PerformanceUnit::Milliseconds,
+        |measurement| Some(&measurement.performance),
+    )?];
+
+    if measurements.iter().any(|measurement| measurement.js_heap.is_some()) {
+        summaries.push(summarize_metric(
+            path,
+            first_measurement,
+            &measurements,
+            &memory_action_for(&first_measurement.action),
+            PerformanceUnit::Bytes,
+            |measurement| measurement.js_heap.as_ref(),
+        )?);
+    }
+
+    Ok(summaries)
+}
+
+fn summarize_metric<'a, F>(
+    path: &Path,
+    first_measurement: &Measurement,
+    measurements: &'a [Measurement],
+    action: &str,
+    default_unit: PerformanceUnit,
+    value_for_measurement: F,
+) -> Result<Summary, Box<dyn Error>>
+where
+    F: Fn(&'a Measurement) -> Option<&'a Value>,
+{
+    let parsed_values = measurements
+        .iter()
+        .map(|measurement| {
+            let value = value_for_measurement(measurement).ok_or_else(|| {
+                format!("Missing {action} value in {}", path.display())
+            })?;
+
+            parse_performance_value(value, default_unit, path)
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let first_unit = parsed_values
+        .first()
+        .map(|value| value.unit)
+        .ok_or_else(|| format!("Cannot summarize empty file: {}", path.display()))?;
+
+    if parsed_values.iter().any(|value| value.unit != first_unit) {
+        return Err(format!("Mixed performance units in {}", path.display()).into());
+    }
+
+    let performance_values = parsed_values
+        .iter()
+        .map(|value| value.value)
+        .collect::<Vec<_>>();
+
+    let data_frame = df!("performance" => performance_values)?;
+    let values = data_frame.column("performance")?.f64()?;
 
     Ok(Summary {
         framework: first_measurement.framework.to_lowercase(),
         browser: first_measurement.browser.clone(),
-        action: first_measurement.action.clone(),
+        action: action.to_string(),
         board: first_measurement.board.clone(),
+        unit: first_unit.as_str().to_string(),
         min: required_stat(values.min(), path, "min").map(round_to_two_decimals)?,
         max: required_stat(values.max(), path, "max").map(round_to_two_decimals)?,
         mean: required_stat(values.mean(), path, "mean").map(round_to_two_decimals)?,
@@ -159,22 +224,83 @@ fn round_to_two_decimals(value: f64) -> f64 {
     (value * 100.0).round() / 100.0
 }
 
-fn parse_performance_ms(value: &Value, path: &Path) -> Result<f64, Box<dyn Error>> {
-    match value {
-        Value::Number(number) => number
-            .as_f64()
-            .ok_or_else(|| format!("Invalid numeric performance in {}", path.display()).into()),
-        Value::String(text) => {
-            let normalized = text.trim().trim_end_matches("ms").trim().replace(',', ".");
-            normalized.parse::<f64>().map_err(|err| {
-                format!(
-                    "Invalid performance value \"{text}\" in {}: {err}",
-                    path.display()
-                )
-                .into()
-            })
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum PerformanceUnit {
+    Milliseconds,
+    Bytes,
+}
+
+impl PerformanceUnit {
+    fn as_str(self) -> &'static str {
+        match self {
+            Self::Milliseconds => "ms",
+            Self::Bytes => "bytes",
         }
+    }
+}
+
+#[derive(Debug)]
+struct ParsedPerformanceValue {
+    value: f64,
+    unit: PerformanceUnit,
+}
+
+fn parse_performance_value(
+    value: &Value,
+    default_unit: PerformanceUnit,
+    path: &Path,
+) -> Result<ParsedPerformanceValue, Box<dyn Error>> {
+    match value {
+        Value::Number(number) => Ok(ParsedPerformanceValue {
+            value: number
+                .as_f64()
+                .ok_or_else(|| format!("Invalid numeric performance in {}", path.display()))?,
+            unit: default_unit,
+        }),
+        Value::String(text) => parse_performance_text(text, default_unit, path),
         _ => Err(format!("Invalid performance value in {}", path.display()).into()),
+    }
+}
+
+fn parse_performance_text(
+    text: &str,
+    default_unit: PerformanceUnit,
+    path: &Path,
+) -> Result<ParsedPerformanceValue, Box<dyn Error>> {
+    let trimmed = text.trim();
+    let lower = trimmed.to_ascii_lowercase();
+    let (number_text, unit) = if lower.ends_with("bytes") {
+        (&trimmed[..trimmed.len() - "bytes".len()], PerformanceUnit::Bytes)
+    } else if lower.ends_with("byte") {
+        (&trimmed[..trimmed.len() - "byte".len()], PerformanceUnit::Bytes)
+    } else if lower.ends_with("ms") {
+        (
+            &trimmed[..trimmed.len() - "ms".len()],
+            PerformanceUnit::Milliseconds,
+        )
+    } else {
+        (trimmed, default_unit)
+    };
+    let normalized = number_text.trim().replace(',', ".");
+    let value = normalized.parse::<f64>().map_err(|err| {
+        format!(
+            "Invalid performance value \"{text}\" in {}: {err}",
+            path.display()
+        )
+    })?;
+
+    Ok(ParsedPerformanceValue { value, unit })
+}
+
+fn is_memory_action(action: &str) -> bool {
+    action.ends_with("-js-heap-used")
+}
+
+fn memory_action_for(action: &str) -> String {
+    if matches!(action, "initial-load-fcp" | "initial-load-lcp") {
+        "initial-load-js-heap-used".to_string()
+    } else {
+        format!("{action}-js-heap-used")
     }
 }
 

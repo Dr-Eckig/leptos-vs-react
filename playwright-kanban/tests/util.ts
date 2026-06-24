@@ -35,6 +35,7 @@ export type PerformanceLogEntry = {
   board: string;
   action: string;
   performance: string;
+  jsHeap?: string;
 };
 
 type CollectedPerformanceLogEntry = Omit<PerformanceLogEntry, 'browser'>;
@@ -201,6 +202,49 @@ export function createPerformanceResultEntry(
   };
 }
 
+export async function addJsHeapToLatestEntry(
+  page: Page,
+  entries: PerformanceResultEntry[],
+  run: number,
+) {
+  const entry = entries[entries.length - 1];
+
+  if (!entry || entry.run !== run) {
+    throw new Error(`Cannot attach JS heap measurement for run ${run}.`);
+  }
+
+  entry.jsHeap = formatBytes(await measureJsHeapUsed(page));
+}
+
+export async function measureJsHeapUsed(page: Page) {
+  const client = await page.context().newCDPSession(page);
+
+  try {
+    await client.send('HeapProfiler.collectGarbage');
+    const heapUsage = (await client.send('Runtime.getHeapUsage')) as {
+      usedSize?: number;
+    };
+
+    if (
+      typeof heapUsage.usedSize !== 'number' ||
+      !Number.isFinite(heapUsage.usedSize)
+    ) {
+      throw new Error(`Invalid JS heap usage: ${heapUsage.usedSize}`);
+    }
+
+    return heapUsage.usedSize;
+  } finally {
+    await client.detach();
+  }
+}
+
+export function shouldMeasureJsHeap(testInfo: TestInfo) {
+  const browserName =
+    testInfo.project.use.browserName ?? testInfo.project.name ?? '';
+
+  return browserName.toLowerCase() === 'chromium';
+}
+
 export async function openBoard(
   page: Page,
   target: PerformanceTarget,
@@ -330,7 +374,7 @@ function serializePerformanceLogEntry(
   entry: CollectedPerformanceLogEntry,
   browser: string,
 ): PerformanceLogEntry {
-  return {
+  const serializedEntry: PerformanceLogEntry = {
     run: entry.run,
     browser,
     framework: entry.framework,
@@ -338,6 +382,12 @@ function serializePerformanceLogEntry(
     action: entry.action,
     performance: entry.performance,
   };
+
+  if (entry.jsHeap !== undefined) {
+    serializedEntry.jsHeap = entry.jsHeap;
+  }
+
+  return serializedEntry;
 }
 
 function browserNameFromTestInfo(testInfo: TestInfo) {
@@ -366,4 +416,12 @@ function getRequestedPerformanceTargets() {
 
 function roundToTwoDecimals(value: number) {
   return Math.round(value * 100) / 100;
+}
+
+function formatBytes(valueBytes: number) {
+  if (!Number.isFinite(valueBytes)) {
+    throw new Error(`Cannot write non-finite byte value: ${valueBytes}`);
+  }
+
+  return `${Math.round(valueBytes)} bytes`;
 }
