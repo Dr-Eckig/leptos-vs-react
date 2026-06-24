@@ -1,23 +1,10 @@
-// Run tests: 
 // npx playwright test 
-
-// npx playwright test tests/add-task.test.ts
-// npx playwright test tests/edit-task.test.ts
-// npx playwright test tests/delete-task.test.ts
-
-// npx playwright test tests/move-task-within-col.test.ts
-// npx playwright test tests/move-task-between-col.test.ts
-// npx playwright test tests/board-switch.test.ts
-
-// npx playwright test --project=chromium
-// npx playwright test --project=firefox
-// npx playwright test --project=webkit
 
 import { expect, type Locator, type Page, type TestInfo } from '@playwright/test';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
-export const resultsDir = path.resolve('results');
+export const resultsDir = path.resolve('../statistics-kanban/seaborn/data');
 export const runs = 50;
 export const performanceTestTimeout = 1_000_000;
 const performanceLogTimeout = 30_000;

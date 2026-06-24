@@ -1,5 +1,3 @@
-// cargo run --manifest-path statistics-kanban/polars/Cargo.toml -- playwright-kanban/results statistics-kanban/polars/performance-summary.json
-
 use polars::prelude::*;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
