@@ -26,6 +26,11 @@ ACTION_LABELS = {
     "board-switch": "Board wechseln",
 }
 
+INITIAL_LOAD_LABELS = {
+    "initial-load-fcp": "First Contentful Paint",
+    "initial-load-lcp": "Largest Contentful Paint",
+}
+
 BOARD_LABELS = {
     "Board 1 (Leer)": "Leeres Board",
     "Board 2 (10 Tasks)": "Board mit 10 Tasks",
@@ -40,6 +45,11 @@ ACTION_ORDER = [
     "task-move-within-column",
     "task-move-between-columns",
     "board-switch",
+]
+
+INITIAL_LOAD_ORDER = [
+    "initial-load-fcp",
+    "initial-load-lcp",
 ]
 
 BOARD_ORDER = [
@@ -70,10 +80,17 @@ def main() -> None:
 
     sns.set_theme(style="whitegrid", context="paper")
 
-    output_paths = [
-        create_browser_boxplot(measurements, browser)
-        for browser in ordered_values(measurements["browser"], BROWSER_ORDER)
+    action_measurements = measurements[
+        ~measurements["action"].isin(INITIAL_LOAD_ORDER)
     ]
+    output_paths = [
+        create_browser_boxplot(action_measurements, browser)
+        for browser in ordered_values(action_measurements["browser"], BROWSER_ORDER)
+    ]
+    initial_load_plot = create_initial_load_boxplot(measurements)
+
+    if initial_load_plot is not None:
+        output_paths.append(initial_load_plot)
 
     print(f"Loaded {len(measurements)} measurements from {DATA_DIR}")
     print("Created plots:")
@@ -153,6 +170,96 @@ def create_browser_boxplot(measurements: pd.DataFrame, browser: str) -> Path:
     fig.tight_layout()
 
     output_path = PLOTS_DIR / f"performance-boxplots-{browser}.png"
+    fig.savefig(output_path, dpi=300, bbox_inches="tight")
+    plt.close(fig)
+
+    return output_path
+
+
+def create_initial_load_boxplot(measurements: pd.DataFrame) -> Path | None:
+    initial_load_measurements = measurements[
+        measurements["action"].isin(INITIAL_LOAD_ORDER)
+    ].copy()
+
+    if initial_load_measurements.empty:
+        return None
+
+    initial_load_measurements["metric"] = initial_load_measurements["action"].map(
+        INITIAL_LOAD_LABELS,
+    )
+    initial_load_measurements["metric"] = pd.Categorical(
+        initial_load_measurements["metric"],
+        categories=[INITIAL_LOAD_LABELS[action] for action in INITIAL_LOAD_ORDER],
+        ordered=True,
+    )
+
+    browsers = ordered_values(initial_load_measurements["browser"], BROWSER_ORDER)
+    fig, axes = plt.subplots(
+        1,
+        len(browsers),
+        figsize=(max(7, 4.8 * len(browsers)), 4.2),
+        sharey=True,
+    )
+
+    if len(browsers) == 1:
+        axes = [axes]
+
+    handles = []
+    labels = []
+
+    for index, (ax, browser) in enumerate(zip(axes, browsers)):
+        browser_measurements = initial_load_measurements[
+            initial_load_measurements["browser"] == browser
+        ]
+
+        sns.boxplot(
+            data=browser_measurements,
+            x="performance_ms",
+            y="metric",
+            hue="framework",
+            order=[INITIAL_LOAD_LABELS[action] for action in INITIAL_LOAD_ORDER],
+            hue_order=FRAMEWORK_ORDER,
+            palette=FRAMEWORK_PALETTE,
+            dodge=True,
+            fliersize=2.5,
+            linewidth=1,
+            ax=ax,
+        )
+
+        browser_label = BROWSER_LABELS.get(browser, browser.title())
+        ax.set_title(browser_label, pad=10)
+        ax.set_xlabel("Zeit in Millisekunden (logarithmische Skala)")
+        ax.set_ylabel("Metrik" if index == 0 else "")
+        ax.set_xscale("log")
+        configure_millisecond_axis(ax)
+        ax.grid(axis="x", which="both", linestyle="--", linewidth=0.5, alpha=0.55)
+        ax.grid(axis="y", visible=False)
+
+        legend = ax.get_legend()
+        if legend is not None:
+            current_handles, current_labels = ax.get_legend_handles_labels()
+
+            if not handles:
+                handles = current_handles
+                labels = current_labels
+
+            legend.remove()
+
+    if handles:
+        fig.legend(
+            handles,
+            labels,
+            title="Framework",
+            loc="center right",
+            bbox_to_anchor=(1.0, 0.5),
+            frameon=True,
+        )
+
+    fig.suptitle("Initial Load: FCP und LCP nach Browser", y=1.02)
+    sns.despine(left=True, bottom=False)
+    fig.tight_layout(rect=(0, 0, 0.91 if handles else 1, 1))
+
+    output_path = PLOTS_DIR / "initial-load-boxplots.png"
     fig.savefig(output_path, dpi=300, bbox_inches="tight")
     plt.close(fig)
 

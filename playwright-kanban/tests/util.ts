@@ -38,6 +38,7 @@ export type PerformanceLogEntry = {
 };
 
 type CollectedPerformanceLogEntry = Omit<PerformanceLogEntry, 'browser'>;
+export type PerformanceResultEntry = CollectedPerformanceLogEntry;
 
 type CollectPerformanceOptions = {
   action: string;
@@ -176,6 +177,28 @@ export async function writePerformanceResults(
     path.join(targetResultsDir, resultFileName),
     JSON.stringify(serializedEntries, null, 2),
   );
+}
+
+export function createPerformanceResultEntry(
+  target: PerformanceTarget,
+  run: number,
+  action: string,
+  board: string,
+  performanceMs: number,
+): PerformanceResultEntry {
+  if (!Number.isFinite(performanceMs)) {
+    throw new Error(
+      `Cannot write non-finite performance value for ${target.framework} ${action}: ${performanceMs}`,
+    );
+  }
+
+  return {
+    run,
+    framework: target.framework,
+    board,
+    action,
+    performance: `${roundToTwoDecimals(performanceMs)} ms`,
+  };
 }
 
 export async function openBoard(
@@ -323,7 +346,7 @@ function browserNameFromTestInfo(testInfo: TestInfo) {
 
 function getRequestedPerformanceTargets() {
   const requestedTargets = new Set(
-    ('react,leptos')
+    (process.env.PERFORMANCE_TARGETS ?? 'react,leptos')
       .split(',')
       .map((target) => target.trim().toLowerCase())
       .filter(Boolean),
@@ -339,4 +362,8 @@ function getRequestedPerformanceTargets() {
   );
 
   return selectedTargets.length > 0 ? selectedTargets : allPerformanceTargets;
+}
+
+function roundToTwoDecimals(value: number) {
+  return Math.round(value * 100) / 100;
 }
