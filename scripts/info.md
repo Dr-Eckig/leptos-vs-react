@@ -9,7 +9,8 @@ The workflow uses several shell scripts. Some scripts start development or previ
 Run the following commands once from the project `scripts` directory:
 
 ```bash
-chmod +x generate-performance-summary.sh
+chmod +x calculate-all-statistics.sh
+chmod +x calculate-statisitcal-indicators.sh
 chmod +x generate-plots.sh
 chmod +x start-npm.sh
 chmod +x start-playwright-tests.sh
@@ -70,7 +71,7 @@ This generates the plots from the collected performance data to `statistics-kanb
 Before or after the plots have been generated, run:
 
 ```bash
-./generate-performance-summary.sh
+./calculate-statistical-indicators.sh
 ```
 
 This creates the final performance summary based on the test results.
