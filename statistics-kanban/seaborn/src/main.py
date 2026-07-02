@@ -10,6 +10,7 @@ from plots import (
     create_browser_boxplot,
     create_initial_load_boxplot,
 )
+from tables import create_performance_summary_table
 
 
 def main() -> None:
@@ -33,10 +34,15 @@ def main() -> None:
     if initial_load_plot is not None:
         output_paths.append(initial_load_plot)
 
+    table_paths = create_performance_summary_table(measurements, PLOTS_DIR)
+
     print(f"Loaded {len(measurements)} measurements from {DATA_DIR}")
     print("Created plots:")
     for output_path in output_paths:
         print(f"- {output_path}")
+    print("Created tables:")
+    for table_path in table_paths:
+        print(f"- {table_path}")
 
 
 if __name__ == "__main__":
