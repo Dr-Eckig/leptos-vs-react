@@ -21,7 +21,7 @@ where
     let _ = on_click_outside(modal_area, move |_| close());
 
     view! {
-        <div class="modal" class:is-active=move || is_open.get()>
+        <div class="modal" class:is-active=move || is_open.get() role="dialog">
             <div class="modal-background"></div>
             <div class="modal-card" node_ref=modal_area>
                 <header class="modal-card-head">

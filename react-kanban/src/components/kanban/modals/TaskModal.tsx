@@ -11,7 +11,7 @@ import {
   start as startPerformanceMeasurement,
   type FinishPerformanceMeasurement,
 } from "../../../performance";
-import { Priority, type Task } from "../../../types/state";
+import { Priority } from "../../../types/state";
 import { validateTask } from "../../../types/validation";
 import { formatDateToString } from "../../../types/date";
 import { IconButton } from "../../ui/IconButton";
@@ -19,7 +19,6 @@ import { Input } from "../../ui/Input";
 import { Modal } from "../../ui/Modal";
 import { Select } from "../../ui/Select";
 import { Textarea } from "../../ui/Textarea";
-import type { ColumnType } from "../../../types/serialize";
 
 const priorityOptions: Priority[] = Object.values(Priority);
 
@@ -28,22 +27,9 @@ export function TaskModal() {
   const data = modals.task ?? { columnType: null, task: null };
   const isOpen = modals.task !== null;
 
-  return (
-    <TaskModalForm
-      task={data.task}
-      columnType={data.columnType}
-      isOpen={isOpen}
-    />
-  );
-}
+  const task = data.task;
+  const columnType = data.columnType;
 
-type TaskModalFormProps = {
-  task: Task | null;
-  columnType: ColumnType | null;
-  isOpen: boolean;
-};
-
-function TaskModalForm({ task, columnType, isOpen }: TaskModalFormProps) {
   const boardActions = useBoardsActions();
   const { currentBoard } = useBoardsState();
   const modalActions = useModalsActions();

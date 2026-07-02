@@ -30,8 +30,6 @@ export function Modal({
     <div
       className={`modal ${isOpen ? "is-active" : ""}`}
       role="dialog"
-      aria-modal={isOpen}
-      aria-hidden={!isOpen}
     >
       <div className="modal-background" onMouseDown={onClose} />
 

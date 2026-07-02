@@ -4,7 +4,6 @@ import {
   useModalsActions,
   useModalsState,
 } from "../../../hooks";
-import type { Board } from "../../../types/state";
 import { validateBoard } from "../../../types/validation";
 import { Input } from "../../ui/Input";
 import { Modal } from "../../ui/Modal";
@@ -14,15 +13,6 @@ export function BoardModal() {
   const board = modals.board?.board ?? null;
   const isOpen = modals.board !== null;
 
-  return <BoardModalForm board={board} isOpen={isOpen} />;
-}
-
-type BoardModalFormProps = {
-  board: Board | null;
-  isOpen: boolean;
-};
-
-function BoardModalForm({ board, isOpen }: BoardModalFormProps) {
   const boards = useBoardsActions();
   const modalActions = useModalsActions();
   const [title, setTitle] = useState(board?.title ?? "");
