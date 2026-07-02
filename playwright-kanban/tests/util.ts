@@ -6,6 +6,7 @@ import path from 'node:path';
 
 export const resultsDir = path.resolve('../statistics-kanban/seaborn/data');
 export const runs = 50;
+export const warmUpRuns = 10;
 export const performanceTestTimeout = 1_000_000;
 const performanceLogTimeout = 30_000;
 
@@ -30,6 +31,7 @@ export type BoardSwitchScenario = BoardScenario & {
 
 export type PerformanceLogEntry = {
   run: number;
+  warmUp: boolean;
   browser: string;
   framework: string;
   board: string;
@@ -139,6 +141,7 @@ export function collectPerformanceLogEntries(
     entries.push({
       ...entry,
       run: entries.length + 1,
+      warmUp: isWarmUpRun(entries.length + 1),
     });
   });
 
@@ -195,6 +198,7 @@ export function createPerformanceResultEntry(
 
   return {
     run,
+    warmUp: isWarmUpRun(run),
     framework: target.framework,
     board,
     action,
@@ -350,7 +354,7 @@ function columnDropZone(page: Page, columnType: ColumnType): Locator {
 
 function parsePerformanceLog(
   text: string,
-): Omit<CollectedPerformanceLogEntry, 'run'> | null {
+): Omit<CollectedPerformanceLogEntry, 'run' | 'warmUp'> | null {
   const match = text.match(
     /^\[(leptos|react)-kanban-performance\]\s+(\d+)\s+-\s+(.+)\s+-\s+([a-z-]+)\s+-\s+(\d+(?:\.\d+)?)\s+ms$/,
   );
@@ -376,6 +380,7 @@ function serializePerformanceLogEntry(
 ): PerformanceLogEntry {
   const serializedEntry: PerformanceLogEntry = {
     run: entry.run,
+    warmUp: entry.warmUp,
     browser,
     framework: entry.framework,
     board: entry.board,
@@ -416,6 +421,10 @@ function getRequestedPerformanceTargets() {
 
 function roundToTwoDecimals(value: number) {
   return Math.round(value * 100) / 100;
+}
+
+function isWarmUpRun(run: number) {
+  return run <= warmUpRuns;
 }
 
 function formatBytes(valueBytes: number) {

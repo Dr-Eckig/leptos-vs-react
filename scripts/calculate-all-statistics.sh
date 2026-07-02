@@ -1,5 +1,5 @@
 set -e
 
 ./start-playwright-tests.sh
-./generate-performance-summary.sh
+./calculate-statistical-indicators.sh
 ./generate-plots.sh

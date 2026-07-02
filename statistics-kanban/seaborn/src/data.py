@@ -32,6 +32,13 @@ def load_measurements(data_dir: Path) -> pd.DataFrame:
     if "jsHeap" not in raw_measurements.columns:
         raw_measurements["jsHeap"] = pd.NA
 
+    if "warmUp" not in raw_measurements.columns:
+        raw_measurements["warmUp"] = False
+
+    raw_measurements = raw_measurements[
+        ~raw_measurements["warmUp"].map(is_warm_up_measurement)
+    ].copy()
+
     measurements = expand_measurements(raw_measurements)
     measurements["performance_value"] = measurements.apply(
         lambda row: parse_performance_value(row["performance"], row["metric_unit"]),
@@ -89,6 +96,16 @@ def create_memory_measurements(measurements: pd.DataFrame) -> pd.DataFrame:
 
 def required_columns() -> set[str]:
     return {"run", "browser", "framework", "board", "action", "performance"}
+
+
+def is_warm_up_measurement(value: Any) -> bool:
+    if pd.isna(value):
+        return False
+
+    if isinstance(value, bool):
+        return value
+
+    return str(value).strip().lower() == "true"
 
 
 def parse_performance_value(value: Any, metric_unit: str) -> float:

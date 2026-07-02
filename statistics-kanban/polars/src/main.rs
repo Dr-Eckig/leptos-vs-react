@@ -22,6 +22,8 @@ struct Measurement {
     performance: Value,
     #[serde(default, rename = "jsHeap")]
     js_heap: Option<Value>,
+    #[serde(default, rename = "warmUp")]
+    warm_up: bool,
 }
 
 #[derive(Debug, Serialize)]
@@ -136,9 +138,13 @@ fn summarize_file(path: &Path) -> Result<Vec<Summary>, Box<dyn Error>> {
     let input = File::open(path)?;
     let measurements = serde_json::from_reader::<_, Vec<Measurement>>(input)
         .map_err(|err| format!("Could not parse {}: {err}", path.display()))?;
+    let measurements = measurements
+        .into_iter()
+        .filter(|measurement| !measurement.warm_up)
+        .collect::<Vec<_>>();
     let first_measurement = measurements
         .first()
-        .ok_or_else(|| format!("Cannot summarize empty file: {}", path.display()))?;
+        .ok_or_else(|| format!("No non-warm-up measurements in {}", path.display()))?;
 
     if is_memory_action(&first_measurement.action) {
         return Ok(Vec::new());
