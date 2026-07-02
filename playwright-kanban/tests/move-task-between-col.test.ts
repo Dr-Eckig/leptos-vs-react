@@ -1,6 +1,5 @@
 import { expect, test, type Page, type TestInfo } from '@playwright/test';
 import {
-  addJsHeapToLatestEntry,
   boardScenariosWithTasks,
   collectPerformanceLogEntries,
   moveTaskToColumnEnd,
@@ -8,7 +7,6 @@ import {
   performanceTargets,
   performanceTestTimeout,
   runs,
-  shouldMeasureJsHeap,
   writePerformanceResults,
   type BoardScenario,
   type PerformanceTarget,
@@ -44,7 +42,6 @@ async function moveOneTaskBetweenColumnsRepeatedly(
     action,
     board: scenario.boardLabel,
   });
-  const shouldMeasureHeap = shouldMeasureJsHeap(testInfo);
 
   for (let i = 1; i <= runs; i++) {
     const previousEntryCount = taskMoveBetweenColumnsLog.entries.length;
@@ -52,10 +49,6 @@ async function moveOneTaskBetweenColumnsRepeatedly(
     await openBoard(page, target, scenario);
     await moveTaskToColumnEnd(page, 'todo', 0, 'in_progress');
     await taskMoveBetweenColumnsLog.waitForNextEntry(previousEntryCount, i);
-
-    if (shouldMeasureHeap) {
-      await addJsHeapToLatestEntry(page, taskMoveBetweenColumnsLog.entries, i);
-    }
   }
 
   await writePerformanceResults(

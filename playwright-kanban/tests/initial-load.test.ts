@@ -1,11 +1,9 @@
 import { expect, test, type Page, type TestInfo } from '@playwright/test';
 import {
-  addJsHeapToLatestEntry,
   createPerformanceResultEntry,
   performanceTargets,
   performanceTestTimeout,
   runs,
-  shouldMeasureJsHeap,
   writePerformanceResults,
   type PerformanceResultEntry,
   type PerformanceTarget,
@@ -36,7 +34,6 @@ async function measureInitialLoadRepeatedly(
 
   const firstContentfulPaintEntries: PerformanceResultEntry[] = [];
   const largestContentfulPaintEntries: PerformanceResultEntry[] = [];
-  const shouldMeasureHeap = shouldMeasureJsHeap(testInfo);
 
   for (let i = 1; i <= runs; i++) {
     const metrics = await measureInitialLoad(page, target, i);
@@ -60,10 +57,6 @@ async function measureInitialLoadRepeatedly(
         requireMetric(metrics.largestContentfulPaint, 'LCP', target, i),
       ),
     );
-
-    if (shouldMeasureHeap) {
-      await addJsHeapToLatestEntry(page, firstContentfulPaintEntries, i);
-    }
   }
 
   await writePerformanceResults(

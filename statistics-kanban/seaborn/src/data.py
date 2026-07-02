@@ -9,7 +9,6 @@ from config import (
     BOARD_LABELS,
     BOARD_ORDER,
     INITIAL_LOAD_ORDER,
-    MEMORY_ACTION_SUFFIX,
 )
 
 
@@ -29,26 +28,24 @@ def load_measurements(data_dir: Path) -> pd.DataFrame:
         missing = ", ".join(sorted(missing_columns))
         raise ValueError(f"Missing required column(s): {missing}")
 
-    if "jsHeap" not in raw_measurements.columns:
-        raw_measurements["jsHeap"] = pd.NA
-
     if "warmUp" not in raw_measurements.columns:
         raw_measurements["warmUp"] = False
 
     raw_measurements = raw_measurements[
         ~raw_measurements["warmUp"].map(is_warm_up_measurement)
     ].copy()
+    raw_measurements = raw_measurements[
+        raw_measurements["action"].isin([*ACTION_ORDER, *INITIAL_LOAD_ORDER])
+    ].copy()
 
-    measurements = expand_measurements(raw_measurements)
+    measurements = raw_measurements.copy()
+    measurements["metric_unit"] = "ms"
     measurements["performance_value"] = measurements.apply(
         lambda row: parse_performance_value(row["performance"], row["metric_unit"]),
         axis=1,
     )
     measurements["performance_ms"] = measurements["performance_value"].where(
         measurements["metric_unit"] == "ms",
-    )
-    measurements["performance_bytes"] = measurements["performance_value"].where(
-        measurements["metric_unit"] == "bytes",
     )
     measurements["browser"] = measurements["browser"].str.lower()
     measurements["framework"] = measurements["framework"].str.title()
@@ -60,38 +57,6 @@ def load_measurements(data_dir: Path) -> pd.DataFrame:
     )
 
     return measurements.sort_values(["browser", "scenario", "framework", "run"])
-
-
-def expand_measurements(raw_measurements: pd.DataFrame) -> pd.DataFrame:
-    embedded_measurements = raw_measurements[
-        ~raw_measurements["action"].map(is_memory_action)
-    ].copy()
-    memory_measurements = create_memory_measurements(embedded_measurements)
-
-    if memory_measurements.empty:
-        memory_measurements = raw_measurements[
-            raw_measurements["action"].map(is_memory_action)
-        ].copy()
-        memory_measurements["metric_unit"] = "bytes"
-
-    embedded_measurements["metric_unit"] = "ms"
-
-    return pd.concat([embedded_measurements, memory_measurements], ignore_index=True)
-
-
-def create_memory_measurements(measurements: pd.DataFrame) -> pd.DataFrame:
-    memory_measurements = measurements[measurements["jsHeap"].notna()].copy()
-
-    if memory_measurements.empty:
-        return memory_measurements
-
-    memory_measurements["action"] = memory_measurements["action"].map(
-        memory_action_for,
-    )
-    memory_measurements["performance"] = memory_measurements["jsHeap"]
-    memory_measurements["metric_unit"] = "bytes"
-
-    return memory_measurements
 
 
 def required_columns() -> set[str]:
@@ -114,11 +79,7 @@ def parse_performance_value(value: Any, metric_unit: str) -> float:
 
     normalized = str(value).strip()
 
-    if metric_unit == "bytes":
-        normalized = remove_suffix(normalized, "bytes")
-        normalized = remove_suffix(normalized, "byte")
-    else:
-        normalized = remove_suffix(normalized, "ms")
+    normalized = remove_suffix(normalized, "ms")
 
     normalized = normalized.strip().replace(",", ".")
     return float(normalized)
@@ -131,30 +92,11 @@ def remove_suffix(value: str, suffix: str) -> str:
     return value
 
 
-def is_memory_action(action: str) -> bool:
-    return action.endswith(MEMORY_ACTION_SUFFIX)
-
-
-def memory_action_for(action: str) -> str:
-    if action in INITIAL_LOAD_ORDER:
-        return "initial-load-js-heap-used"
-
-    return f"{action}{MEMORY_ACTION_SUFFIX}"
-
-
 def scenario_label(row: pd.Series) -> str:
-    row_action = base_action(row["action"])
-    action = ACTION_LABELS.get(row_action, str(row_action))
+    action = ACTION_LABELS.get(row["action"], str(row["action"]))
     board = BOARD_LABELS.get(row["board"], str(row["board"]))
 
     return f"{action} | {board}"
-
-
-def base_action(action: str) -> str:
-    if action.endswith(MEMORY_ACTION_SUFFIX):
-        return action[: -len(MEMORY_ACTION_SUFFIX)]
-
-    return action
 
 
 def scenario_order() -> list[str]:

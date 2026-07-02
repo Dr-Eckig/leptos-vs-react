@@ -1,6 +1,5 @@
 import { expect, test, type Page, type TestInfo } from '@playwright/test';
 import {
-  addJsHeapToLatestEntry,
   boardScenariosWithTasks,
   collectPerformanceLogEntries,
   deleteTask,
@@ -8,7 +7,6 @@ import {
   performanceTargets,
   performanceTestTimeout,
   runs,
-  shouldMeasureJsHeap,
   writePerformanceResults,
   type BoardScenario,
   type PerformanceTarget,
@@ -39,7 +37,6 @@ async function deleteOneTaskFromBoardRepeatedly(
     action,
     board: scenario.boardLabel,
   });
-  const shouldMeasureHeap = shouldMeasureJsHeap(testInfo);
 
   for (let i = 1; i <= runs; i++) {
     const previousEntryCount = taskDeleteLog.entries.length;
@@ -47,10 +44,6 @@ async function deleteOneTaskFromBoardRepeatedly(
     await openBoard(page, target, scenario);
     await deleteTask(page, 'todo', 0);
     await taskDeleteLog.waitForNextEntry(previousEntryCount, i);
-
-    if (shouldMeasureHeap) {
-      await addJsHeapToLatestEntry(page, taskDeleteLog.entries, i);
-    }
   }
 
   await writePerformanceResults(

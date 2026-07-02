@@ -20,8 +20,6 @@ struct Measurement {
     #[serde(default)]
     board: String,
     performance: Value,
-    #[serde(default, rename = "jsHeap")]
-    js_heap: Option<Value>,
     #[serde(default, rename = "warmUp")]
     warm_up: bool,
 }
@@ -146,11 +144,7 @@ fn summarize_file(path: &Path) -> Result<Vec<Summary>, Box<dyn Error>> {
         .first()
         .ok_or_else(|| format!("No non-warm-up measurements in {}", path.display()))?;
 
-    if is_memory_action(&first_measurement.action) {
-        return Ok(Vec::new());
-    }
-
-    let mut summaries = vec![summarize_metric(
+    let summaries = vec![summarize_metric(
         path,
         first_measurement,
         &measurements,
@@ -158,17 +152,6 @@ fn summarize_file(path: &Path) -> Result<Vec<Summary>, Box<dyn Error>> {
         PerformanceUnit::Milliseconds,
         |measurement| Some(&measurement.performance),
     )?];
-
-    if measurements.iter().any(|measurement| measurement.js_heap.is_some()) {
-        summaries.push(summarize_metric(
-            path,
-            first_measurement,
-            &measurements,
-            &memory_action_for(&first_measurement.action),
-            PerformanceUnit::Bytes,
-            |measurement| measurement.js_heap.as_ref(),
-        )?);
-    }
 
     Ok(summaries)
 }
@@ -233,14 +216,12 @@ fn round_to_two_decimals(value: f64) -> f64 {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum PerformanceUnit {
     Milliseconds,
-    Bytes,
 }
 
 impl PerformanceUnit {
     fn as_str(self) -> &'static str {
         match self {
             Self::Milliseconds => "ms",
-            Self::Bytes => "bytes",
         }
     }
 }
@@ -275,11 +256,7 @@ fn parse_performance_text(
 ) -> Result<ParsedPerformanceValue, Box<dyn Error>> {
     let trimmed = text.trim();
     let lower = trimmed.to_ascii_lowercase();
-    let (number_text, unit) = if lower.ends_with("bytes") {
-        (&trimmed[..trimmed.len() - "bytes".len()], PerformanceUnit::Bytes)
-    } else if lower.ends_with("byte") {
-        (&trimmed[..trimmed.len() - "byte".len()], PerformanceUnit::Bytes)
-    } else if lower.ends_with("ms") {
+    let (number_text, unit) = if lower.ends_with("ms") {
         (
             &trimmed[..trimmed.len() - "ms".len()],
             PerformanceUnit::Milliseconds,
@@ -296,18 +273,6 @@ fn parse_performance_text(
     })?;
 
     Ok(ParsedPerformanceValue { value, unit })
-}
-
-fn is_memory_action(action: &str) -> bool {
-    action.ends_with("-js-heap-used")
-}
-
-fn memory_action_for(action: &str) -> String {
-    if matches!(action, "initial-load-fcp" | "initial-load-lcp") {
-        "initial-load-js-heap-used".to_string()
-    } else {
-        format!("{action}-js-heap-used")
-    }
 }
 
 fn required_stat(

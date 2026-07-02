@@ -7,8 +7,6 @@ os.environ.setdefault("MPLCONFIGDIR", str(PROJECT_DIR / ".matplotlib-cache"))
 DATA_DIR = PROJECT_DIR / "data"
 PLOTS_DIR = PROJECT_DIR / "plots"
 
-MEMORY_ACTION_SUFFIX = "-js-heap-used"
-
 ACTION_LABELS = {
     "task-create": "Aufgabe erstellen",
     "task-edit": "Aufgabe bearbeiten",
@@ -21,10 +19,6 @@ ACTION_LABELS = {
 INITIAL_LOAD_LABELS = {
     "initial-load-fcp": "First Contentful Paint",
     "initial-load-lcp": "Largest Contentful Paint",
-}
-
-INITIAL_LOAD_MEMORY_LABELS = {
-    "initial-load-js-heap-used": "Belegter JS-Heap",
 }
 
 BOARD_LABELS = {
@@ -48,10 +42,6 @@ INITIAL_LOAD_ORDER = [
     "initial-load-lcp",
 ]
 
-INITIAL_LOAD_MEMORY_ORDER = [
-    "initial-load-js-heap-used",
-]
-
 BOARD_ORDER = [
     "Board 1 (Leer)",
     "Board 2 (10 Tasks)",
@@ -73,14 +63,3 @@ FRAMEWORK_PALETTE = {
 BROWSER_ORDER = ["chromium", "firefox", "webkit"]
 
 MILLISECOND_TICKS = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000]
-BYTE_TICKS = [
-    256 * 1024,
-    512 * 1024,
-    1024 * 1024,
-    2 * 1024 * 1024,
-    4 * 1024 * 1024,
-    8 * 1024 * 1024,
-    16 * 1024 * 1024,
-    32 * 1024 * 1024,
-    64 * 1024 * 1024,
-]

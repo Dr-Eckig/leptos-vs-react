@@ -1,12 +1,10 @@
 import { expect, test, type Page, type TestInfo } from '@playwright/test';
 import {
-  addJsHeapToLatestEntry,
   boardSwitchScenarios,
   collectPerformanceLogEntries,
   performanceTargets,
   performanceTestTimeout,
   runs,
-  shouldMeasureJsHeap,
   writePerformanceResults,
   type BoardSwitchScenario,
   type PerformanceTarget,
@@ -34,7 +32,6 @@ async function switchToBoardRepeatedly(
     action,
     board: scenario.boardLabel,
   });
-  const shouldMeasureHeap = shouldMeasureJsHeap(testInfo);
 
   for (let i = 1; i <= runs; i++) {
     const previousEntryCount = boardSwitchLog.entries.length;
@@ -48,10 +45,6 @@ async function switchToBoardRepeatedly(
 
     await page.getByTestId(scenario.boardTestId).click();
     await boardSwitchLog.waitForNextEntry(previousEntryCount, i);
-
-    if (shouldMeasureHeap) {
-      await addJsHeapToLatestEntry(page, boardSwitchLog.entries, i);
-    }
   }
 
   await writePerformanceResults(

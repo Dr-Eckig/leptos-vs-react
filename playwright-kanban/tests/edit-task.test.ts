@@ -1,6 +1,5 @@
 import { expect, test, type Page, type TestInfo } from '@playwright/test';
 import {
-  addJsHeapToLatestEntry,
   boardScenariosWithTasks,
   collectPerformanceLogEntries,
   editTaskTitle,
@@ -8,7 +7,6 @@ import {
   performanceTargets,
   performanceTestTimeout,
   runs,
-  shouldMeasureJsHeap,
   writePerformanceResults,
   type BoardScenario,
   type PerformanceTarget,
@@ -39,7 +37,6 @@ async function editOneTaskOnBoardRepeatedly(
     action,
     board: scenario.boardLabel,
   });
-  const shouldMeasureHeap = shouldMeasureJsHeap(testInfo);
 
   for (let i = 1; i <= runs; i++) {
     const previousEntryCount = taskEditLog.entries.length;
@@ -47,10 +44,6 @@ async function editOneTaskOnBoardRepeatedly(
     await openBoard(page, target, scenario);
     await editTaskTitle(page, 'todo', 0, `Edited Task ${i}`);
     await taskEditLog.waitForNextEntry(previousEntryCount, i);
-
-    if (shouldMeasureHeap) {
-      await addJsHeapToLatestEntry(page, taskEditLog.entries, i);
-    }
   }
 
   await writePerformanceResults(
