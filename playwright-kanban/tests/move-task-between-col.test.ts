@@ -1,13 +1,11 @@
-import { expect, test, type Page, type TestInfo } from '@playwright/test';
+import { test, type Page, type TestInfo } from '@playwright/test';
 import {
   boardScenariosWithTasks,
-  collectPerformanceLogEntries,
   moveTaskToColumnEnd,
   openBoard,
   performanceTargets,
   performanceTestTimeout,
-  runs,
-  writePerformanceResults,
+  repeatLoggedPerformanceAction,
   type BoardScenario,
   type PerformanceTarget,
 } from './util';
@@ -38,26 +36,14 @@ async function moveOneTaskBetweenColumnsRepeatedly(
 ) {
   const action = 'task-move-between-columns';
   const resultFileName = `move-task-between-cols-on-${scenario.resultSlug}.json`;
-  const taskMoveBetweenColumnsLog = collectPerformanceLogEntries(page, target, {
+  await repeatLoggedPerformanceAction(page, testInfo, target, {
     action,
     board: scenario.boardLabel,
-  });
-
-  for (let i = 1; i <= runs; i++) {
-    const previousEntryCount = taskMoveBetweenColumnsLog.entries.length;
-
-    await openBoard(page, target, scenario);
-    await moveTaskToColumnEnd(page, 'todo', 0, 'in_progress');
-    await taskMoveBetweenColumnsLog.waitForNextEntry(previousEntryCount, i);
-  }
-
-  await writePerformanceResults(
-    testInfo,
-    target,
-    'move-task-between-col',
+    resultGroup: 'move-task-between-col',
     resultFileName,
-    taskMoveBetweenColumnsLog.entries,
-  );
-
-  expect(taskMoveBetweenColumnsLog.entries).toHaveLength(runs);
+    run: async () => {
+      await openBoard(page, target, scenario);
+      await moveTaskToColumnEnd(page, 'todo', 0, 'in_progress');
+    },
+  });
 }

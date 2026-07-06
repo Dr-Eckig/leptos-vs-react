@@ -10,19 +10,25 @@ import {
 } from './util';
 
 const initialLoadBoardLabel = 'Initial Load';
-const initialLoadSettleTimeMs = 1_000;
+const initialLoadMetricTimeout = 10_000;
+const largestContentfulPaintQuietWindowMs = 250;
 
 type InitialLoadMetrics = {
   firstContentfulPaint: number | null;
   largestContentfulPaint: number | null;
+  largestContentfulPaintSupported: boolean;
+  lastLargestContentfulPaintAt: number | null;
 };
 
 test.setTimeout(performanceTestTimeout);
 
 for (const target of performanceTargets) {
-  test(`${target.framework}: measure initial load repeatedly`, async ({ page }, testInfo) => {
-    await measureInitialLoadRepeatedly(page, testInfo, target);
-  });
+  test(
+    `${target.framework}: measure initial load repeatedly`,
+    async ({ page }, testInfo) => {
+      await measureInitialLoadRepeatedly(page, testInfo, target);
+    },
+  );
 }
 
 async function measureInitialLoadRepeatedly(
@@ -35,28 +41,32 @@ async function measureInitialLoadRepeatedly(
   const firstContentfulPaintEntries: PerformanceResultEntry[] = [];
   const largestContentfulPaintEntries: PerformanceResultEntry[] = [];
 
-  for (let i = 1; i <= runs; i++) {
-    const metrics = await measureInitialLoad(page, target, i);
+  for (let run = 1; run <= runs; run++) {
+    await test.step(`run ${run}`, async () => {
+      const metrics = await measureInitialLoad(page, target, run);
 
-    firstContentfulPaintEntries.push(
-      createPerformanceResultEntry(
-        target,
-        i,
-        'initial-load-fcp',
-        initialLoadBoardLabel,
-        requireMetric(metrics.firstContentfulPaint, 'FCP', target, i),
-      ),
-    );
+      firstContentfulPaintEntries.push(
+        createPerformanceResultEntry(
+          target,
+          run,
+          'initial-load-fcp',
+          initialLoadBoardLabel,
+          requireMetric(metrics.firstContentfulPaint, 'FCP', target, run),
+        ),
+      );
 
-    largestContentfulPaintEntries.push(
-      createPerformanceResultEntry(
-        target,
-        i,
-        'initial-load-lcp',
-        initialLoadBoardLabel,
-        requireMetric(metrics.largestContentfulPaint, 'LCP', target, i),
-      ),
-    );
+      if (metrics.largestContentfulPaintSupported) {
+        largestContentfulPaintEntries.push(
+          createPerformanceResultEntry(
+            target,
+            run,
+            'initial-load-lcp',
+            initialLoadBoardLabel,
+            requireMetric(metrics.largestContentfulPaint, 'LCP', target, run),
+          ),
+        );
+      }
+    });
   }
 
   await writePerformanceResults(
@@ -66,16 +76,25 @@ async function measureInitialLoadRepeatedly(
     'initial-load-fcp.json',
     firstContentfulPaintEntries,
   );
-  await writePerformanceResults(
-    testInfo,
-    target,
-    'initial-load',
-    'initial-load-lcp.json',
-    largestContentfulPaintEntries,
-  );
 
   expect(firstContentfulPaintEntries).toHaveLength(runs);
-  expect(largestContentfulPaintEntries).toHaveLength(runs);
+
+  if (largestContentfulPaintEntries.length > 0) {
+    await writePerformanceResults(
+      testInfo,
+      target,
+      'initial-load',
+      'initial-load-lcp.json',
+      largestContentfulPaintEntries,
+    );
+
+    expect(largestContentfulPaintEntries).toHaveLength(runs);
+  } else {
+    testInfo.annotations.push({
+      type: 'info',
+      description: 'Largest Contentful Paint is not supported in this browser.',
+    });
+  }
 }
 
 async function installInitialLoadObservers(page: Page) {
@@ -87,6 +106,12 @@ async function installInitialLoadObservers(page: Page) {
     metricWindow.__kanbanInitialLoadMetrics = {
       firstContentfulPaint: null,
       largestContentfulPaint: null,
+      largestContentfulPaintSupported:
+        typeof PerformanceObserver !== 'undefined' &&
+        (PerformanceObserver.supportedEntryTypes ?? []).includes(
+          'largest-contentful-paint',
+        ),
+      lastLargestContentfulPaintAt: null,
     };
 
     const updateFirstContentfulPaint = (entries: PerformanceEntry[]) => {
@@ -122,6 +147,8 @@ async function installInitialLoadObservers(page: Page) {
         if (lastEntry) {
           metricWindow.__kanbanInitialLoadMetrics!.largestContentfulPaint =
             lastEntry.startTime;
+          metricWindow.__kanbanInitialLoadMetrics!.lastLargestContentfulPaintAt =
+            performance.now();
         }
       }).observe({ type: 'largest-contentful-paint', buffered: true });
     } catch {
@@ -135,8 +162,12 @@ async function measureInitialLoad(
   target: PerformanceTarget,
   run: number,
 ): Promise<InitialLoadMetrics> {
-  await page.goto(urlForRun(target.url, run), { waitUntil: 'load' });
-  await page.waitForTimeout(initialLoadSettleTimeMs);
+  await page.goto(urlForRun(target.url, run), {
+    waitUntil: 'domcontentloaded',
+  });
+  await expect(page.getByTestId('sidebar-board-0')).toBeVisible();
+  await page.waitForLoadState('load');
+  await waitForInitialLoadMetrics(page);
 
   return await page.evaluate(() => {
     const metricWindow = window as Window & {
@@ -154,8 +185,53 @@ async function measureInitialLoad(
         null,
       largestContentfulPaint:
         metricWindow.__kanbanInitialLoadMetrics?.largestContentfulPaint ?? null,
+      largestContentfulPaintSupported:
+        metricWindow.__kanbanInitialLoadMetrics
+          ?.largestContentfulPaintSupported ?? false,
+      lastLargestContentfulPaintAt:
+        metricWindow.__kanbanInitialLoadMetrics?.lastLargestContentfulPaintAt ??
+        null,
     };
   });
+}
+
+async function waitForInitialLoadMetrics(page: Page) {
+  await page.waitForFunction(
+    () => {
+      const metricWindow = window as Window & {
+        __kanbanInitialLoadMetrics?: InitialLoadMetrics;
+      };
+
+      return (
+        typeof metricWindow.__kanbanInitialLoadMetrics?.firstContentfulPaint ===
+        'number'
+      );
+    },
+    undefined,
+    { timeout: initialLoadMetricTimeout },
+  );
+
+  await page.waitForFunction(
+    (quietWindowMs) => {
+      const metricWindow = window as Window & {
+        __kanbanInitialLoadMetrics?: InitialLoadMetrics;
+      };
+      const metrics = metricWindow.__kanbanInitialLoadMetrics;
+
+      if (!metrics?.largestContentfulPaintSupported) {
+        return true;
+      }
+
+      return (
+        metrics.largestContentfulPaint !== null &&
+        metrics.lastLargestContentfulPaintAt !== null &&
+        performance.now() - metrics.lastLargestContentfulPaintAt >=
+          quietWindowMs
+      );
+    },
+    largestContentfulPaintQuietWindowMs,
+    { timeout: initialLoadMetricTimeout },
+  );
 }
 
 function urlForRun(url: string, run: number) {

@@ -1,6 +1,12 @@
 // npx playwright test 
 
-import { expect, type Locator, type Page, type TestInfo } from '@playwright/test';
+import {
+  expect,
+  test,
+  type Locator,
+  type Page,
+  type TestInfo,
+} from '@playwright/test';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
@@ -45,6 +51,12 @@ export type PerformanceResultEntry = CollectedPerformanceLogEntry;
 type CollectPerformanceOptions = {
   action: string;
   board?: string;
+};
+
+type RepeatPerformanceActionOptions = CollectPerformanceOptions & {
+  resultGroup: string;
+  resultFileName: string;
+  run: (run: number) => Promise<void>;
 };
 
 const allPerformanceTargets: PerformanceTarget[] = [
@@ -155,6 +167,34 @@ export function collectPerformanceLogEntries(
         .toBe(previousEntryCount + 1);
     },
   };
+}
+
+export async function repeatLoggedPerformanceAction(
+  page: Page,
+  testInfo: TestInfo,
+  target: PerformanceTarget,
+  options: RepeatPerformanceActionOptions,
+) {
+  const performanceLog = collectPerformanceLogEntries(page, target, options);
+
+  for (let run = 1; run <= runs; run++) {
+    await test.step(`run ${run}`, async () => {
+      const previousEntryCount = performanceLog.entries.length;
+
+      await options.run(run);
+      await performanceLog.waitForNextEntry(previousEntryCount, run);
+    });
+  }
+
+  await writePerformanceResults(
+    testInfo,
+    target,
+    options.resultGroup,
+    options.resultFileName,
+    performanceLog.entries,
+  );
+
+  expect(performanceLog.entries).toHaveLength(runs);
 }
 
 export async function writePerformanceResults(

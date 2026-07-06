@@ -1,11 +1,9 @@
 import { expect, test, type Page, type TestInfo } from '@playwright/test';
 import {
   boardSwitchScenarios,
-  collectPerformanceLogEntries,
   performanceTargets,
   performanceTestTimeout,
-  runs,
-  writePerformanceResults,
+  repeatLoggedPerformanceAction,
   type BoardSwitchScenario,
   type PerformanceTarget,
 } from './util';
@@ -28,32 +26,20 @@ async function switchToBoardRepeatedly(
 ) {
   const action = 'board-switch';
   const resultFileName = `board-switch-to-${scenario.resultSlug}.json`;
-  const boardSwitchLog = collectPerformanceLogEntries(page, target, {
+  await repeatLoggedPerformanceAction(page, testInfo, target, {
     action,
     board: scenario.boardLabel,
-  });
-
-  for (let i = 1; i <= runs; i++) {
-    const previousEntryCount = boardSwitchLog.entries.length;
-
-    await page.goto(target.url);
-
-    if (scenario.fromBoardTestId) {
-      await page.getByTestId(scenario.fromBoardTestId).click();
-      await expect(page.getByTestId('todo-task-dropdown-0')).toBeVisible();
-    }
-
-    await page.getByTestId(scenario.boardTestId).click();
-    await boardSwitchLog.waitForNextEntry(previousEntryCount, i);
-  }
-
-  await writePerformanceResults(
-    testInfo,
-    target,
-    'board-switch',
+    resultGroup: 'board-switch',
     resultFileName,
-    boardSwitchLog.entries,
-  );
+    run: async () => {
+      await page.goto(target.url);
 
-  expect(boardSwitchLog.entries).toHaveLength(runs);
+      if (scenario.fromBoardTestId) {
+        await page.getByTestId(scenario.fromBoardTestId).click();
+        await expect(page.getByTestId('todo-task-dropdown-0')).toBeVisible();
+      }
+
+      await page.getByTestId(scenario.boardTestId).click();
+    },
+  });
 }

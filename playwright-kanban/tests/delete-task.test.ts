@@ -1,13 +1,11 @@
-import { expect, test, type Page, type TestInfo } from '@playwright/test';
+import { test, type Page, type TestInfo } from '@playwright/test';
 import {
   boardScenariosWithTasks,
-  collectPerformanceLogEntries,
   deleteTask,
   openBoard,
   performanceTargets,
   performanceTestTimeout,
-  runs,
-  writePerformanceResults,
+  repeatLoggedPerformanceAction,
   type BoardScenario,
   type PerformanceTarget,
 } from './util';
@@ -33,26 +31,14 @@ async function deleteOneTaskFromBoardRepeatedly(
 ) {
   const action = 'task-delete';
   const resultFileName = `delete-task-from-${scenario.resultSlug}.json`;
-  const taskDeleteLog = collectPerformanceLogEntries(page, target, {
+  await repeatLoggedPerformanceAction(page, testInfo, target, {
     action,
     board: scenario.boardLabel,
-  });
-
-  for (let i = 1; i <= runs; i++) {
-    const previousEntryCount = taskDeleteLog.entries.length;
-
-    await openBoard(page, target, scenario);
-    await deleteTask(page, 'todo', 0);
-    await taskDeleteLog.waitForNextEntry(previousEntryCount, i);
-  }
-
-  await writePerformanceResults(
-    testInfo,
-    target,
-    'delete-task',
+    resultGroup: 'delete-task',
     resultFileName,
-    taskDeleteLog.entries,
-  );
-
-  expect(taskDeleteLog.entries).toHaveLength(runs);
+    run: async () => {
+      await openBoard(page, target, scenario);
+      await deleteTask(page, 'todo', 0);
+    },
+  });
 }

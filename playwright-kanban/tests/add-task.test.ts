@@ -1,13 +1,11 @@
-import { expect, test, type Page, type TestInfo } from '@playwright/test';
+import { test, type Page, type TestInfo } from '@playwright/test';
 import {
   addTaskToColumn,
   boardScenarios,
-  collectPerformanceLogEntries,
   openBoard,
   performanceTargets,
   performanceTestTimeout,
-  runs,
-  writePerformanceResults,
+  repeatLoggedPerformanceAction,
   type BoardScenario,
   type PerformanceTarget,
 } from './util';
@@ -33,26 +31,14 @@ async function addOneTaskToBoardRepeatedly(
 ) {
   const action = 'task-create';
   const resultFileName = `add-task-to-${scenario.resultSlug}.json`;
-  const taskCreateLog = collectPerformanceLogEntries(page, target, {
+  await repeatLoggedPerformanceAction(page, testInfo, target, {
     action,
     board: scenario.boardLabel,
-  });
-
-  for (let i = 1; i <= runs; i++) {
-    const previousEntryCount = taskCreateLog.entries.length;
-
-    await openBoard(page, target, scenario);
-    await addTaskToColumn(page, 'todo', `Example Task ${i}`);
-    await taskCreateLog.waitForNextEntry(previousEntryCount, i);
-  }
-
-  await writePerformanceResults(
-    testInfo,
-    target,
-    'add-task',
+    resultGroup: 'add-task',
     resultFileName,
-    taskCreateLog.entries,
-  );
-
-  expect(taskCreateLog.entries).toHaveLength(runs);
+    run: async (run) => {
+      await openBoard(page, target, scenario);
+      await addTaskToColumn(page, 'todo', `Example Task ${run}`);
+    },
+  });
 }

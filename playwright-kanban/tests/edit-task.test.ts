@@ -1,13 +1,11 @@
-import { expect, test, type Page, type TestInfo } from '@playwright/test';
+import { test, type Page, type TestInfo } from '@playwright/test';
 import {
   boardScenariosWithTasks,
-  collectPerformanceLogEntries,
   editTaskTitle,
   openBoard,
   performanceTargets,
   performanceTestTimeout,
-  runs,
-  writePerformanceResults,
+  repeatLoggedPerformanceAction,
   type BoardScenario,
   type PerformanceTarget,
 } from './util';
@@ -33,26 +31,14 @@ async function editOneTaskOnBoardRepeatedly(
 ) {
   const action = 'task-edit';
   const resultFileName = `edit-task-on-${scenario.resultSlug}.json`;
-  const taskEditLog = collectPerformanceLogEntries(page, target, {
+  await repeatLoggedPerformanceAction(page, testInfo, target, {
     action,
     board: scenario.boardLabel,
-  });
-
-  for (let i = 1; i <= runs; i++) {
-    const previousEntryCount = taskEditLog.entries.length;
-
-    await openBoard(page, target, scenario);
-    await editTaskTitle(page, 'todo', 0, `Edited Task ${i}`);
-    await taskEditLog.waitForNextEntry(previousEntryCount, i);
-  }
-
-  await writePerformanceResults(
-    testInfo,
-    target,
-    'edit-task',
+    resultGroup: 'edit-task',
     resultFileName,
-    taskEditLog.entries,
-  );
-
-  expect(taskEditLog.entries).toHaveLength(runs);
+    run: async (run) => {
+      await openBoard(page, target, scenario);
+      await editTaskTitle(page, 'todo', 0, `Edited Task ${run}`);
+    },
+  });
 }
