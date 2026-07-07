@@ -9,8 +9,6 @@ The workflow uses several shell scripts. Some scripts start development or previ
 Run the following commands once from the project `scripts` directory:
 
 ```bash
-chmod +x calculate-all-statistics.sh
-chmod +x calculate-statisitcal-indicators.sh
 chmod +x generate-plots.sh
 chmod +x start-npm.sh
 chmod +x start-playwright-tests.sh
@@ -64,17 +62,7 @@ After the Playwright tests have finished, run:
 ./generate-plots.sh
 ```
 
-This generates the plots from the collected performance data to `statistics-kanban/seaborn/plots`.
-
-## 6. Generate the performance summary
-
-Before or after the plots have been generated, run:
-
-```bash
-./calculate-statistical-indicators.sh
-```
-
-This creates the final performance summary based on the test results.
+This generates the plots from the collected performance data to `statistics-kanban/plots`.
 
 ## Terminal overview
 
@@ -90,7 +78,6 @@ Terminal 2:
 Terminal 3:
 ./start-playwright-tests.sh
 ./generate-plots.sh
-./generate-performance-summary.sh
 ```
 
 ## Stopping the servers
