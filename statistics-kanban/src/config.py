@@ -5,7 +5,9 @@ PROJECT_DIR = Path(__file__).resolve().parent.parent
 os.environ.setdefault("MPLCONFIGDIR", str(PROJECT_DIR / ".matplotlib-cache"))
 
 DATA_DIR = PROJECT_DIR / "data"
+DOM_MUTATION_DATA_DIR = PROJECT_DIR / "dom-mutations-data"
 PLOTS_DIR = PROJECT_DIR / "plots"
+DOM_MUTATION_BROWSER = "chromium"
 
 ACTION_LABELS = {
     "task-create": "Aufgabe erstellen",

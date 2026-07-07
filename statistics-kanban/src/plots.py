@@ -5,6 +5,7 @@ import pandas as pd
 from config import (
     BROWSER_LABELS,
     BROWSER_ORDER,
+    DOM_MUTATION_BROWSER,
     FRAMEWORK_ORDER,
     FRAMEWORK_PALETTE,
     INITIAL_LOAD_LABELS,
@@ -150,6 +151,103 @@ def create_initial_load_boxplot(measurements: pd.DataFrame) -> Path | None:
     plt.close(fig)
 
     return output_path
+
+
+def create_dom_mutation_scenario_barplots(measurements: pd.DataFrame) -> list[Path]:
+    if measurements.empty:
+        return []
+
+    scenario_labels = ordered_values(
+        measurements["scenario"],
+        scenario_order(),
+    )
+    output_dir = PLOTS_DIR / "dom-mutations"
+    output_dir.mkdir(exist_ok=True)
+    browser_measurements = measurements[
+        measurements["browser"] == DOM_MUTATION_BROWSER
+    ].copy()
+    browser_label = BROWSER_LABELS.get(
+        DOM_MUTATION_BROWSER,
+        DOM_MUTATION_BROWSER.title(),
+    )
+    output_paths = []
+
+    for scenario in scenario_labels:
+        scenario_measurements = browser_measurements[
+            browser_measurements["scenario"] == scenario
+        ].copy()
+
+        if scenario_measurements.empty:
+            continue
+
+        fig, ax = plt.subplots(figsize=(6.8, 4.4))
+        sns.barplot(
+            data=scenario_measurements,
+            x="framework",
+            y="rerenderedNodeEstimate",
+            order=FRAMEWORK_ORDER,
+            palette=FRAMEWORK_PALETTE,
+            hue="framework",
+            hue_order=FRAMEWORK_ORDER,
+            legend=False,
+            errorbar=None,
+            ax=ax,
+        )
+
+        annotate_bars(ax)
+        ax.set_title(f"DOM-Mutationen - {scenario}", pad=12)
+        ax.set_xlabel("Framework")
+        ax.set_ylabel("Mutierte DOM-Elementknoten")
+        ax.set_ylim(0, max(1, scenario_measurements["rerenderedNodeEstimate"].max()) * 1.18)
+        ax.grid(axis="y", linestyle="--", linewidth=0.5, alpha=0.55)
+        ax.grid(axis="x", visible=False)
+        ax.text(
+            0.99,
+            0.96,
+            browser_label,
+            transform=ax.transAxes,
+            ha="right",
+            va="top",
+            fontsize=9,
+            color="#4b5563",
+        )
+        sns.despine(left=False, bottom=False)
+        fig.tight_layout()
+
+        output_path = output_dir / f"{slugify(scenario)}.png"
+        fig.savefig(output_path, dpi=300, bbox_inches="tight")
+        plt.close(fig)
+        output_paths.append(output_path)
+
+    return output_paths
+
+
+def annotate_bars(ax: Axes) -> None:
+    for container in ax.containers:
+        ax.bar_label(container, fmt="%.0f", padding=3, fontsize=9)
+
+
+def slugify(value: str) -> str:
+    replacements = {
+        "ä": "ae",
+        "ö": "oe",
+        "ü": "ue",
+        "Ä": "ae",
+        "Ö": "oe",
+        "Ü": "ue",
+        "ß": "ss",
+    }
+    normalized = value
+
+    for source, target in replacements.items():
+        normalized = normalized.replace(source, target)
+
+    slug = "".join(
+        character.lower() if character.isalnum() else "-"
+        for character in normalized
+    )
+
+    return "-".join(part for part in slug.split("-") if part)
 
 
 def configure_millisecond_axis(ax: Axes) -> None:

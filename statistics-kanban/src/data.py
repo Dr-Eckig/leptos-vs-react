@@ -8,6 +8,7 @@ from config import (
     ACTION_ORDER,
     BOARD_LABELS,
     BOARD_ORDER,
+    DOM_MUTATION_BROWSER,
     INITIAL_LOAD_ORDER,
 )
 
@@ -59,8 +60,64 @@ def load_measurements(data_dir: Path) -> pd.DataFrame:
     return measurements.sort_values(["browser", "scenario", "framework", "run"])
 
 
+def load_dom_mutation_measurements(data_dir: Path) -> pd.DataFrame:
+    json_files = sorted(data_dir.rglob("*.json"))
+
+    if not json_files:
+        return pd.DataFrame()
+
+    measurements = pd.concat(
+        [pd.read_json(json_file) for json_file in json_files],
+        ignore_index=True,
+    )
+    missing_columns = required_dom_mutation_columns() - set(measurements.columns)
+
+    if missing_columns:
+        missing = ", ".join(sorted(missing_columns))
+        raise ValueError(f"Missing required DOM mutation column(s): {missing}")
+
+    measurements = measurements.copy()
+    measurements["browser"] = measurements["browser"].str.lower()
+    measurements = measurements[measurements["browser"] == DOM_MUTATION_BROWSER].copy()
+    measurements["framework"] = measurements["framework"].str.title()
+    measurements["scenario"] = measurements.apply(scenario_label, axis=1)
+    measurements["scenario"] = pd.Categorical(
+        measurements["scenario"],
+        categories=scenario_order(),
+        ordered=True,
+    )
+
+    numeric_columns = [
+        "rerenderedNodeEstimate",
+        "addedElementNodes",
+        "removedElementNodes",
+        "changedElementNodes",
+        "mutationRecords",
+    ]
+
+    for column in numeric_columns:
+        measurements[column] = pd.to_numeric(measurements[column])
+
+    return measurements.sort_values(["browser", "scenario", "framework"])
+
+
 def required_columns() -> set[str]:
     return {"run", "browser", "framework", "board", "action", "performance"}
+
+
+def required_dom_mutation_columns() -> set[str]:
+    return {
+        "browser",
+        "framework",
+        "board",
+        "action",
+        "scenario",
+        "rerenderedNodeEstimate",
+        "addedElementNodes",
+        "removedElementNodes",
+        "changedElementNodes",
+        "mutationRecords",
+    }
 
 
 def is_warm_up_measurement(value: Any) -> bool:

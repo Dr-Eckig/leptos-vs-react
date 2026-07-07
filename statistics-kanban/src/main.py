@@ -1,13 +1,15 @@
 from config import (
     BROWSER_ORDER,
     DATA_DIR,
+    DOM_MUTATION_DATA_DIR,
     INITIAL_LOAD_ORDER,
     PLOTS_DIR,
 )
-from data import load_measurements, ordered_values
+from data import load_dom_mutation_measurements, load_measurements, ordered_values
 from plots import (
     configure_plot_theme,
     create_browser_boxplot,
+    create_dom_mutation_scenario_barplots,
     create_initial_load_boxplot,
 )
 from tables import create_performance_summary_table
@@ -33,6 +35,9 @@ def main() -> None:
 
     if initial_load_plot is not None:
         output_paths.append(initial_load_plot)
+
+    dom_mutation_measurements = load_dom_mutation_measurements(DOM_MUTATION_DATA_DIR)
+    output_paths.extend(create_dom_mutation_scenario_barplots(dom_mutation_measurements))
 
     table_paths = create_performance_summary_table(measurements, PLOTS_DIR)
 

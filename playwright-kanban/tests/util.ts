@@ -3,6 +3,7 @@
 import {
   expect,
   test,
+  type ConsoleMessage,
   type Locator,
   type Page,
   type TestInfo,
@@ -11,6 +12,9 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 export const resultsDir = path.resolve('../statistics-kanban/seaborn/data');
+export const domMutationResultsDir = path.resolve(
+  '../statistics-kanban/dom-mutations-data',
+);
 export const runs = 50;
 export const warmUpRuns = 10;
 export const performanceTestTimeout = 1_000_000;
@@ -62,6 +66,25 @@ type RepeatPerformanceActionOptions = CollectPerformanceOptions & {
   resultGroup: string;
   resultFileName: string;
   run: (run: number) => Promise<void>;
+};
+
+type CollectDomMutationActionOptions = CollectPerformanceOptions & {
+  scenario: string;
+  run: () => Promise<void>;
+};
+
+export type DomMutationResultEntry = {
+  browser: string;
+  framework: string;
+  board: string;
+  action: string;
+  scenario: string;
+  performance: string;
+  rerenderedNodeEstimate: number;
+  addedElementNodes: number;
+  removedElementNodes: number;
+  changedElementNodes: number;
+  mutationRecords: number;
 };
 
 const allPerformanceTargets: PerformanceTarget[] = [
@@ -193,6 +216,96 @@ export async function repeatLoggedPerformanceAction(
   );
 
   expect(performanceLog.entries).toHaveLength(runs);
+}
+
+export async function collectLoggedDomMutationAction(
+  page: Page,
+  testInfo: TestInfo,
+  target: PerformanceTarget,
+  options: CollectDomMutationActionOptions,
+): Promise<DomMutationResultEntry> {
+  const browser = browserNameFromTestInfo(testInfo);
+  const entries: CollectedPerformanceLogEntry[] = [];
+
+  const onConsole = (message: ConsoleMessage) => {
+    const entry = parsePerformanceLog(message.text());
+
+    if (
+      entry?.framework !== target.framework ||
+      entry.action !== options.action ||
+      (options.board && entry.board !== options.board) ||
+      entry.domRerenderedNodeEstimate === undefined ||
+      entry.domAddedElementNodes === undefined ||
+      entry.domRemovedElementNodes === undefined ||
+      entry.domChangedElementNodes === undefined ||
+      entry.domMutationRecords === undefined
+    ) {
+      return;
+    }
+
+    entries.push({
+      ...entry,
+      run: 1,
+      warmUp: false,
+    });
+  };
+
+  page.on('console', onConsole);
+
+  try {
+    await options.run();
+    await expect
+      .poll(() => entries.length, {
+        message: `Expected DOM mutation log for ${target.framework} ${options.scenario}.`,
+        timeout: performanceLogTimeout,
+      })
+      .toBe(1);
+  } finally {
+    page.off('console', onConsole);
+  }
+
+  const [entry] = entries;
+
+  return {
+    browser,
+    framework: entry.framework,
+    board: entry.board,
+    action: entry.action,
+    scenario: options.scenario,
+    performance: entry.performance,
+    rerenderedNodeEstimate: requireDomMetric(
+      entry.domRerenderedNodeEstimate,
+      'rerenderedNodeEstimate',
+    ),
+    addedElementNodes: requireDomMetric(
+      entry.domAddedElementNodes,
+      'addedElementNodes',
+    ),
+    removedElementNodes: requireDomMetric(
+      entry.domRemovedElementNodes,
+      'removedElementNodes',
+    ),
+    changedElementNodes: requireDomMetric(
+      entry.domChangedElementNodes,
+      'changedElementNodes',
+    ),
+    mutationRecords: requireDomMetric(entry.domMutationRecords, 'mutationRecords'),
+  };
+}
+
+export async function writeDomMutationResults(
+  testInfo: TestInfo,
+  target: PerformanceTarget,
+  entries: DomMutationResultEntry[],
+) {
+  const browser = browserNameFromTestInfo(testInfo);
+  const targetResultsDir = path.join(domMutationResultsDir, target.id, browser);
+
+  await mkdir(targetResultsDir, { recursive: true });
+  await writeFile(
+    path.join(targetResultsDir, 'dom-mutations.json'),
+    JSON.stringify(entries, null, 2),
+  );
 }
 
 export async function writePerformanceResults(
@@ -387,6 +500,14 @@ function parsePerformanceLog(
 
 function parseOptionalInteger(value: string | undefined): number | undefined {
   return value === undefined ? undefined : Number.parseInt(value, 10);
+}
+
+function requireDomMetric(value: number | undefined, metric: string): number {
+  if (value === undefined) {
+    throw new Error(`Missing DOM mutation metric: ${metric}`);
+  }
+
+  return value;
 }
 
 function serializePerformanceLogEntry(
