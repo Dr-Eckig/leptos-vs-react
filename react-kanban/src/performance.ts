@@ -23,7 +23,36 @@ type PerformanceLogEntry = {
   board: string;
   action: string;
   performance: string;
+  domMutations: DomMutationSummary;
 };
+
+type DomMutationSummary = {
+  measurementId: number | null;
+  action: string | null;
+  board: string | null;
+  duration: string;
+  mutationRecords: number;
+  childListMutations: number;
+  attributeMutations: number;
+  characterDataMutations: number;
+  addedNodes: number;
+  addedElementNodes: number;
+  removedNodes: number;
+  removedElementNodes: number;
+  changedElementNodes: number;
+  rerenderedNodeEstimate: number;
+};
+
+type DomMutationMetrics = {
+  startMeasurement: (action: string, board: string) => number | null;
+  finishMeasurement: (id: number | null) => DomMutationSummary;
+};
+
+declare global {
+  interface Window {
+    KanbanDomMutationMetrics?: DomMutationMetrics;
+  }
+}
 
 export function performanceContextFromBoard(
   board: { title: string } | null | undefined,
@@ -67,6 +96,10 @@ export function start(
     return () => undefined;
   }
 
+  const domMutationMeasurementId =
+    window.KanbanDomMutationMetrics?.startMeasurement(actionName, boardTitle)
+    ?? null;
+
   let isFinished = false;
 
   return () => {
@@ -85,6 +118,9 @@ export function start(
 
       const duration = performanceApi.now() - startTime;
       const performance = `${duration.toFixed(2)} ms`;
+      const domMutations =
+        window.KanbanDomMutationMetrics?.finishMeasurement(domMutationMeasurementId)
+        ?? emptyDomMutationSummary();
 
       try {
         performanceApi.measure(label, startMark, endMark);
@@ -92,7 +128,9 @@ export function start(
         // Ignore performance measurement errors
       }
 
-      console.log(`${LOG_PREFIX} ${label} - ${performance}`);
+      console.log(
+        `${LOG_PREFIX} ${label} - ${performance} - ${domMutationConsoleSummary(domMutations)}`,
+      );
 
       appendPerformanceLog({
         id: logId,
@@ -100,6 +138,7 @@ export function start(
         board: boardTitle,
         action: actionName,
         performance,
+        domMutations,
       });
 
       clearPerformanceEntries(performanceApi, startMark, endMark, label);
@@ -146,6 +185,36 @@ function clearPerformanceEntries(
 
 function sanitizeLogSegment(value: string): string {
   return value.replace(/[\n\r]/g, "_");
+}
+
+function emptyDomMutationSummary(): DomMutationSummary {
+  return {
+    measurementId: null,
+    action: null,
+    board: null,
+    duration: "0.00 ms",
+    mutationRecords: 0,
+    childListMutations: 0,
+    attributeMutations: 0,
+    characterDataMutations: 0,
+    addedNodes: 0,
+    addedElementNodes: 0,
+    removedNodes: 0,
+    removedElementNodes: 0,
+    changedElementNodes: 0,
+    rerenderedNodeEstimate: 0,
+  };
+}
+
+function domMutationConsoleSummary(domMutations: DomMutationSummary): string {
+  return [
+    "dom:",
+    `rerendered=${domMutations.rerenderedNodeEstimate}`,
+    `added=${domMutations.addedElementNodes}`,
+    `removed=${domMutations.removedElementNodes}`,
+    `changed=${domMutations.changedElementNodes}`,
+    `records=${domMutations.mutationRecords}`,
+  ].join(" ");
 }
 
 export function initPerformanceLogSession() {

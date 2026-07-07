@@ -56,6 +56,27 @@ struct PerformanceLogEntry {
     board: String,
     action: String,
     performance: String,
+    #[serde(rename = "domMutations")]
+    dom_mutations: DomMutationSummary,
+}
+
+#[derive(Clone, Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct DomMutationSummary {
+    measurement_id: Option<usize>,
+    action: Option<String>,
+    board: Option<String>,
+    duration: String,
+    mutation_records: usize,
+    child_list_mutations: usize,
+    attribute_mutations: usize,
+    character_data_mutations: usize,
+    added_nodes: usize,
+    added_element_nodes: usize,
+    removed_nodes: usize,
+    removed_element_nodes: usize,
+    changed_element_nodes: usize,
+    rerendered_node_estimate: usize,
 }
 
 impl PerformanceContext {
@@ -103,6 +124,8 @@ pub fn start(
         return Box::new(|| {});
     }
 
+    let dom_mutation_measurement_id = start_dom_mutation_measurement(&action_name, &board_title);
+
     let is_finished = Rc::new(Cell::new(false));
 
     Box::new(move || {
@@ -118,12 +141,14 @@ pub fn start(
         let log_id = log_id.clone();
         let board_title = board_title.clone();
         let action_name = action_name.clone();
+        let dom_mutation_measurement_id = dom_mutation_measurement_id.clone();
 
         after_next_paint(move || {
             let _ = performance_api.mark(&end_mark);
 
             let duration = performance_api.now() - start_time;
             let performance = format!("{:.2} ms", duration);
+            let dom_mutations = finish_dom_mutation_measurement(&dom_mutation_measurement_id);
 
             let _ = performance_api.measure_with_start_mark_and_end_mark(
                 &label,
@@ -131,7 +156,13 @@ pub fn start(
                 &end_mark,
             );
 
-            console_log(&format!("{} {} - {:.2} ms", LOG_PREFIX, label, duration));
+            console_log(&format!(
+                "{} {} - {:.2} ms - {}",
+                LOG_PREFIX,
+                label,
+                duration,
+                dom_mutation_console_summary(&dom_mutations),
+            ));
 
             append_performance_log(PerformanceLogEntry {
                 id: log_id,
@@ -139,6 +170,7 @@ pub fn start(
                 board: board_title,
                 action: action_name,
                 performance,
+                dom_mutations,
             });
 
             clear_performance_entries(&performance_api, &start_mark, &end_mark, &label);
@@ -175,6 +207,113 @@ fn clear_performance_entries(
 
 fn sanitize_log_segment(value: &str) -> String {
     value.replace('\n', "_").replace('\r', "_")
+}
+
+fn start_dom_mutation_measurement(action: &str, board: &str) -> JsValue {
+    let Some(metrics) = dom_mutation_metrics() else {
+        return JsValue::NULL;
+    };
+
+    let Ok(start) = js_sys::Reflect::get(&metrics, &JsValue::from_str("startMeasurement")) else {
+        return JsValue::NULL;
+    };
+
+    let Ok(start) = start.dyn_into::<js_sys::Function>() else {
+        return JsValue::NULL;
+    };
+
+    start
+        .call2(&metrics, &JsValue::from_str(action), &JsValue::from_str(board))
+        .unwrap_or(JsValue::NULL)
+}
+
+fn finish_dom_mutation_measurement(measurement_id: &JsValue) -> DomMutationSummary {
+    let Some(metrics) = dom_mutation_metrics() else {
+        return empty_dom_mutation_summary();
+    };
+
+    let Ok(finish) = js_sys::Reflect::get(&metrics, &JsValue::from_str("finishMeasurement")) else {
+        return empty_dom_mutation_summary();
+    };
+
+    let Ok(finish) = finish.dyn_into::<js_sys::Function>() else {
+        return empty_dom_mutation_summary();
+    };
+
+    let Ok(summary) = finish.call1(&metrics, measurement_id) else {
+        return empty_dom_mutation_summary();
+    };
+
+    DomMutationSummary {
+        measurement_id: js_property_usize(&summary, "measurementId"),
+        action: js_property_string(&summary, "action"),
+        board: js_property_string(&summary, "board"),
+        duration: js_property_string(&summary, "duration")
+            .unwrap_or_else(|| String::from("0.00 ms")),
+        mutation_records: js_property_usize(&summary, "mutationRecords").unwrap_or(0),
+        child_list_mutations: js_property_usize(&summary, "childListMutations").unwrap_or(0),
+        attribute_mutations: js_property_usize(&summary, "attributeMutations").unwrap_or(0),
+        character_data_mutations: js_property_usize(&summary, "characterDataMutations")
+            .unwrap_or(0),
+        added_nodes: js_property_usize(&summary, "addedNodes").unwrap_or(0),
+        added_element_nodes: js_property_usize(&summary, "addedElementNodes").unwrap_or(0),
+        removed_nodes: js_property_usize(&summary, "removedNodes").unwrap_or(0),
+        removed_element_nodes: js_property_usize(&summary, "removedElementNodes").unwrap_or(0),
+        changed_element_nodes: js_property_usize(&summary, "changedElementNodes").unwrap_or(0),
+        rerendered_node_estimate: js_property_usize(&summary, "rerenderedNodeEstimate")
+            .unwrap_or(0),
+    }
+}
+
+fn dom_mutation_metrics() -> Option<JsValue> {
+    let window = web_sys::window()?;
+
+    js_sys::Reflect::get(&window, &JsValue::from_str("KanbanDomMutationMetrics"))
+        .ok()
+        .filter(|value| !value.is_null() && !value.is_undefined())
+}
+
+fn js_property_usize(value: &JsValue, property: &str) -> Option<usize> {
+    js_sys::Reflect::get(value, &JsValue::from_str(property))
+        .ok()
+        .and_then(|value| value.as_f64())
+        .map(|value| value as usize)
+}
+
+fn js_property_string(value: &JsValue, property: &str) -> Option<String> {
+    js_sys::Reflect::get(value, &JsValue::from_str(property))
+        .ok()
+        .and_then(|value| value.as_string())
+}
+
+fn empty_dom_mutation_summary() -> DomMutationSummary {
+    DomMutationSummary {
+        measurement_id: None,
+        action: None,
+        board: None,
+        duration: String::from("0.00 ms"),
+        mutation_records: 0,
+        child_list_mutations: 0,
+        attribute_mutations: 0,
+        character_data_mutations: 0,
+        added_nodes: 0,
+        added_element_nodes: 0,
+        removed_nodes: 0,
+        removed_element_nodes: 0,
+        changed_element_nodes: 0,
+        rerendered_node_estimate: 0,
+    }
+}
+
+fn dom_mutation_console_summary(dom_mutations: &DomMutationSummary) -> String {
+    format!(
+        "dom: rerendered={} added={} removed={} changed={} records={}",
+        dom_mutations.rerendered_node_estimate,
+        dom_mutations.added_element_nodes,
+        dom_mutations.removed_element_nodes,
+        dom_mutations.changed_element_nodes,
+        dom_mutations.mutation_records,
+    )
 }
 
 pub fn init_performance_log_session() {

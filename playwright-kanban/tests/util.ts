@@ -43,6 +43,11 @@ export type PerformanceLogEntry = {
   board: string;
   action: string;
   performance: string;
+  domRerenderedNodeEstimate?: number;
+  domAddedElementNodes?: number;
+  domRemovedElementNodes?: number;
+  domChangedElementNodes?: number;
+  domMutationRecords?: number;
 };
 
 type CollectedPerformanceLogEntry = Omit<PerformanceLogEntry, 'browser'>;
@@ -352,14 +357,26 @@ function parsePerformanceLog(
   text: string,
 ): Omit<CollectedPerformanceLogEntry, 'run' | 'warmUp'> | null {
   const match = text.match(
-    /^\[(leptos|react)-kanban-performance\]\s+(\d+)\s+-\s+(.+)\s+-\s+([a-z-]+)\s+-\s+(\d+(?:\.\d+)?)\s+ms$/,
+    /^\[(leptos|react)-kanban-performance\]\s+(\d+)\s+-\s+(.+)\s+-\s+([a-z-]+)\s+-\s+(\d+(?:\.\d+)?)\s+ms(?:\s+-\s+dom:\s+rerendered=(\d+)\s+added=(\d+)\s+removed=(\d+)\s+changed=(\d+)\s+records=(\d+))?$/,
   );
 
   if (!match) {
     return null;
   }
 
-  const [, targetId, _measurementId, board, action, performance] = match;
+  const [
+    ,
+    targetId,
+    _measurementId,
+    board,
+    action,
+    performance,
+    domRerenderedNodeEstimate,
+    domAddedElementNodes,
+    domRemovedElementNodes,
+    domChangedElementNodes,
+    domMutationRecords,
+  ] = match;
   const framework = targetId === 'leptos' ? 'Leptos' : 'React';
 
   return {
@@ -367,7 +384,16 @@ function parsePerformanceLog(
     board,
     action,
     performance: `${performance} ms`,
+    domRerenderedNodeEstimate: parseOptionalInteger(domRerenderedNodeEstimate),
+    domAddedElementNodes: parseOptionalInteger(domAddedElementNodes),
+    domRemovedElementNodes: parseOptionalInteger(domRemovedElementNodes),
+    domChangedElementNodes: parseOptionalInteger(domChangedElementNodes),
+    domMutationRecords: parseOptionalInteger(domMutationRecords),
   };
+}
+
+function parseOptionalInteger(value: string | undefined): number | undefined {
+  return value === undefined ? undefined : Number.parseInt(value, 10);
 }
 
 function serializePerformanceLogEntry(
@@ -382,6 +408,11 @@ function serializePerformanceLogEntry(
     board: entry.board,
     action: entry.action,
     performance: entry.performance,
+    domRerenderedNodeEstimate: entry.domRerenderedNodeEstimate,
+    domAddedElementNodes: entry.domAddedElementNodes,
+    domRemovedElementNodes: entry.domRemovedElementNodes,
+    domChangedElementNodes: entry.domChangedElementNodes,
+    domMutationRecords: entry.domMutationRecords,
   };
 
   return serializedEntry;
