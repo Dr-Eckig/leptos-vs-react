@@ -11,7 +11,7 @@ import {
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
-export const resultsDir = path.resolve('../statistics-kanban/seaborn/data');
+export const resultsDir = path.resolve('../statistics-kanban/data');
 export const domMutationResultsDir = path.resolve(
   '../statistics-kanban/dom-mutations-data',
 );
