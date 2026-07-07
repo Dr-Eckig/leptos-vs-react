@@ -1,6 +1,6 @@
 set -e
 
-cd ../statistics-kanban/seaborn
+cd ../statistics-kanban
 
 python3 -m venv .venv
 source .venv/bin/activate
