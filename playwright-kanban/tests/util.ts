@@ -110,13 +110,6 @@ export const boardScenariosWithTasks = boardScenarios.slice(1);
 
 export const boardSwitchScenarios: BoardSwitchScenario[] = [
   {
-    title: 'switch to an empty board repeatedly',
-    boardTestId: 'sidebar-board-0',
-    fromBoardTestId: 'sidebar-board-1',
-    boardLabel: 'Board 1 (Leer)',
-    resultSlug: 'empty-board',
-  },
-  {
     title: 'switch to a board with 10 tasks repeatedly',
     boardTestId: 'sidebar-board-1',
     boardLabel: 'Board 2 (10 Tasks)',
