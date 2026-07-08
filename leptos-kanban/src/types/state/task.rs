@@ -25,7 +25,7 @@ impl From<&Task> for TaskState {
             title: RwSignal::new(task.title().to_string()),
             description: RwSignal::new(task.description().cloned()),
             due_date: RwSignal::new(task.due_date().cloned()),
-            priority: RwSignal::new(task.priority().clone()),
+            priority: RwSignal::new(*task.priority()),
         }
     }
 }

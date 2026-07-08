@@ -93,7 +93,7 @@ pub fn TaskModal() -> impl IntoView {
                     task_state.title.set(new_task.title().to_string());
                     task_state.description.set(new_task.description().cloned());
                     task_state.due_date.set(new_task.due_date().cloned());
-                    task_state.priority.set(new_task.priority().clone());
+                    task_state.priority.set(*new_task.priority());
                     close_modal();
                     (measurement)();
                 }

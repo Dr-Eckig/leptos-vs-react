@@ -17,8 +17,8 @@ const LOG_PREFIX: &str = "[leptos-kanban-performance]";
 static NEXT_MEASUREMENT_ID: AtomicUsize = AtomicUsize::new(1);
 
 thread_local! {
-    static PERFORMANCE_LOG_FILE_NAME: RefCell<Option<String>> = RefCell::new(None);
-    static PERFORMANCE_LOG_ENTRIES: RefCell<Vec<PerformanceLogEntry>> = RefCell::new(Vec::new());
+    static PERFORMANCE_LOG_FILE_NAME: RefCell<Option<String>> = const { RefCell::new(None) };
+    static PERFORMANCE_LOG_ENTRIES: RefCell<Vec<PerformanceLogEntry>> = const { RefCell::new(Vec::new()) };
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -200,13 +200,13 @@ fn clear_performance_entries(
     end_mark: &str,
     label: &str,
 ) {
-    let _ = performance_api.clear_marks_with_mark_name(start_mark);
-    let _ = performance_api.clear_marks_with_mark_name(end_mark);
-    let _ = performance_api.clear_measures_with_measure_name(label);
+    performance_api.clear_marks_with_mark_name(start_mark);
+    performance_api.clear_marks_with_mark_name(end_mark);
+    performance_api.clear_measures_with_measure_name(label);
 }
 
 fn sanitize_log_segment(value: &str) -> String {
-    value.replace('\n', "_").replace('\r', "_")
+    value.replace(['\n', '\r'], "_")
 }
 
 fn start_dom_mutation_measurement(action: &str, board: &str) -> JsValue {

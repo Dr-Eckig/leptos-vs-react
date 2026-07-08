@@ -36,7 +36,7 @@ impl Board {
     }
 
     pub fn columns(&self) -> &Vec<Column> {
-        &self.columns.as_vec()
+        self.columns.as_vec()
     }
 }
 

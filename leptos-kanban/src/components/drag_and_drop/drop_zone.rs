@@ -82,11 +82,10 @@ pub fn DropZone(
         drag_counter.set(0);
         is_drag_over.set(false);
 
-        if let Some(item) = read_dragged_item(&event) {
-            if drop_allowed.get() {
+        if let Some(item) = read_dragged_item(&event) 
+            && drop_allowed.get() {
                 on_drop.run(item);
             }
-        }
     };
 
     view! {

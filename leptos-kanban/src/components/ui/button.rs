@@ -26,7 +26,7 @@ where
             color.get().as_class(),
             size.get().as_class(),
             state.get().as_class(),
-            is_fullwidth.then(|| "is-fullwidth").unwrap_or_default(),
+            if is_fullwidth { "is-fullwidth" } else { Default::default() },
         )
     };
 
