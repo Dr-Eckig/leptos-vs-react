@@ -16,7 +16,7 @@ export const domMutationResultsDir = path.resolve(
   '../statistics-kanban/dom-mutations-data',
 );
 export const runs = 50;
-export const warmUpRuns = 10;
+export const warmUpRuns = 5;
 export const performanceTestTimeout = 1_000_000;
 const performanceLogTimeout = 30_000;
 
