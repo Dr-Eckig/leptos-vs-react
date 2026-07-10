@@ -1,34 +1,13 @@
-import { ColumnType } from "../serialize";
-import { createId } from "../utility";
+import type { Board, Column, ColumnType, Task, TaskId } from "../serialize";
 import {
   canColumnAcceptTaskFrom,
-  columnTypes,
-  createColumn,
-  type Column,
 } from "./column";
-import type { Task, TaskId } from "./task";
-
-export type BoardId = string;
-
-export type Board = {
-  id: BoardId;
-  title: string;
-  columns: Column[];
-};
 
 type MoveTaskContext = {
   sourceColumn: Column;
   targetColumn: Column;
   movingTask: Task;
 };
-
-export function createBoard(title: string): Board {
-  return {
-    id: createId(),
-    title,
-    columns: columnTypes.map((columnType) => createColumn(columnType, null)),
-  };
-}
 
 export function addTaskToBoardColumn(
   board: Board,

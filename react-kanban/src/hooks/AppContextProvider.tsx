@@ -10,12 +10,15 @@ import {
   updateAllBoardsBoardTitle,
   updateCurrentBoardColumnWipLimit,
   updateTaskOnCurrentBoard as updateTaskOnCurrentBoardState,
-  type Board,
-  type BoardId,
-  type ColumnId,
-  type Task,
-  type TaskId,
 } from "../types/state";
+import type {
+  Board,
+  BoardId,
+  ColumnId,
+  ColumnType,
+  Task,
+  TaskId,
+} from "../types/serialize";
 import {
   BoardsActionsContext,
   BoardsStateContext,
@@ -32,7 +35,6 @@ import {
   type ModalState,
 } from "./appContext";
 import type { DraggableItemDto } from "../types/drag_and_drop";
-import type { ColumnType } from "../types/serialize";
 
 export function AppContextProvider({
   initialBoards,

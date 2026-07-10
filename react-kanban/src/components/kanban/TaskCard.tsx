@@ -10,12 +10,11 @@ import {
   start as startPerformanceMeasurement,
 } from "../../performance";
 import { openTaskModalWithTask } from "../../types/modals";
-import { Priority, type Task } from "../../types/state";
 import { formatDateToDisplay } from "../../types/date";
 import { Dropdown } from "../ui/Dropdown";
 import { IconText } from "../ui/IconText";
 import { Tag } from "../ui/Tag";
-import type { ColumnType } from "../../types/serialize";
+import { Priority, type ColumnType, type Task } from "../../types/serialize";
 
 type TaskCardProps = {
   task: Task;

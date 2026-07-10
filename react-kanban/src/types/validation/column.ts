@@ -1,6 +1,4 @@
-import type { ColumnType } from "../serialize";
-import { createColumn } from "../state";
-import type { Column } from "../state";
+import { createColumn, type Column, type ColumnType } from "../serialize";
 
 export type ColumnValidationError = "InvalidWipLimit";
 

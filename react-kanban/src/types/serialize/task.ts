@@ -17,6 +17,14 @@ export type Task = {
   priority: Priority;
 };
 
+export type RawTask = {
+  id?: TaskId;
+  title: string;
+  description?: string | null;
+  dueDate?: string | null;
+  priority: Priority;
+};
+
 export function createTask(
   title: string,
   description: string | null,

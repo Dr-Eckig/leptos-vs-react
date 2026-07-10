@@ -1,5 +1,4 @@
-import { createBoard } from "../state";
-import type { Board } from "../state";
+import { createBoard, type Board } from "../serialize";
 
 export type BoardValidationError = "EmptyTitle" | "TitleTooLong";
 

@@ -1,5 +1,4 @@
-import type { ColumnType } from "./serialize";
-import type { TaskId } from "./state";
+import type { ColumnType, TaskId } from "./serialize";
 
 export const DRAGGABLE_ITEM_MIME_TYPE = "application/x-kanban-task+json";
 export const DRAGGABLE_ITEM_TEXT_FALLBACK = "text/plain";

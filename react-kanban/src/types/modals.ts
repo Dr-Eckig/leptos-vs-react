@@ -1,5 +1,4 @@
-import type { ColumnType } from "./serialize";
-import type { Board, Column, Task } from "./state";
+import type { Board, Column, ColumnType, Task } from "./serialize";
 
 export type OpenTaskModal = {
   columnType: ColumnType | null;

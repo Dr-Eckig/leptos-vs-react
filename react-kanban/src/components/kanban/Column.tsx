@@ -15,10 +15,12 @@ import {
 } from "../../types/modals";
 import {
   canColumnAcceptTaskFrom,
-  columnDisplayNames,
   isColumnWipLimitReached,
-  type Column as ColumnState,
 } from "../../types/state";
+import {
+  columnDisplayNames,
+  type Column as ColumnState,
+} from "../../types/serialize";
 import {
   createDraggableItemDto,
   type DraggableItemDto,

@@ -7,7 +7,7 @@ import {
 import { validateColumn } from "../../../types/validation";
 import { Input } from "../../ui/Input";
 import { Modal } from "../../ui/Modal";
-import { columnDisplayNames } from "../../../types/state";
+import { columnDisplayNames } from "../../../types/serialize";
 
 export function ColumnModal() {
   const modals = useModalsState();

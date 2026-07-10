@@ -11,7 +11,7 @@ import {
   start as startPerformanceMeasurement,
   type FinishPerformanceMeasurement,
 } from "../../../performance";
-import { Priority } from "../../../types/state";
+import { Priority } from "../../../types/serialize";
 import { validateTask } from "../../../types/validation";
 import { formatDateToString } from "../../../types/date";
 import { IconButton } from "../../ui/IconButton";

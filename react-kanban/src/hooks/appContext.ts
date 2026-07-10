@@ -12,10 +12,10 @@ import type {
   Board,
   BoardId,
   ColumnId,
+  ColumnType,
   Task,
   TaskId,
-} from "../types/state";
-import type { ColumnType } from "../types/serialize";
+} from "../types/serialize";
 
 export type ModalState = {
   board: OpenBoardModal | null;

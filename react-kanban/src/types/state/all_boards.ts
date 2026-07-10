@@ -1,20 +1,19 @@
-import type { ColumnType } from "../serialize";
+import type {
+  AllBoards,
+  Board,
+  BoardId,
+  ColumnId,
+  ColumnType,
+  Task,
+  TaskId,
+} from "../serialize";
 import {
   addTaskToBoardColumn,
   canMoveBoardTask,
   deleteBoardTask,
   moveBoardTask,
   updateBoardTask,
-  type Board,
-  type BoardId,
 } from "./board";
-import type { ColumnId } from "./column";
-import type { Task, TaskId } from "./task";
-
-export type AllBoards = {
-  boards: Board[];
-  currentBoardId: BoardId | null;
-};
 
 export function getCurrentBoard(allBoards: AllBoards): Board | null {
   return (

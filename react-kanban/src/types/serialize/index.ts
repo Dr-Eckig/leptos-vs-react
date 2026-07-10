@@ -1,39 +1,39 @@
-import { createDefaultColumns, type AllBoards, type Board, type BoardId, type Column, type ColumnId, type Priority, type Task, type TaskId } from "./state";
-import { parseDateFromString } from "./date";
-import { createId } from "./utility";
 import type { Temporal } from "@js-temporal/polyfill";
+import { parseDateFromString } from "../date";
+import { createId } from "../utility";
+import {
+  createDefaultColumns,
+  ColumnType,
+  type Column,
+  type RawColumn,
+} from "./column";
+import type { AllBoards, Board, RawAllBoards, RawBoard } from "./board";
+import type { RawTask, Task } from "./task";
 
-export enum ColumnType {
-  Todo = "todo",
-  InProgress = "in_progress",
-  Done = "done",
-}
-
-export type RawAllBoards = {
-  boards?: RawBoard[];
-  currentBoardId?: BoardId | null;
-};
-
-type RawBoard = {
-  id?: BoardId;
-  title: string;
-  columns?: RawColumn[];
-};
-
-type RawColumn = {
-  id?: ColumnId;
-  columnType?: ColumnType;
-  tasks?: RawTask[];
-  wipLimit?: number | null;
-};
-
-type RawTask = {
-  id?: TaskId;
-  title: string;
-  description?: string | null;
-  dueDate?: string | null;
-  priority: Priority;
-};
+export {
+  ColumnType,
+  columnDisplayNames,
+  columnTypes,
+  createColumn,
+  createDefaultColumns,
+} from "./column";
+export {
+  createBoard,
+  createDefaultBoard,
+  type AllBoards,
+  type Board,
+  type BoardId,
+  type RawAllBoards,
+  type RawBoard,
+} from "./board";
+export {
+  createTask,
+  Priority,
+  type RawTask,
+  type Task,
+  type TaskId,
+} from "./task";
+export type { Column, ColumnId, RawColumn } from "./column";
 
 export function deserializeAllBoards(raw: RawAllBoards): AllBoards {
   const boards: Board[] = (raw.boards ?? []).map(deserializeBoard);

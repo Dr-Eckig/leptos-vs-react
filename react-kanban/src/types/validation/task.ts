@@ -1,4 +1,4 @@
-import { createTask, Priority, type Task } from "../state";
+import { createTask, Priority, type Task } from "../serialize";
 import { parseDateFromString } from "../date";
 
 export type TaskValidationError =
