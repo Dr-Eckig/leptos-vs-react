@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 # python3 decision-density.py
-# python3 decision-density.py --markdown
+# python3 decision-density.py --state-details
 # python3 decision-density.py --details --notes
 
 from __future__ import annotations
 
 import argparse
 import re
+from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -42,6 +43,41 @@ class Metrics:
     @property
     def approximate_complexity(self) -> int:
         return self.functions + self.decision_points
+
+
+@dataclass
+class ReactivityMetrics:
+    state_types: int = 0
+    state_type_names: list[str] = field(default_factory=list)
+    hook_definitions: int = 0
+    hook_calls: int = 0
+    hook_builtin_calls: int = 0
+    hook_custom_calls: int = 0
+    hook_call_breakdown: dict[str, int] = field(default_factory=dict)
+    hook_definition_names: set[str] = field(default_factory=set)
+    signal_constructions: int = 0
+    signal_breakdown: dict[str, int] = field(default_factory=dict)
+
+
+REACT_BUILTIN_HOOKS = frozenset(
+    (
+        "useCallback",
+        "useContext",
+        "useDebugValue",
+        "useDeferredValue",
+        "useEffect",
+        "useId",
+        "useImperativeHandle",
+        "useInsertionEffect",
+        "useLayoutEffect",
+        "useMemo",
+        "useReducer",
+        "useRef",
+        "useState",
+        "useSyncExternalStore",
+        "useTransition",
+    )
+)
 
 
 RUST_DECISION_PATTERNS = (
@@ -115,11 +151,6 @@ def main() -> int:
         help="Print machine-readable CSV instead of the table.",
     )
     parser.add_argument(
-        "--markdown",
-        action="store_true",
-        help="Print a GitHub-flavored Markdown table instead of the terminal table.",
-    )
-    parser.add_argument(
         "--notes",
         action="store_true",
         help="Print the decision-pattern definition below the table.",
@@ -128,6 +159,11 @@ def main() -> int:
         "--details",
         action="store_true",
         help="Print how the highest decision file was selected.",
+    )
+    parser.add_argument(
+        "--state-details",
+        action="store_true",
+        help="Print detailed hook and signal breakdowns for the state/reactivity metrics.",
     )
     args = parser.parse_args()
 
@@ -140,19 +176,20 @@ def main() -> int:
         projects = DEFAULT_PROJECTS
 
     rows = [(project.name, measure_project(project)) for project in projects]
+    reactivity_rows = [
+        (project.name, measure_reactivity_project(project)) for project in projects
+    ]
 
     if args.csv:
         print_csv(rows)
-    elif args.markdown:
-        print_markdown_table(rows)
-        if args.notes:
-            print_notes()
-        if args.details:
-            print_highest_file_details(rows)
     else:
         print_table(rows)
+        print_reactivity_table(reactivity_rows)
+        if args.state_details:
+            print_state_details(reactivity_rows)
         if args.notes:
             print_notes()
+            print_reactivity_notes()
         if args.details:
             print_highest_file_details(rows)
 
@@ -182,6 +219,63 @@ def measure_project(project: ProjectConfig) -> Metrics:
             metrics.highest_decision_file_breakdown = file_decision_breakdown
 
     return metrics
+
+
+def measure_reactivity_project(project: ProjectConfig) -> ReactivityMetrics:
+    metrics = ReactivityMetrics()
+
+    state_root = state_object_root(project)
+    if state_root.is_dir():
+        state_project = ProjectConfig(
+            project.name,
+            state_root,
+            project.extensions,
+            project.excluded_parts,
+        )
+        for path in source_files(state_project):
+            text = path.read_text(encoding="utf-8")
+            state_type_names = collect_state_type_names(path, text)
+            metrics.state_types += len(state_type_names)
+            metrics.state_type_names.extend(state_type_names)
+
+    for path in source_files(project):
+        text = path.read_text(encoding="utf-8")
+        if path.suffix == ".rs":
+            signal_breakdown = count_signal_constructions(text)
+            metrics.signal_constructions += sum(signal_breakdown.values())
+            metrics.signal_breakdown = add_counts(
+                metrics.signal_breakdown,
+                signal_breakdown,
+            )
+        else:
+            hook_definitions = collect_hook_definitions(text)
+            hook_calls = count_hook_calls(text)
+            metrics.hook_definitions += len(hook_definitions)
+            metrics.hook_definition_names.update(hook_definitions)
+            metrics.hook_calls += sum(hook_calls.values())
+            metrics.hook_call_breakdown = add_counts(
+                metrics.hook_call_breakdown,
+                hook_calls,
+            )
+
+    metrics.hook_builtin_calls = sum(
+        count
+        for name, count in metrics.hook_call_breakdown.items()
+        if name in REACT_BUILTIN_HOOKS
+    )
+    metrics.hook_custom_calls = metrics.hook_calls - metrics.hook_builtin_calls
+    return metrics
+
+
+def state_object_root(project: ProjectConfig) -> Path:
+    if ".rs" in project.extensions:
+        return project.root / "types" / "state"
+
+    serialize_root = project.root / "types" / "serialize"
+    if serialize_root.is_dir():
+        return serialize_root
+
+    return project.root / "types" / "state"
 
 
 def source_files(project: ProjectConfig) -> list[Path]:
@@ -254,6 +348,67 @@ def count_types(path: Path, text: str) -> int:
             text,
         )
     )
+
+
+def count_state_types(path: Path, text: str) -> int:
+    return len(collect_state_type_names(path, text))
+
+
+def collect_state_type_names(path: Path, text: str) -> list[str]:
+    if path.suffix == ".rs":
+        return re.findall(r"(?m)^\s*(?:pub\s+)?(?:struct|enum)\s+(\w+)", text)
+
+    names = re.findall(
+        r"(?m)^export\s+type\s+(\w+)\s*=\s*\{",
+        text,
+    )
+    return [
+        name
+        for name in names
+        if not name.startswith("Raw") and not name.endswith("Id")
+    ]
+
+
+def collect_hook_definitions(text: str) -> set[str]:
+    return set(
+        re.findall(
+            r"(?m)^\s*export\s+function\s+(use[A-Z][A-Za-z0-9_]*)\s*\(",
+            text,
+        )
+    )
+
+
+def count_hook_calls(text: str) -> dict[str, int]:
+    counts: Counter[str] = Counter()
+    definition_pattern = re.compile(
+        r"^\s*export\s+function\s+use[A-Z][A-Za-z0-9_]*\s*\("
+    )
+    call_pattern = re.compile(r"\b(use[A-Z][A-Za-z0-9_]*)\s*\(")
+
+    for line in text.splitlines():
+        if definition_pattern.search(line):
+            continue
+        counts.update(call_pattern.findall(line))
+
+    return dict(counts)
+
+
+def count_signal_constructions(text: str) -> dict[str, int]:
+    return dict(
+        Counter(
+            re.findall(
+                r"\b(RwSignal::new|Signal::derive|Signal::from|"
+                r"create_signal|create_rw_signal|create_memo)\s*\(",
+                text,
+            )
+        )
+    )
+
+
+def add_counts(left: dict[str, int], right: dict[str, int]) -> dict[str, int]:
+    counts = Counter(left)
+    counts.update(right)
+    return dict(counts)
 
 
 def count_decision_points(path: Path, text: str) -> dict[str, int]:
@@ -337,15 +492,61 @@ def print_table(rows: list[tuple[str, Metrics]]) -> None:
         print(" | ".join(cell.ljust(widths[index]) for index, cell in enumerate(row)))
 
 
-def print_markdown_table(rows: list[tuple[str, Metrics]]) -> None:
-    comparison_rows = comparison_table_rows(rows)
-    project_names = [name for name, _metrics in rows]
+def print_reactivity_table(rows: list[tuple[str, ReactivityMetrics]]) -> None:
+    print()
+    print("State-/Reaktivitäts-Metriken:")
 
-    print("| Kriterium | " + " | ".join(project_names) + " |")
-    print("|---|" + "|".join("---:" for _name in project_names) + "|")
+    comparison_rows = reactivity_table_rows(rows)
+    headers = ("Kriterium", *(name for name, _metrics in rows))
+    widths = [
+        max(len(row[index]) for row in (headers, *comparison_rows))
+        for index in range(len(headers))
+    ]
+
+    print(" | ".join(cell.ljust(widths[index]) for index, cell in enumerate(headers)))
+    print("-+-".join("-" * width for width in widths))
 
     for row in comparison_rows:
-        print("| " + " | ".join(row) + " |")
+        print(" | ".join(cell.ljust(widths[index]) for index, cell in enumerate(row)))
+
+
+def print_state_details(rows: list[tuple[str, ReactivityMetrics]]) -> None:
+    print()
+    print("State-/Reaktivitäts-Details:")
+
+    for name, metrics in rows:
+        print(f"  {name}:")
+
+        if metrics.state_type_names:
+            print(
+                f"    State-Objekte: {metrics.state_types} gesamt, "
+                + ", ".join(sorted(metrics.state_type_names))
+            )
+
+        if metrics.hook_calls:
+            print(
+                "    Hook-Aufrufe: "
+                f"{metrics.hook_calls} gesamt, "
+                f"{metrics.hook_builtin_calls} Built-in, "
+                f"{metrics.hook_custom_calls} Custom"
+            )
+            print_count_breakdown("    Hook-Aufrufe nach Name", metrics.hook_call_breakdown)
+
+        if metrics.hook_definition_names:
+            print(
+                "    Hook-Definitionen: "
+                + ", ".join(sorted(metrics.hook_definition_names))
+            )
+
+        if metrics.signal_constructions:
+            print(f"    Signal-Konstruktionen: {metrics.signal_constructions} gesamt")
+            print_count_breakdown("    Signal-Konstruktionen nach Typ", metrics.signal_breakdown)
+
+
+def print_count_breakdown(title: str, counts: dict[str, int]) -> None:
+    print(f"{title}:")
+    for label, count in sorted(counts.items(), key=lambda item: (-item[1], item[0])):
+        print(f"      {label}: {count}")
 
 
 def comparison_table_rows(rows: list[tuple[str, Metrics]]) -> list[tuple[str, ...]]:
@@ -384,6 +585,27 @@ def comparison_table_rows(rows: list[tuple[str, Metrics]]) -> list[tuple[str, ..
     return table_rows
 
 
+def reactivity_table_rows(
+    rows: list[tuple[str, ReactivityMetrics]],
+) -> list[tuple[str, ...]]:
+    metrics_by_name = {name: metrics for name, metrics in rows}
+    project_names = [name for name, _metrics in rows]
+
+    comparison_rows = [
+        ("State-Objekte", lambda metrics: str(metrics.state_types)),
+        ("Hook-Definitionen", lambda metrics: str(metrics.hook_definitions)),
+        ("Hook-Aufrufe", lambda metrics: str(metrics.hook_calls)),
+        ("Signal-Konstruktionen", lambda metrics: str(metrics.signal_constructions)),
+    ]
+
+    table_rows = []
+    for criterion, format_value in comparison_rows:
+        values = [format_value(metrics_by_name[name]) for name in project_names]
+        table_rows.append((criterion, *values))
+
+    return table_rows
+
+
 def print_notes() -> None:
     print()
     print("Decision patterns:")
@@ -392,6 +614,15 @@ def print_notes() -> None:
     print()
     print("Formula:")
     print("  decision density = decision points / non-empty LOC")
+
+
+def print_reactivity_notes() -> None:
+    print()
+    print("State/reactivity patterns:")
+    print("  State objects: Leptos structs below src/types/state; React object types below src/types/serialize")
+    print("  React ID aliases and Raw DTO types are excluded from state objects")
+    print("  Hooks: React-style useX definitions and invocations, excluding definition lines")
+    print("  Signals: Leptos signal constructions via RwSignal::new, Signal::derive, Signal::from")
 
 
 def print_highest_file_details(rows: list[tuple[str, Metrics]]) -> None:
