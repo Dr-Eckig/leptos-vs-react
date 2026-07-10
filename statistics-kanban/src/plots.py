@@ -15,15 +15,15 @@ from config import (
 )
 from data import ordered_values, scenario_order
 
-import matplotlib.pyplot as plt
 import seaborn as sns
-from matplotlib.axes import Axes
-from matplotlib.figure import Figure
-from matplotlib.ticker import FixedLocator, FuncFormatter, NullFormatter
 
 
 def configure_plot_theme() -> None:
-    sns.set_theme(style="whitegrid", context="paper")
+    sns.set_theme(
+        style="whitegrid",
+        context="paper",
+        rc={"figure.max_open_warning": 0},
+    )
 
 
 def create_browser_boxplot(measurements: pd.DataFrame, browser: str) -> Path:
@@ -33,11 +33,10 @@ def create_browser_boxplot(measurements: pd.DataFrame, browser: str) -> Path:
         scenario_order(),
     )
 
-    fig_height = max(7, len(scenario_labels) * 0.48)
-    fig, ax = plt.subplots(figsize=(13, fig_height))
-
-    sns.boxplot(
+    height = max(7, len(scenario_labels) * 0.48)
+    grid = sns.catplot(
         data=browser_measurements,
+        kind="box",
         x="performance_ms",
         y="scenario",
         hue="framework",
@@ -47,8 +46,10 @@ def create_browser_boxplot(measurements: pd.DataFrame, browser: str) -> Path:
         dodge=True,
         fliersize=2.5,
         linewidth=1,
-        ax=ax,
+        height=height,
+        aspect=13 / height,
     )
+    ax = grid.ax
 
     browser_label = BROWSER_LABELS.get(browser, browser.title())
     ax.set_title(f"Kanban-Performance nach Szenario - {browser_label}", pad=12)
@@ -58,19 +59,20 @@ def create_browser_boxplot(measurements: pd.DataFrame, browser: str) -> Path:
     configure_millisecond_axis(ax)
     ax.grid(axis="x", which="both", linestyle="--", linewidth=0.5, alpha=0.55)
     ax.grid(axis="y", visible=False)
-    ax.legend(
+    sns.move_legend(
+        grid,
+        "center left",
         title="Framework",
-        loc="center left",
         bbox_to_anchor=(1.01, 0.5),
         frameon=True,
     )
 
     sns.despine(left=True, bottom=False)
-    fig.tight_layout()
+    grid.figure.tight_layout()
 
     output_path = PLOTS_DIR / f"performance-boxplots-{browser}.png"
-    fig.savefig(output_path, dpi=300, bbox_inches="tight")
-    plt.close(fig)
+    grid.figure.savefig(output_path, dpi=300, bbox_inches="tight")
+    close_grid(grid)
 
     return output_path
 
@@ -93,38 +95,26 @@ def create_initial_load_boxplot(measurements: pd.DataFrame) -> Path | None:
     )
 
     browsers = ordered_values(initial_load_measurements["browser"], BROWSER_ORDER)
-    fig, axes = plt.subplots(
-        1,
-        len(browsers),
-        figsize=(max(7, 4.8 * len(browsers)), 4.2),
+    grid = sns.catplot(
+        data=initial_load_measurements,
+        kind="box",
+        col="browser",
+        col_order=browsers,
+        x="performance_ms",
+        y="metric",
+        hue="framework",
+        order=[INITIAL_LOAD_LABELS[action] for action in INITIAL_LOAD_ORDER],
+        hue_order=FRAMEWORK_ORDER,
+        palette=FRAMEWORK_PALETTE,
+        dodge=True,
+        fliersize=2.5,
+        linewidth=1,
+        height=4.2,
+        aspect=1.15,
         sharey=True,
     )
 
-    if len(browsers) == 1:
-        axes = [axes]
-
-    handles = []
-    labels = []
-
-    for index, (ax, browser) in enumerate(zip(axes, browsers)):
-        browser_measurements = initial_load_measurements[
-            initial_load_measurements["browser"] == browser
-        ]
-
-        sns.boxplot(
-            data=browser_measurements,
-            x="performance_ms",
-            y="metric",
-            hue="framework",
-            order=[INITIAL_LOAD_LABELS[action] for action in INITIAL_LOAD_ORDER],
-            hue_order=FRAMEWORK_ORDER,
-            palette=FRAMEWORK_PALETTE,
-            dodge=True,
-            fliersize=2.5,
-            linewidth=1,
-            ax=ax,
-        )
-
+    for index, (ax, browser) in enumerate(zip(grid.axes.flat, browsers)):
         browser_label = BROWSER_LABELS.get(browser, browser.title())
         ax.set_title(browser_label, pad=10)
         ax.set_xlabel("Zeit in Millisekunden (logarithmische Skala)")
@@ -134,21 +124,21 @@ def create_initial_load_boxplot(measurements: pd.DataFrame) -> Path | None:
         ax.grid(axis="x", which="both", linestyle="--", linewidth=0.5, alpha=0.55)
         ax.grid(axis="y", visible=False)
 
-        current_handles, current_labels = remove_axis_legend(ax)
+    sns.move_legend(
+        grid,
+        "center right",
+        title="Framework",
+        bbox_to_anchor=(1.0, 0.5),
+        frameon=True,
+    )
 
-        if current_handles and not handles:
-            handles = current_handles
-            labels = current_labels
-
-    place_figure_legend(fig, handles, labels)
-
-    fig.suptitle("Initial Load: FCP und LCP nach Browser", y=1.02)
+    grid.figure.suptitle("Initial Load: FCP und LCP nach Browser", y=1.02)
     sns.despine(left=True, bottom=False)
-    fig.tight_layout(rect=(0, 0, 0.91 if handles else 1, 1))
+    grid.figure.tight_layout(rect=(0, 0, 0.91, 1))
 
     output_path = PLOTS_DIR / "initial-load-boxplots.png"
-    fig.savefig(output_path, dpi=300, bbox_inches="tight")
-    plt.close(fig)
+    grid.figure.savefig(output_path, dpi=300, bbox_inches="tight")
+    close_grid(grid)
 
     return output_path
 
@@ -180,9 +170,9 @@ def create_dom_mutation_scenario_barplots(measurements: pd.DataFrame) -> list[Pa
         if scenario_measurements.empty:
             continue
 
-        fig, ax = plt.subplots(figsize=(6.8, 4.4))
-        sns.barplot(
+        grid = sns.catplot(
             data=scenario_measurements,
+            kind="bar",
             x="framework",
             y="rerenderedNodeEstimate",
             order=FRAMEWORK_ORDER,
@@ -191,8 +181,10 @@ def create_dom_mutation_scenario_barplots(measurements: pd.DataFrame) -> list[Pa
             hue_order=FRAMEWORK_ORDER,
             legend=False,
             errorbar=None,
-            ax=ax,
+            height=4.4,
+            aspect=6.8 / 4.4,
         )
+        ax = grid.ax
 
         annotate_bars(ax)
         ax.set_title(f"DOM-Mutationen - {scenario}", pad=12)
@@ -212,17 +204,23 @@ def create_dom_mutation_scenario_barplots(measurements: pd.DataFrame) -> list[Pa
             color="#4b5563",
         )
         sns.despine(left=False, bottom=False)
-        fig.tight_layout()
+        grid.figure.tight_layout()
 
         output_path = output_dir / f"{slugify(scenario)}.png"
-        fig.savefig(output_path, dpi=300, bbox_inches="tight")
-        plt.close(fig)
+        grid.figure.savefig(output_path, dpi=300, bbox_inches="tight")
+        close_grid(grid)
         output_paths.append(output_path)
 
     return output_paths
 
 
-def annotate_bars(ax: Axes) -> None:
+def close_grid(grid) -> None:
+    manager = getattr(grid.figure.canvas, "manager", None)
+    if manager is not None:
+        manager.destroy()
+
+
+def annotate_bars(ax) -> None:
     for container in ax.containers:
         ax.bar_label(container, fmt="%.0f", padding=3, fontsize=9)
 
@@ -250,7 +248,7 @@ def slugify(value: str) -> str:
     return "-".join(part for part in slug.split("-") if part)
 
 
-def configure_millisecond_axis(ax: Axes) -> None:
+def configure_millisecond_axis(ax) -> None:
     lower, upper = ax.get_xlim()
     ticks = [
         tick
@@ -258,39 +256,12 @@ def configure_millisecond_axis(ax: Axes) -> None:
         if lower <= tick <= upper
     ]
 
-    ax.xaxis.set_major_locator(FixedLocator(ticks))
-    ax.xaxis.set_major_formatter(FuncFormatter(format_millisecond_tick))
-    ax.xaxis.set_minor_formatter(NullFormatter())
+    ax.set_xticks(ticks)
+    ax.set_xticklabels([format_millisecond_tick(tick) for tick in ticks])
 
 
-def format_millisecond_tick(value: float, _position: int) -> str:
+def format_millisecond_tick(value: float) -> str:
     if value >= 1:
         return f"{value:.0f} ms"
 
     return f"{value:.1f} ms".replace(".", ",")
-
-
-def remove_axis_legend(ax: Axes) -> tuple[list, list]:
-    legend = ax.get_legend()
-
-    if legend is None:
-        return [], []
-
-    handles, labels = ax.get_legend_handles_labels()
-    legend.remove()
-
-    return handles, labels
-
-
-def place_figure_legend(fig: Figure, handles: list, labels: list) -> None:
-    if not handles:
-        return
-
-    fig.legend(
-        handles,
-        labels,
-        title="Framework",
-        loc="center right",
-        bbox_to_anchor=(1.0, 0.5),
-        frameon=True,
-    )
