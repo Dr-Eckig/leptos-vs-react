@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# python3 scripts/decision-density.py
-# python3 scripts/decision-density.py --markdown
-# python3 scripts/decision-density.py --details --notes
+# python3 decision-density.py
+# python3 decision-density.py --markdown
+# python3 decision-density.py --details --notes
 
 from __future__ import annotations
 
@@ -76,11 +76,23 @@ TS_DECISION_PATTERNS = (
 )
 
 
+SCRIPT_DIR = Path(__file__).resolve().parent
+REPO_ROOT = next(
+    (
+        candidate
+        for candidate in (SCRIPT_DIR, *SCRIPT_DIR.parents)
+        if (candidate / "leptos-kanban/src").is_dir()
+        and (candidate / "react-kanban/src").is_dir()
+    ),
+    Path.cwd(),
+)
+
+
 DEFAULT_PROJECTS = (
-    ProjectConfig("Leptos", Path("leptos-kanban/src"), (".rs",)),
+    ProjectConfig("Leptos", REPO_ROOT / "leptos-kanban/src", (".rs",)),
     ProjectConfig(
         "React",
-        Path("react-kanban/src"),
+        REPO_ROOT / "react-kanban/src",
         (".ts", ".tsx"),
         excluded_parts=("assets",),
     ),
@@ -386,13 +398,21 @@ def print_highest_file_details(rows: list[tuple[str, Metrics]]) -> None:
     print()
     print("Highest decision file details:")
     for name, metrics in rows:
-        print(f"  {name}: {metrics.highest_decision_file}")
+        print(f"  {name}: {format_path(metrics.highest_decision_file)}")
         print(f"    decision points: {metrics.highest_decision_file_points}")
         for label, count in sorted(
             metrics.highest_decision_file_breakdown.items(),
             key=lambda item: (-item[1], item[0]),
         ):
             print(f"    {label}: {count}")
+
+
+def format_path(path: str) -> str:
+    path_value = Path(path)
+    try:
+        return str(path_value.relative_to(REPO_ROOT))
+    except ValueError:
+        return str(path_value)
 
 
 if __name__ == "__main__":
