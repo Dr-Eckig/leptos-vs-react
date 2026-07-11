@@ -8,7 +8,6 @@ from config import (
     ACTION_ORDER,
     BOARD_LABELS,
     BOARD_ORDER,
-    DOM_MUTATION_BROWSER,
     INITIAL_LOAD_ORDER,
 )
 
@@ -61,7 +60,7 @@ def load_measurements(data_dir: Path) -> pd.DataFrame:
 
 
 def load_dom_mutation_measurements(data_dir: Path) -> pd.DataFrame:
-    json_files = sorted(data_dir.rglob("*.json"))
+    json_files = sorted(data_dir.glob("*/dom-mutations.json"))
 
     if not json_files:
         return pd.DataFrame()
@@ -77,8 +76,6 @@ def load_dom_mutation_measurements(data_dir: Path) -> pd.DataFrame:
         raise ValueError(f"Missing required DOM mutation column(s): {missing}")
 
     measurements = measurements.copy()
-    measurements["browser"] = measurements["browser"].str.lower()
-    measurements = measurements[measurements["browser"] == DOM_MUTATION_BROWSER].copy()
     measurements["framework"] = measurements["framework"].str.title()
     measurements["scenario"] = measurements.apply(scenario_label, axis=1)
     measurements["scenario"] = pd.Categorical(
@@ -88,17 +85,17 @@ def load_dom_mutation_measurements(data_dir: Path) -> pd.DataFrame:
     )
 
     numeric_columns = [
-        "rerenderedNodeEstimate",
-        "addedElementNodes",
-        "removedElementNodes",
-        "changedElementNodes",
         "mutationRecords",
+        "textChanges",
+        "attributeChanges",
+        "addedElements",
+        "removedElements",
     ]
 
     for column in numeric_columns:
         measurements[column] = pd.to_numeric(measurements[column])
 
-    return measurements.sort_values(["browser", "scenario", "framework"])
+    return measurements.sort_values(["scenario", "framework"])
 
 
 def required_columns() -> set[str]:
@@ -107,16 +104,16 @@ def required_columns() -> set[str]:
 
 def required_dom_mutation_columns() -> set[str]:
     return {
-        "browser",
         "framework",
         "board",
         "action",
         "scenario",
-        "rerenderedNodeEstimate",
-        "addedElementNodes",
-        "removedElementNodes",
-        "changedElementNodes",
         "mutationRecords",
+        "textChanges",
+        "attributeChanges",
+        "addedElements",
+        "removedElements",
+        "affectedDomAreas",
     }
 
 

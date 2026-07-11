@@ -12,7 +12,7 @@ from plots import (
     create_dom_mutation_scenario_barplots,
     create_initial_load_boxplot,
 )
-from tables import create_performance_summary_table
+from tables import create_dom_mutation_summary_table, create_performance_summary_table
 
 
 def main() -> None:
@@ -40,6 +40,9 @@ def main() -> None:
     output_paths.extend(create_dom_mutation_scenario_barplots(dom_mutation_measurements))
 
     table_paths = create_performance_summary_table(measurements, PLOTS_DIR)
+    table_paths.extend(
+        create_dom_mutation_summary_table(dom_mutation_measurements, PLOTS_DIR)
+    )
 
     print(f"Loaded {len(measurements)} measurements from {DATA_DIR}")
     print("Created plots:")

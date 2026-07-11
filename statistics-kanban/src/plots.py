@@ -5,7 +5,6 @@ import pandas as pd
 from config import (
     BROWSER_LABELS,
     BROWSER_ORDER,
-    DOM_MUTATION_BROWSER,
     FRAMEWORK_ORDER,
     FRAMEWORK_PALETTE,
     INITIAL_LOAD_LABELS,
@@ -53,7 +52,7 @@ def create_browser_boxplot(measurements: pd.DataFrame, browser: str) -> Path:
 
     browser_label = BROWSER_LABELS.get(browser, browser.title())
     ax.set_title(f"Kanban-Performance nach Szenario - {browser_label}", pad=12)
-    ax.set_xlabel("Ausführungsdauer in Millisekunden (logarithmische Skala)")
+    ax.set_xlabel("Ausführungsdauer in Millisekunden")
     ax.set_ylabel("Szenario: Aktion und Boardgröße")
     ax.set_xscale("log")
     configure_millisecond_axis(ax)
@@ -117,7 +116,7 @@ def create_initial_load_boxplot(measurements: pd.DataFrame) -> Path | None:
     for index, (ax, browser) in enumerate(zip(grid.axes.flat, browsers)):
         browser_label = BROWSER_LABELS.get(browser, browser.title())
         ax.set_title(browser_label, pad=10)
-        ax.set_xlabel("Zeit in Millisekunden (logarithmische Skala)")
+        ax.set_xlabel("Zeit in Millisekunden")
         ax.set_ylabel("Metrik" if index == 0 else "")
         ax.set_xscale("log")
         configure_millisecond_axis(ax)
@@ -153,18 +152,11 @@ def create_dom_mutation_scenario_barplots(measurements: pd.DataFrame) -> list[Pa
     )
     output_dir = PLOTS_DIR / "dom-mutations"
     output_dir.mkdir(exist_ok=True)
-    browser_measurements = measurements[
-        measurements["browser"] == DOM_MUTATION_BROWSER
-    ].copy()
-    browser_label = BROWSER_LABELS.get(
-        DOM_MUTATION_BROWSER,
-        DOM_MUTATION_BROWSER.title(),
-    )
     output_paths = []
 
     for scenario in scenario_labels:
-        scenario_measurements = browser_measurements[
-            browser_measurements["scenario"] == scenario
+        scenario_measurements = measurements[
+            measurements["scenario"] == scenario
         ].copy()
 
         if scenario_measurements.empty:
@@ -174,7 +166,7 @@ def create_dom_mutation_scenario_barplots(measurements: pd.DataFrame) -> list[Pa
             data=scenario_measurements,
             kind="bar",
             x="framework",
-            y="rerenderedNodeEstimate",
+            y="mutationRecords",
             order=FRAMEWORK_ORDER,
             palette=FRAMEWORK_PALETTE,
             hue="framework",
@@ -189,20 +181,10 @@ def create_dom_mutation_scenario_barplots(measurements: pd.DataFrame) -> list[Pa
         annotate_bars(ax)
         ax.set_title(f"DOM-Mutationen - {scenario}", pad=12)
         ax.set_xlabel("Framework")
-        ax.set_ylabel("Mutierte DOM-Elementknoten")
-        ax.set_ylim(0, max(1, scenario_measurements["rerenderedNodeEstimate"].max()) * 1.18)
+        ax.set_ylabel("Mutation Records")
+        ax.set_ylim(0, max(1, scenario_measurements["mutationRecords"].max()) * 1.18)
         ax.grid(axis="y", linestyle="--", linewidth=0.5, alpha=0.55)
         ax.grid(axis="x", visible=False)
-        ax.text(
-            0.99,
-            0.96,
-            browser_label,
-            transform=ax.transAxes,
-            ha="right",
-            va="top",
-            fontsize=9,
-            color="#4b5563",
-        )
         sns.despine(left=False, bottom=False)
         grid.figure.tight_layout()
 
