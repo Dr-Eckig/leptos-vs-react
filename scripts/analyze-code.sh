@@ -1,3 +1,4 @@
 set -e
 
-python3 ../decision-density.py
+cd ../shared
+python3 ./decision-density.py
