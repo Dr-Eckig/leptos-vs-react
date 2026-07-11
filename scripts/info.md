@@ -22,10 +22,10 @@ This step only needs to be done once. After that, the scripts can be started dir
 Open the first terminal window and run:
 
 ```bash
-./start-npm.sh
+./scripts/start-npm.sh
 ```
 
-This starts the React application, for example using the Vite preview server.
+This starts the React application, using the Vite preview server.
 
 Keep this terminal open while running the tests. Do not close it until all Playwright tests are finished.
 
@@ -34,10 +34,10 @@ Keep this terminal open while running the tests. Do not close it until all Playw
 Open a second terminal window and run:
 
 ```bash
-./start-trunk.sh
+./scripts/start-trunk.sh
 ```
 
-This starts the Leptos application using Trunk.
+This starts the Leptos application in release mode, using Trunk.
 
 Keep this terminal open as well. The server needs to stay active while the Playwright tests are running.
 
@@ -46,7 +46,7 @@ Keep this terminal open as well. The server needs to stay active while the Playw
 Open a third terminal window and run:
 
 ```bash
-./start-playwright-tests.sh
+./scripts/start-playwright-tests.sh
 ```
 
 This executes the automated Playwright tests against the running React and Leptos applications.
@@ -59,7 +59,7 @@ Make sure that both application servers are already running before starting the 
 After the Playwright tests have finished, run:
 
 ```bash
-./generate-plots.sh
+./scripts/generate-plots.sh
 ```
 
 This generates the plots from the collected performance data to `statistics-kanban/plots`.
