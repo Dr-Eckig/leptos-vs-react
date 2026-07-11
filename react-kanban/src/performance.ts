@@ -35,11 +35,16 @@ type DomMutationSummary = {
   childListMutations: number;
   attributeMutations: number;
   characterDataMutations: number;
+  textChanges: number;
+  attributeChanges: number;
   addedNodes: number;
   addedElementNodes: number;
+  addedElements: number;
   removedNodes: number;
   removedElementNodes: number;
+  removedElements: number;
   changedElementNodes: number;
+  affectedDomAreas: string[];
   rerenderedNodeEstimate: number;
 };
 
@@ -88,8 +93,6 @@ export function start(
   const startMark = `react-kanban:${id}:start`;
   const endMark = `react-kanban:${id}:end`;
 
-  const startTime = performanceApi.now();
-
   try {
     performanceApi.mark(startMark);
   } catch {
@@ -110,23 +113,21 @@ export function start(
     isFinished = true;
 
     afterNextPaint(() => {
+      let duration: number;
+
       try {
         performanceApi.mark(endMark);
+        duration = performanceApi.measure(label, startMark, endMark).duration;
       } catch {
-        // Ignore performance measurement errors
+        window.KanbanDomMutationMetrics?.finishMeasurement(domMutationMeasurementId);
+        clearPerformanceEntries(performanceApi, startMark, endMark, label);
+        return;
       }
 
-      const duration = performanceApi.now() - startTime;
       const performance = `${duration.toFixed(2)} ms`;
       const domMutations =
         window.KanbanDomMutationMetrics?.finishMeasurement(domMutationMeasurementId)
         ?? emptyDomMutationSummary();
-
-      try {
-        performanceApi.measure(label, startMark, endMark);
-      } catch {
-        // Ignore performance measurement errors
-      }
 
       console.log(
         `${LOG_PREFIX} ${label} - ${performance} - ${domMutationConsoleSummary(domMutations)}`,
@@ -197,11 +198,16 @@ function emptyDomMutationSummary(): DomMutationSummary {
     childListMutations: 0,
     attributeMutations: 0,
     characterDataMutations: 0,
+    textChanges: 0,
+    attributeChanges: 0,
     addedNodes: 0,
     addedElementNodes: 0,
+    addedElements: 0,
     removedNodes: 0,
     removedElementNodes: 0,
+    removedElements: 0,
     changedElementNodes: 0,
+    affectedDomAreas: [],
     rerenderedNodeEstimate: 0,
   };
 }
@@ -209,11 +215,12 @@ function emptyDomMutationSummary(): DomMutationSummary {
 function domMutationConsoleSummary(domMutations: DomMutationSummary): string {
   return [
     "dom:",
-    `rerendered=${domMutations.rerenderedNodeEstimate}`,
-    `added=${domMutations.addedElementNodes}`,
-    `removed=${domMutations.removedElementNodes}`,
-    `changed=${domMutations.changedElementNodes}`,
     `records=${domMutations.mutationRecords}`,
+    `text=${domMutations.textChanges}`,
+    `attributes=${domMutations.attributeChanges}`,
+    `added=${domMutations.addedElements}`,
+    `removed=${domMutations.removedElements}`,
+    `areas=${encodeURIComponent(domMutations.affectedDomAreas.join("|"))}`,
   ].join(" ");
 }
 

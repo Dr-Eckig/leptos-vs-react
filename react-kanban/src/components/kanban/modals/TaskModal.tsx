@@ -113,8 +113,7 @@ export function TaskModal() {
       boardActions.addTaskToCurrentBoard(columnType, result.task);
     }
 
-    resetForm();
-    modalActions.setTask(null);
+    closeModal();
     finishMeasurement?.();
   };
 

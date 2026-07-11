@@ -80,14 +80,18 @@
     let removedNodes = 0;
     let removedElementNodes = 0;
     const changedElements = new Set();
+    const affectedDomAreas = new Set();
 
     for (const record of records) {
+      addAffectedDomArea(affectedDomAreas, record.target);
+
       if (record.type === "childList") {
         childListMutations += 1;
 
         for (const node of record.addedNodes) {
           addedNodes += countNodes(node);
           addedElementNodes += countElementNodes(node);
+          addAffectedDomArea(affectedDomAreas, node);
         }
 
         for (const node of record.removedNodes) {
@@ -110,11 +114,16 @@
       childListMutations,
       attributeMutations,
       characterDataMutations,
+      textChanges: characterDataMutations,
+      attributeChanges: attributeMutations,
       addedNodes,
       addedElementNodes,
+      addedElements: addedElementNodes,
       removedNodes,
       removedElementNodes,
+      removedElements: removedElementNodes,
       changedElementNodes,
+      affectedDomAreas: Array.from(affectedDomAreas).sort(),
       rerenderedNodeEstimate:
         addedElementNodes + removedElementNodes + changedElementNodes,
     };
@@ -124,6 +133,46 @@
     if (node && node.nodeType === Node.ELEMENT_NODE) {
       changedElements.add(node);
     }
+  }
+
+  function addAffectedDomArea(affectedDomAreas, node) {
+    const element = elementFromNode(node);
+
+    if (!element) {
+      return;
+    }
+
+    affectedDomAreas.add(describeDomArea(element));
+  }
+
+  function elementFromNode(node) {
+    if (!node) {
+      return null;
+    }
+
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      return node;
+    }
+
+    return node.parentElement || null;
+  }
+
+  function describeDomArea(element) {
+    const testArea = element.closest("[data-testid]");
+
+    if (testArea) {
+      return `[data-testid="${testArea.getAttribute("data-testid")}"]`;
+    }
+
+    if (element.id) {
+      return `#${element.id}`;
+    }
+
+    if (element.classList.length > 0) {
+      return `${element.tagName.toLowerCase()}.${Array.from(element.classList).join(".")}`;
+    }
+
+    return element.tagName.toLowerCase();
   }
 
   function countNodes(node) {
@@ -156,11 +205,16 @@
       childListMutations: 0,
       attributeMutations: 0,
       characterDataMutations: 0,
+      textChanges: 0,
+      attributeChanges: 0,
       addedNodes: 0,
       addedElementNodes: 0,
+      addedElements: 0,
       removedNodes: 0,
       removedElementNodes: 0,
+      removedElements: 0,
       changedElementNodes: 0,
+      affectedDomAreas: [],
       rerenderedNodeEstimate: 0,
     };
   }

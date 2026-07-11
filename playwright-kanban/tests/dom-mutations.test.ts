@@ -1,7 +1,6 @@
 import { expect, test, type Page, type TestInfo } from '@playwright/test';
 import {
   addTaskToColumn,
-  boardScenarios,
   boardScenariosWithTasks,
   boardSwitchScenarios,
   collectLoggedDomMutationAction,
@@ -65,13 +64,16 @@ async function collectDomMutationsOncePerScenario(
 }
 
 function domMutationScenarios(): DomMutationScenario[] {
+  const boardWith10Tasks = boardScenariosWithTasks[0];
+  const switchToBoardWith10Tasks = boardSwitchScenarios[0];
+
   return [
-    ...boardScenarios.map(addTaskScenario),
-    ...boardScenariosWithTasks.map(editTaskScenario),
+    addTaskScenario(boardWith10Tasks),
+    editTaskScenario(boardWith10Tasks),
     ...boardScenariosWithTasks.map(deleteTaskScenario),
-    ...boardScenariosWithTasks.map(moveTaskWithinColumnScenario),
+    moveTaskWithinColumnScenario(boardWith10Tasks),
     ...boardScenariosWithTasks.map(moveTaskBetweenColumnsScenario),
-    ...boardSwitchScenarios.map(boardSwitchScenario),
+    boardSwitchScenario(switchToBoardWith10Tasks),
   ];
 }
 

@@ -47,11 +47,12 @@ export type PerformanceLogEntry = {
   board: string;
   action: string;
   performance: string;
-  domRerenderedNodeEstimate?: number;
-  domAddedElementNodes?: number;
-  domRemovedElementNodes?: number;
-  domChangedElementNodes?: number;
   domMutationRecords?: number;
+  domTextChanges?: number;
+  domAttributeChanges?: number;
+  domAddedElements?: number;
+  domRemovedElements?: number;
+  domAffectedAreas?: string[];
 };
 
 type CollectedPerformanceLogEntry = Omit<PerformanceLogEntry, 'browser'>;
@@ -74,17 +75,16 @@ type CollectDomMutationActionOptions = CollectPerformanceOptions & {
 };
 
 export type DomMutationResultEntry = {
-  browser: string;
   framework: string;
   board: string;
   action: string;
   scenario: string;
-  performance: string;
-  rerenderedNodeEstimate: number;
-  addedElementNodes: number;
-  removedElementNodes: number;
-  changedElementNodes: number;
   mutationRecords: number;
+  textChanges: number;
+  attributeChanges: number;
+  addedElements: number;
+  removedElements: number;
+  affectedDomAreas: string[];
 };
 
 const allPerformanceTargets: PerformanceTarget[] = [
@@ -220,11 +220,10 @@ export async function repeatLoggedPerformanceAction(
 
 export async function collectLoggedDomMutationAction(
   page: Page,
-  testInfo: TestInfo,
+  _testInfo: TestInfo,
   target: PerformanceTarget,
   options: CollectDomMutationActionOptions,
 ): Promise<DomMutationResultEntry> {
-  const browser = browserNameFromTestInfo(testInfo);
   const entries: CollectedPerformanceLogEntry[] = [];
 
   const onConsole = (message: ConsoleMessage) => {
@@ -234,11 +233,12 @@ export async function collectLoggedDomMutationAction(
       entry?.framework !== target.framework ||
       entry.action !== options.action ||
       (options.board && entry.board !== options.board) ||
-      entry.domRerenderedNodeEstimate === undefined ||
-      entry.domAddedElementNodes === undefined ||
-      entry.domRemovedElementNodes === undefined ||
-      entry.domChangedElementNodes === undefined ||
-      entry.domMutationRecords === undefined
+      entry.domMutationRecords === undefined ||
+      entry.domTextChanges === undefined ||
+      entry.domAttributeChanges === undefined ||
+      entry.domAddedElements === undefined ||
+      entry.domRemovedElements === undefined ||
+      entry.domAffectedAreas === undefined
     ) {
       return;
     }
@@ -267,39 +267,28 @@ export async function collectLoggedDomMutationAction(
   const [entry] = entries;
 
   return {
-    browser,
     framework: entry.framework,
     board: entry.board,
     action: entry.action,
     scenario: options.scenario,
-    performance: entry.performance,
-    rerenderedNodeEstimate: requireDomMetric(
-      entry.domRerenderedNodeEstimate,
-      'rerenderedNodeEstimate',
-    ),
-    addedElementNodes: requireDomMetric(
-      entry.domAddedElementNodes,
-      'addedElementNodes',
-    ),
-    removedElementNodes: requireDomMetric(
-      entry.domRemovedElementNodes,
-      'removedElementNodes',
-    ),
-    changedElementNodes: requireDomMetric(
-      entry.domChangedElementNodes,
-      'changedElementNodes',
-    ),
     mutationRecords: requireDomMetric(entry.domMutationRecords, 'mutationRecords'),
+    textChanges: requireDomMetric(entry.domTextChanges, 'textChanges'),
+    attributeChanges: requireDomMetric(
+      entry.domAttributeChanges,
+      'attributeChanges',
+    ),
+    addedElements: requireDomMetric(entry.domAddedElements, 'addedElements'),
+    removedElements: requireDomMetric(entry.domRemovedElements, 'removedElements'),
+    affectedDomAreas: entry.domAffectedAreas ?? [],
   };
 }
 
 export async function writeDomMutationResults(
-  testInfo: TestInfo,
+  _testInfo: TestInfo,
   target: PerformanceTarget,
   entries: DomMutationResultEntry[],
 ) {
-  const browser = browserNameFromTestInfo(testInfo);
-  const targetResultsDir = path.join(domMutationResultsDir, target.id, browser);
+  const targetResultsDir = path.join(domMutationResultsDir, target.id);
 
   await mkdir(targetResultsDir, { recursive: true });
   await writeFile(
@@ -463,7 +452,7 @@ function parsePerformanceLog(
   text: string,
 ): Omit<CollectedPerformanceLogEntry, 'run' | 'warmUp'> | null {
   const match = text.match(
-    /^\[(leptos|react)-kanban-performance\]\s+(\d+)\s+-\s+(.+)\s+-\s+([a-z-]+)\s+-\s+(\d+(?:\.\d+)?)\s+ms(?:\s+-\s+dom:\s+rerendered=(\d+)\s+added=(\d+)\s+removed=(\d+)\s+changed=(\d+)\s+records=(\d+))?$/,
+    /^\[(leptos|react)-kanban-performance\]\s+(\d+)\s+-\s+(.+)\s+-\s+([a-z-]+)\s+-\s+(\d+(?:\.\d+)?)\s+ms(?:\s+-\s+dom:\s+records=(\d+)\s+text=(\d+)\s+attributes=(\d+)\s+added=(\d+)\s+removed=(\d+)\s+areas=(.*))?$/,
   );
 
   if (!match) {
@@ -477,11 +466,12 @@ function parsePerformanceLog(
     board,
     action,
     performance,
-    domRerenderedNodeEstimate,
-    domAddedElementNodes,
-    domRemovedElementNodes,
-    domChangedElementNodes,
     domMutationRecords,
+    domTextChanges,
+    domAttributeChanges,
+    domAddedElements,
+    domRemovedElements,
+    domAffectedAreas,
   ] = match;
   const framework = targetId === 'leptos' ? 'Leptos' : 'React';
 
@@ -490,16 +480,31 @@ function parsePerformanceLog(
     board,
     action,
     performance: `${performance} ms`,
-    domRerenderedNodeEstimate: parseOptionalInteger(domRerenderedNodeEstimate),
-    domAddedElementNodes: parseOptionalInteger(domAddedElementNodes),
-    domRemovedElementNodes: parseOptionalInteger(domRemovedElementNodes),
-    domChangedElementNodes: parseOptionalInteger(domChangedElementNodes),
     domMutationRecords: parseOptionalInteger(domMutationRecords),
+    domTextChanges: parseOptionalInteger(domTextChanges),
+    domAttributeChanges: parseOptionalInteger(domAttributeChanges),
+    domAddedElements: parseOptionalInteger(domAddedElements),
+    domRemovedElements: parseOptionalInteger(domRemovedElements),
+    domAffectedAreas: parseOptionalDomAreas(domAffectedAreas),
   };
 }
 
 function parseOptionalInteger(value: string | undefined): number | undefined {
   return value === undefined ? undefined : Number.parseInt(value, 10);
+}
+
+function parseOptionalDomAreas(value: string | undefined): string[] | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  const decodedValue = decodeURIComponent(value);
+
+  if (!decodedValue) {
+    return [];
+  }
+
+  return decodedValue.split('|').filter(Boolean);
 }
 
 function requireDomMetric(value: number | undefined, metric: string): number {
@@ -522,11 +527,12 @@ function serializePerformanceLogEntry(
     board: entry.board,
     action: entry.action,
     performance: entry.performance,
-    domRerenderedNodeEstimate: entry.domRerenderedNodeEstimate,
-    domAddedElementNodes: entry.domAddedElementNodes,
-    domRemovedElementNodes: entry.domRemovedElementNodes,
-    domChangedElementNodes: entry.domChangedElementNodes,
     domMutationRecords: entry.domMutationRecords,
+    domTextChanges: entry.domTextChanges,
+    domAttributeChanges: entry.domAttributeChanges,
+    domAddedElements: entry.domAddedElements,
+    domRemovedElements: entry.domRemovedElements,
+    domAffectedAreas: entry.domAffectedAreas,
   };
 
   return serializedEntry;

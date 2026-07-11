@@ -71,11 +71,16 @@ struct DomMutationSummary {
     child_list_mutations: usize,
     attribute_mutations: usize,
     character_data_mutations: usize,
+    text_changes: usize,
+    attribute_changes: usize,
     added_nodes: usize,
     added_element_nodes: usize,
+    added_elements: usize,
     removed_nodes: usize,
     removed_element_nodes: usize,
+    removed_elements: usize,
     changed_element_nodes: usize,
+    affected_dom_areas: Vec<String>,
     rerendered_node_estimate: usize,
 }
 
@@ -118,8 +123,6 @@ pub fn start(
     let start_mark = format!("leptos-kanban:{id}:start");
     let end_mark = format!("leptos-kanban:{id}:end");
 
-    let start_time = performance_api.now();
-
     if performance_api.mark(&start_mark).is_err() {
         return Box::new(|| {});
     }
@@ -144,17 +147,15 @@ pub fn start(
         let dom_mutation_measurement_id = dom_mutation_measurement_id.clone();
 
         after_next_paint(move || {
-            let _ = performance_api.mark(&end_mark);
-
-            let duration = performance_api.now() - start_time;
-            let performance = format!("{:.2} ms", duration);
+            let duration = measure_duration(&performance_api, &label, &start_mark, &end_mark);
             let dom_mutations = finish_dom_mutation_measurement(&dom_mutation_measurement_id);
 
-            let _ = performance_api.measure_with_start_mark_and_end_mark(
-                &label,
-                &start_mark,
-                &end_mark,
-            );
+            let Some(duration) = duration else {
+                clear_performance_entries(&performance_api, &start_mark, &end_mark, &label);
+                return;
+            };
+
+            let performance = format!("{:.2} ms", duration);
 
             console_log(&format!(
                 "{} {} - {:.2} ms - {}",
@@ -176,6 +177,27 @@ pub fn start(
             clear_performance_entries(&performance_api, &start_mark, &end_mark, &label);
         });
     })
+}
+
+fn measure_duration(
+    performance_api: &web_sys::Performance,
+    label: &str,
+    start_mark: &str,
+    end_mark: &str,
+) -> Option<f64> {
+    performance_api.mark(end_mark).ok()?;
+    performance_api
+        .measure_with_start_mark_and_end_mark(label, start_mark, end_mark)
+        .ok()?;
+
+    let entries = performance_api.get_entries_by_name_with_entry_type(label, "measure");
+    let last_index = entries.length().checked_sub(1)?;
+    let entry = entries
+        .get(last_index)
+        .dyn_into::<web_sys::PerformanceEntry>()
+        .ok()?;
+
+    Some(entry.duration())
 }
 
 fn after_next_paint(callback: impl FnOnce() + 'static) {
@@ -255,11 +277,16 @@ fn finish_dom_mutation_measurement(measurement_id: &JsValue) -> DomMutationSumma
         attribute_mutations: js_property_usize(&summary, "attributeMutations").unwrap_or(0),
         character_data_mutations: js_property_usize(&summary, "characterDataMutations")
             .unwrap_or(0),
+        text_changes: js_property_usize(&summary, "textChanges").unwrap_or(0),
+        attribute_changes: js_property_usize(&summary, "attributeChanges").unwrap_or(0),
         added_nodes: js_property_usize(&summary, "addedNodes").unwrap_or(0),
         added_element_nodes: js_property_usize(&summary, "addedElementNodes").unwrap_or(0),
+        added_elements: js_property_usize(&summary, "addedElements").unwrap_or(0),
         removed_nodes: js_property_usize(&summary, "removedNodes").unwrap_or(0),
         removed_element_nodes: js_property_usize(&summary, "removedElementNodes").unwrap_or(0),
+        removed_elements: js_property_usize(&summary, "removedElements").unwrap_or(0),
         changed_element_nodes: js_property_usize(&summary, "changedElementNodes").unwrap_or(0),
+        affected_dom_areas: js_property_string_array(&summary, "affectedDomAreas"),
         rerendered_node_estimate: js_property_usize(&summary, "rerenderedNodeEstimate")
             .unwrap_or(0),
     }
@@ -286,6 +313,21 @@ fn js_property_string(value: &JsValue, property: &str) -> Option<String> {
         .and_then(|value| value.as_string())
 }
 
+fn js_property_string_array(value: &JsValue, property: &str) -> Vec<String> {
+    let Ok(value) = js_sys::Reflect::get(value, &JsValue::from_str(property)) else {
+        return Vec::new();
+    };
+
+    if !js_sys::Array::is_array(&value) {
+        return Vec::new();
+    }
+
+    js_sys::Array::from(&value)
+        .iter()
+        .filter_map(|value| value.as_string())
+        .collect()
+}
+
 fn empty_dom_mutation_summary() -> DomMutationSummary {
     DomMutationSummary {
         measurement_id: None,
@@ -296,24 +338,34 @@ fn empty_dom_mutation_summary() -> DomMutationSummary {
         child_list_mutations: 0,
         attribute_mutations: 0,
         character_data_mutations: 0,
+        text_changes: 0,
+        attribute_changes: 0,
         added_nodes: 0,
         added_element_nodes: 0,
+        added_elements: 0,
         removed_nodes: 0,
         removed_element_nodes: 0,
+        removed_elements: 0,
         changed_element_nodes: 0,
+        affected_dom_areas: Vec::new(),
         rerendered_node_estimate: 0,
     }
 }
 
 fn dom_mutation_console_summary(dom_mutations: &DomMutationSummary) -> String {
     format!(
-        "dom: rerendered={} added={} removed={} changed={} records={}",
-        dom_mutations.rerendered_node_estimate,
-        dom_mutations.added_element_nodes,
-        dom_mutations.removed_element_nodes,
-        dom_mutations.changed_element_nodes,
+        "dom: records={} text={} attributes={} added={} removed={} areas={}",
         dom_mutations.mutation_records,
+        dom_mutations.text_changes,
+        dom_mutations.attribute_changes,
+        dom_mutations.added_elements,
+        dom_mutations.removed_elements,
+        encode_dom_areas(&dom_mutations.affected_dom_areas),
     )
+}
+
+fn encode_dom_areas(areas: &[String]) -> String {
+    areas.join("|").replace(' ', "%20")
 }
 
 pub fn init_performance_log_session() {
