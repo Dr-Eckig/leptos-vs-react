@@ -27,29 +27,16 @@ type PerformanceLogEntry = {
 };
 
 type DomMutationSummary = {
-  measurementId: number | null;
-  action: string | null;
-  board: string | null;
-  duration: string;
   mutationRecords: number;
-  childListMutations: number;
-  attributeMutations: number;
-  characterDataMutations: number;
   textChanges: number;
   attributeChanges: number;
-  addedNodes: number;
-  addedElementNodes: number;
   addedElements: number;
-  removedNodes: number;
-  removedElementNodes: number;
   removedElements: number;
-  changedElementNodes: number;
   affectedDomAreas: string[];
-  rerenderedNodeEstimate: number;
 };
 
 type DomMutationMetrics = {
-  startMeasurement: (action: string, board: string) => number | null;
+  startMeasurement: () => number | null;
   finishMeasurement: (id: number | null) => DomMutationSummary;
 };
 
@@ -100,7 +87,7 @@ export function start(
   }
 
   const domMutationMeasurementId =
-    window.KanbanDomMutationMetrics?.startMeasurement(actionName, boardTitle)
+    window.KanbanDomMutationMetrics?.startMeasurement()
     ?? null;
 
   let isFinished = false;
@@ -190,25 +177,12 @@ function sanitizeLogSegment(value: string): string {
 
 function emptyDomMutationSummary(): DomMutationSummary {
   return {
-    measurementId: null,
-    action: null,
-    board: null,
-    duration: "0.00 ms",
     mutationRecords: 0,
-    childListMutations: 0,
-    attributeMutations: 0,
-    characterDataMutations: 0,
     textChanges: 0,
     attributeChanges: 0,
-    addedNodes: 0,
-    addedElementNodes: 0,
     addedElements: 0,
-    removedNodes: 0,
-    removedElementNodes: 0,
     removedElements: 0,
-    changedElementNodes: 0,
     affectedDomAreas: [],
-    rerenderedNodeEstimate: 0,
   };
 }
 

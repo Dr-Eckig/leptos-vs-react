@@ -63,25 +63,12 @@ struct PerformanceLogEntry {
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct DomMutationSummary {
-    measurement_id: Option<usize>,
-    action: Option<String>,
-    board: Option<String>,
-    duration: String,
     mutation_records: usize,
-    child_list_mutations: usize,
-    attribute_mutations: usize,
-    character_data_mutations: usize,
     text_changes: usize,
     attribute_changes: usize,
-    added_nodes: usize,
-    added_element_nodes: usize,
     added_elements: usize,
-    removed_nodes: usize,
-    removed_element_nodes: usize,
     removed_elements: usize,
-    changed_element_nodes: usize,
     affected_dom_areas: Vec<String>,
-    rerendered_node_estimate: usize,
 }
 
 impl PerformanceContext {
@@ -127,7 +114,7 @@ pub fn start(
         return Box::new(|| {});
     }
 
-    let dom_mutation_measurement_id = start_dom_mutation_measurement(&action_name, &board_title);
+    let dom_mutation_measurement_id = start_dom_mutation_measurement();
 
     let is_finished = Rc::new(Cell::new(false));
 
@@ -231,7 +218,7 @@ fn sanitize_log_segment(value: &str) -> String {
     value.replace(['\n', '\r'], "_")
 }
 
-fn start_dom_mutation_measurement(action: &str, board: &str) -> JsValue {
+fn start_dom_mutation_measurement() -> JsValue {
     let Some(metrics) = dom_mutation_metrics() else {
         return JsValue::NULL;
     };
@@ -244,9 +231,7 @@ fn start_dom_mutation_measurement(action: &str, board: &str) -> JsValue {
         return JsValue::NULL;
     };
 
-    start
-        .call2(&metrics, &JsValue::from_str(action), &JsValue::from_str(board))
-        .unwrap_or(JsValue::NULL)
+    start.call0(&metrics).unwrap_or(JsValue::NULL)
 }
 
 fn finish_dom_mutation_measurement(measurement_id: &JsValue) -> DomMutationSummary {
@@ -267,28 +252,12 @@ fn finish_dom_mutation_measurement(measurement_id: &JsValue) -> DomMutationSumma
     };
 
     DomMutationSummary {
-        measurement_id: js_property_usize(&summary, "measurementId"),
-        action: js_property_string(&summary, "action"),
-        board: js_property_string(&summary, "board"),
-        duration: js_property_string(&summary, "duration")
-            .unwrap_or_else(|| String::from("0.00 ms")),
         mutation_records: js_property_usize(&summary, "mutationRecords").unwrap_or(0),
-        child_list_mutations: js_property_usize(&summary, "childListMutations").unwrap_or(0),
-        attribute_mutations: js_property_usize(&summary, "attributeMutations").unwrap_or(0),
-        character_data_mutations: js_property_usize(&summary, "characterDataMutations")
-            .unwrap_or(0),
         text_changes: js_property_usize(&summary, "textChanges").unwrap_or(0),
         attribute_changes: js_property_usize(&summary, "attributeChanges").unwrap_or(0),
-        added_nodes: js_property_usize(&summary, "addedNodes").unwrap_or(0),
-        added_element_nodes: js_property_usize(&summary, "addedElementNodes").unwrap_or(0),
         added_elements: js_property_usize(&summary, "addedElements").unwrap_or(0),
-        removed_nodes: js_property_usize(&summary, "removedNodes").unwrap_or(0),
-        removed_element_nodes: js_property_usize(&summary, "removedElementNodes").unwrap_or(0),
         removed_elements: js_property_usize(&summary, "removedElements").unwrap_or(0),
-        changed_element_nodes: js_property_usize(&summary, "changedElementNodes").unwrap_or(0),
         affected_dom_areas: js_property_string_array(&summary, "affectedDomAreas"),
-        rerendered_node_estimate: js_property_usize(&summary, "rerenderedNodeEstimate")
-            .unwrap_or(0),
     }
 }
 
@@ -305,12 +274,6 @@ fn js_property_usize(value: &JsValue, property: &str) -> Option<usize> {
         .ok()
         .and_then(|value| value.as_f64())
         .map(|value| value as usize)
-}
-
-fn js_property_string(value: &JsValue, property: &str) -> Option<String> {
-    js_sys::Reflect::get(value, &JsValue::from_str(property))
-        .ok()
-        .and_then(|value| value.as_string())
 }
 
 fn js_property_string_array(value: &JsValue, property: &str) -> Vec<String> {
@@ -330,25 +293,12 @@ fn js_property_string_array(value: &JsValue, property: &str) -> Vec<String> {
 
 fn empty_dom_mutation_summary() -> DomMutationSummary {
     DomMutationSummary {
-        measurement_id: None,
-        action: None,
-        board: None,
-        duration: String::from("0.00 ms"),
         mutation_records: 0,
-        child_list_mutations: 0,
-        attribute_mutations: 0,
-        character_data_mutations: 0,
         text_changes: 0,
         attribute_changes: 0,
-        added_nodes: 0,
-        added_element_nodes: 0,
         added_elements: 0,
-        removed_nodes: 0,
-        removed_element_nodes: 0,
         removed_elements: 0,
-        changed_element_nodes: 0,
         affected_dom_areas: Vec::new(),
-        rerendered_node_estimate: 0,
     }
 }
 

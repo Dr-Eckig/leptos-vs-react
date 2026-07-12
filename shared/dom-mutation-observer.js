@@ -32,7 +32,7 @@
     return observer;
   }
 
-  function startMeasurement(action, board) {
+  function startMeasurement() {
     const currentObserver = ensureObserver();
 
     if (!currentObserver) {
@@ -43,10 +43,7 @@
 
     activeMeasurement = {
       id: nextMeasurementId,
-      action,
-      board,
       records: [],
-      startedAt: performance.now(),
     };
     nextMeasurementId += 1;
 
@@ -61,10 +58,6 @@
     activeMeasurement.records.push(...observer.takeRecords());
 
     const summary = summarizeRecords(activeMeasurement.records);
-    summary.measurementId = activeMeasurement.id;
-    summary.action = activeMeasurement.action;
-    summary.board = activeMeasurement.board;
-    summary.duration = `${(performance.now() - activeMeasurement.startedAt).toFixed(2)} ms`;
 
     activeMeasurement = null;
 
@@ -72,67 +65,39 @@
   }
 
   function summarizeRecords(records) {
-    let childListMutations = 0;
-    let attributeMutations = 0;
-    let characterDataMutations = 0;
-    let addedNodes = 0;
-    let addedElementNodes = 0;
-    let removedNodes = 0;
-    let removedElementNodes = 0;
-    const changedElements = new Set();
+    let textChanges = 0;
+    let attributeChanges = 0;
+    let addedElements = 0;
+    let removedElements = 0;
     const affectedDomAreas = new Set();
 
     for (const record of records) {
       addAffectedDomArea(affectedDomAreas, record.target);
 
       if (record.type === "childList") {
-        childListMutations += 1;
-
         for (const node of record.addedNodes) {
-          addedNodes += countNodes(node);
-          addedElementNodes += countElementNodes(node);
+          addedElements += countElementNodes(node);
           addAffectedDomArea(affectedDomAreas, node);
         }
 
         for (const node of record.removedNodes) {
-          removedNodes += countNodes(node);
-          removedElementNodes += countElementNodes(node);
+          removedElements += countElementNodes(node);
         }
       } else if (record.type === "attributes") {
-        attributeMutations += 1;
-        addChangedElement(changedElements, record.target);
+        attributeChanges += 1;
       } else if (record.type === "characterData") {
-        characterDataMutations += 1;
-        addChangedElement(changedElements, record.target.parentElement);
+        textChanges += 1;
       }
     }
 
-    const changedElementNodes = changedElements.size;
-
     return {
       mutationRecords: records.length,
-      childListMutations,
-      attributeMutations,
-      characterDataMutations,
-      textChanges: characterDataMutations,
-      attributeChanges: attributeMutations,
-      addedNodes,
-      addedElementNodes,
-      addedElements: addedElementNodes,
-      removedNodes,
-      removedElementNodes,
-      removedElements: removedElementNodes,
-      changedElementNodes,
+      textChanges,
+      attributeChanges,
+      addedElements,
+      removedElements,
       affectedDomAreas: Array.from(affectedDomAreas).sort(),
-      rerenderedNodeEstimate:
-        addedElementNodes + removedElementNodes + changedElementNodes,
     };
-  }
-
-  function addChangedElement(changedElements, node) {
-    if (node && node.nodeType === Node.ELEMENT_NODE) {
-      changedElements.add(node);
-    }
   }
 
   function addAffectedDomArea(affectedDomAreas, node) {
@@ -175,16 +140,6 @@
     return element.tagName.toLowerCase();
   }
 
-  function countNodes(node) {
-    let count = 1;
-
-    for (const child of node.childNodes) {
-      count += countNodes(child);
-    }
-
-    return count;
-  }
-
   function countElementNodes(node) {
     let count = node.nodeType === Node.ELEMENT_NODE ? 1 : 0;
 
@@ -197,25 +152,12 @@
 
   function emptySummary() {
     return {
-      measurementId: null,
-      action: null,
-      board: null,
-      duration: "0.00 ms",
       mutationRecords: 0,
-      childListMutations: 0,
-      attributeMutations: 0,
-      characterDataMutations: 0,
       textChanges: 0,
       attributeChanges: 0,
-      addedNodes: 0,
-      addedElementNodes: 0,
       addedElements: 0,
-      removedNodes: 0,
-      removedElementNodes: 0,
       removedElements: 0,
-      changedElementNodes: 0,
       affectedDomAreas: [],
-      rerenderedNodeEstimate: 0,
     };
   }
 
