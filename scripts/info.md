@@ -52,6 +52,10 @@ Open a third terminal window and run:
 This executes the automated Playwright tests against the running React and Leptos applications.
 This can take some time.
 
+The Chromium-only bundle-size test opens every application in a fresh browser context
+and sums the response-body sizes of same-origin JavaScript, CSS, and WebAssembly
+assets. Its raw measurements are written to `statistics-kanban/bundle-size-data`.
+
 Make sure that both application servers are already running before starting the tests.
 
 ## 5. Generate plots
@@ -62,7 +66,9 @@ After the Playwright tests have finished, run:
 ./scripts/generate-plots.sh
 ```
 
-This generates the plots from the collected performance data to `statistics-kanban/plots`.
+This generates the plots and summary tables from the collected performance data to `ba-plots`.
+The generated files include the Chromium bundle-size bar chart
+`ba-plots/bundle-size.png`.
 
 ## Terminal overview
 

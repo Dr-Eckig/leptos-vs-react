@@ -142,6 +142,43 @@ def create_initial_load_boxplot(measurements: pd.DataFrame) -> Path | None:
     return output_path
 
 
+def create_bundle_size_barplot(measurements: pd.DataFrame) -> Path | None:
+    if measurements.empty:
+        return None
+
+    grid = sns.catplot(
+        data=measurements,
+        kind="bar",
+        x="framework",
+        y="bundle_size_kib",
+        order=FRAMEWORK_ORDER,
+        palette=FRAMEWORK_PALETTE,
+        hue="framework",
+        hue_order=FRAMEWORK_ORDER,
+        legend=False,
+        errorbar=None,
+        height=4.4,
+        aspect=6.8 / 4.4,
+    )
+    ax = grid.ax
+
+    annotate_bars(ax, decimal_places=2)
+    ax.set_title("Bundle-Größe", pad=12)
+    ax.set_xlabel("Framework")
+    ax.set_ylabel("Bundle-Größe in KiB")
+    ax.set_ylim(0, max(1, measurements["bundle_size_kib"].max()) * 1.18)
+    ax.grid(axis="y", linestyle="--", linewidth=0.5, alpha=0.55)
+    ax.grid(axis="x", visible=False)
+    sns.despine(left=False, bottom=False)
+    grid.figure.tight_layout()
+
+    output_path = PLOTS_DIR / "bundle-size.png"
+    grid.figure.savefig(output_path, dpi=300, bbox_inches="tight")
+    close_grid(grid)
+
+    return output_path
+
+
 def create_dom_mutation_scenario_barplots(measurements: pd.DataFrame) -> list[Path]:
     if measurements.empty:
         return []
@@ -202,9 +239,11 @@ def close_grid(grid) -> None:
         manager.destroy()
 
 
-def annotate_bars(ax) -> None:
+def annotate_bars(ax, decimal_places: int = 0) -> None:
+    value_format = f"%.{decimal_places}f"
+
     for container in ax.containers:
-        ax.bar_label(container, fmt="%.0f", padding=3, fontsize=9)
+        ax.bar_label(container, fmt=value_format, padding=3, fontsize=9)
 
 
 def slugify(value: str) -> str:

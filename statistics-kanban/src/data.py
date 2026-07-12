@@ -98,6 +98,33 @@ def load_dom_mutation_measurements(data_dir: Path) -> pd.DataFrame:
     return measurements.sort_values(["scenario", "framework"])
 
 
+def load_bundle_size_measurements(data_dir: Path) -> pd.DataFrame:
+    json_files = sorted(data_dir.rglob("bundle-size.json"))
+
+    if not json_files:
+        return pd.DataFrame()
+
+    measurements = pd.concat(
+        [pd.read_json(json_file) for json_file in json_files],
+        ignore_index=True,
+    )
+    required = {"run", "browser", "framework", "bundleSizeBytes"}
+    missing_columns = required - set(measurements.columns)
+
+    if missing_columns:
+        missing = ", ".join(sorted(missing_columns))
+        raise ValueError(f"Missing required bundle-size column(s): {missing}")
+
+    measurements = measurements.copy()
+    measurements["browser"] = measurements["browser"].str.lower()
+    measurements["framework"] = measurements["framework"].str.title()
+    measurements["bundle_size_kib"] = (
+        pd.to_numeric(measurements["bundleSizeBytes"]) / 1024
+    )
+
+    return measurements.sort_values(["browser", "framework", "run"])
+
+
 def required_columns() -> set[str]:
     return {"run", "browser", "framework", "board", "action", "performance"}
 

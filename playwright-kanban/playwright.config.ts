@@ -41,13 +41,13 @@ export default defineConfig({
 
     {
       name: 'firefox',
-      grepInvert: /collect DOM mutations/,
+      grepInvert: /collect DOM mutations|measure bundle size/,
       use: { ...devices['Desktop Firefox'] },
     },
 
     {
       name: 'webkit',
-      grepInvert: /collect DOM mutations/,
+      grepInvert: /collect DOM mutations|measure bundle size/,
       use: { ...devices['Desktop Safari'] },
     },
 

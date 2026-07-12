@@ -2,12 +2,15 @@ import os
 from pathlib import Path
 
 PROJECT_DIR = Path(__file__).resolve().parent.parent
+REPO_ROOT = PROJECT_DIR.parent
 os.environ.setdefault("MPLCONFIGDIR", str(PROJECT_DIR / ".matplotlib-cache"))
 
 DATA_DIR = PROJECT_DIR / "data"
 DOM_MUTATION_DATA_DIR = PROJECT_DIR / "dom-mutations-data"
-PLOTS_DIR = PROJECT_DIR / "plots"
+BUNDLE_SIZE_DATA_DIR = PROJECT_DIR / "bundle-size-data"
+PLOTS_DIR = REPO_ROOT / "ba-plots"
 DOM_MUTATION_BROWSER = "chromium"
+BUNDLE_SIZE_BROWSER = "chromium"
 
 ACTION_LABELS = {
     "task-create": "Aufgabe erstellen",

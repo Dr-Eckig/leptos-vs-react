@@ -4,5 +4,6 @@ __pycache__/
 *.py[cod]
 .ipynb_checkpoints/
 data/
+bundle-size-data/
 dom-mutations-data/
 plots/

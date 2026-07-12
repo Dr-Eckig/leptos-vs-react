@@ -15,6 +15,9 @@ export const resultsDir = path.resolve('../statistics-kanban/data');
 export const domMutationResultsDir = path.resolve(
   '../statistics-kanban/dom-mutations-data',
 );
+export const bundleSizeResultsDir = path.resolve(
+  '../statistics-kanban/bundle-size-data',
+);
 export const runs = 50;
 export const warmUpRuns = 5;
 export const performanceTestTimeout = 1_000_000;
@@ -85,6 +88,13 @@ export type DomMutationResultEntry = {
   addedElements: number;
   removedElements: number;
   affectedDomAreas: string[];
+};
+
+export type BundleSizeResultEntry = {
+  run: number;
+  browser: string;
+  framework: string;
+  bundleSizeBytes: number;
 };
 
 const allPerformanceTargets: PerformanceTarget[] = [
@@ -294,6 +304,22 @@ export async function writeDomMutationResults(
   await writeFile(
     path.join(targetResultsDir, 'dom-mutations.json'),
     JSON.stringify(entries, null, 2),
+  );
+}
+
+export async function writeBundleSizeResults(
+  testInfo: TestInfo,
+  target: PerformanceTarget,
+  entries: Omit<BundleSizeResultEntry, 'browser'>[],
+) {
+  const browser = browserNameFromTestInfo(testInfo);
+  const targetResultsDir = path.join(bundleSizeResultsDir, target.id, browser);
+  const serializedEntries = entries.map((entry) => ({ ...entry, browser }));
+
+  await mkdir(targetResultsDir, { recursive: true });
+  await writeFile(
+    path.join(targetResultsDir, 'bundle-size.json'),
+    JSON.stringify(serializedEntries, null, 2),
   );
 }
 
