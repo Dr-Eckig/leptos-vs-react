@@ -28,7 +28,7 @@ async function deleteOneTaskFromBoardRepeatedly(
   testInfo: TestInfo,
   target: PerformanceTarget,
   scenario: BoardScenario,
-) {
+): Promise<void> {
   const action = 'task-delete';
   const resultFileName = `delete-task-from-${scenario.resultSlug}.json`;
   await repeatLoggedPerformanceAction(page, testInfo, target, {

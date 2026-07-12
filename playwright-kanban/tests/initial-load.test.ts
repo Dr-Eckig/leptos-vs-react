@@ -35,7 +35,7 @@ async function measureInitialLoadRepeatedly(
   page: Page,
   testInfo: TestInfo,
   target: PerformanceTarget,
-) {
+): Promise<void> {
   await installInitialLoadObservers(page);
 
   const firstContentfulPaintEntries: PerformanceResultEntry[] = [];
@@ -97,7 +97,7 @@ async function measureInitialLoadRepeatedly(
   }
 }
 
-async function installInitialLoadObservers(page: Page) {
+async function installInitialLoadObservers(page: Page): Promise<void> {
   await page.addInitScript(() => {
     const metricWindow = window as Window & {
       __kanbanInitialLoadMetrics?: InitialLoadMetrics;
@@ -114,7 +114,7 @@ async function installInitialLoadObservers(page: Page) {
       lastLargestContentfulPaintAt: null,
     };
 
-    const updateFirstContentfulPaint = (entries: PerformanceEntry[]) => {
+    const updateFirstContentfulPaint = (entries: PerformanceEntry[]): void => {
       const fcpEntry = entries.find(
         (entry) => entry.name === 'first-contentful-paint',
       );
@@ -195,7 +195,7 @@ async function measureInitialLoad(
   });
 }
 
-async function waitForInitialLoadMetrics(page: Page) {
+async function waitForInitialLoadMetrics(page: Page): Promise<void> {
   await page.waitForFunction(
     () => {
       const metricWindow = window as Window & {
@@ -234,7 +234,7 @@ async function waitForInitialLoadMetrics(page: Page) {
   );
 }
 
-function urlForRun(url: string, run: number) {
+function urlForRun(url: string, run: number): string {
   const targetUrl = new URL(url);
   targetUrl.searchParams.set('performanceRun', String(run));
   return targetUrl.toString();
@@ -245,7 +245,7 @@ function requireMetric(
   metricName: string,
   target: PerformanceTarget,
   run: number,
-) {
+): number {
   if (value === null) {
     throw new Error(
       `${metricName} was not reported for ${target.framework} on run ${run}.`,

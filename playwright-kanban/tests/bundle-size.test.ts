@@ -23,7 +23,7 @@ async function measureBundleSizeRepeatedly(
   browser: Browser,
   testInfo: TestInfo,
   target: PerformanceTarget,
-) {
+): Promise<void> {
   const entries: Omit<BundleSizeResultEntry, 'browser'>[] = [];
 
   for (let run = 1; run <= runs; run++) {
@@ -63,7 +63,7 @@ async function measureBundleSizeRepeatedly(
   expect(entries).toHaveLength(runs);
 }
 
-function isBundleAsset(response: Response, targetOrigin: string) {
+function isBundleAsset(response: Response, targetOrigin: string): boolean {
   const url = new URL(response.url());
 
   if (url.origin !== targetOrigin || !response.ok()) {
@@ -83,7 +83,9 @@ function isBundleAsset(response: Response, targetOrigin: string) {
   );
 }
 
-async function sumResponseBodySizes(responses: Iterable<Response>) {
+async function sumResponseBodySizes(
+  responses: Iterable<Response>,
+): Promise<number> {
   const bodies = await Promise.all(
     Array.from(responses, (response) => response.body()),
   );

@@ -23,7 +23,7 @@ async function switchToBoardRepeatedly(
   testInfo: TestInfo,
   target: PerformanceTarget,
   scenario: BoardSwitchScenario,
-) {
+): Promise<void> {
   const action = 'board-switch';
   const resultFileName = `board-switch-to-${scenario.resultSlug}.json`;
   await repeatLoggedPerformanceAction(page, testInfo, target, {

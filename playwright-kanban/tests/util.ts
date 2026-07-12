@@ -72,6 +72,14 @@ type RepeatPerformanceActionOptions = CollectPerformanceOptions & {
   run: (run: number) => Promise<void>;
 };
 
+type PerformanceLogCollector = {
+  entries: CollectedPerformanceLogEntry[];
+  waitForNextEntry: (
+    previousEntryCount: number,
+    run: number,
+  ) => Promise<void>;
+};
+
 type CollectDomMutationActionOptions = CollectPerformanceOptions & {
   scenario: string;
   run: () => Promise<void>;
@@ -166,7 +174,7 @@ export function collectPerformanceLogEntries(
   page: Page,
   target: PerformanceTarget,
   options: CollectPerformanceOptions,
-) {
+): PerformanceLogCollector {
   const entries: CollectedPerformanceLogEntry[] = [];
 
   page.on('console', (message) => {
@@ -205,7 +213,7 @@ export async function repeatLoggedPerformanceAction(
   testInfo: TestInfo,
   target: PerformanceTarget,
   options: RepeatPerformanceActionOptions,
-) {
+): Promise<void> {
   const performanceLog = collectPerformanceLogEntries(page, target, options);
 
   for (let run = 1; run <= runs; run++) {
@@ -297,7 +305,7 @@ export async function writeDomMutationResults(
   _testInfo: TestInfo,
   target: PerformanceTarget,
   entries: DomMutationResultEntry[],
-) {
+): Promise<void> {
   const targetResultsDir = path.join(domMutationResultsDir, target.id);
 
   await mkdir(targetResultsDir, { recursive: true });
@@ -311,7 +319,7 @@ export async function writeBundleSizeResults(
   testInfo: TestInfo,
   target: PerformanceTarget,
   entries: Omit<BundleSizeResultEntry, 'browser'>[],
-) {
+): Promise<void> {
   const browser = browserNameFromTestInfo(testInfo);
   const targetResultsDir = path.join(bundleSizeResultsDir, target.id, browser);
   const serializedEntries = entries.map((entry) => ({ ...entry, browser }));
@@ -329,7 +337,7 @@ export async function writePerformanceResults(
   resultGroup: string,
   resultFileName: string,
   entries: CollectedPerformanceLogEntry[],
-) {
+): Promise<void> {
   const browser = browserNameFromTestInfo(testInfo);
   const targetResultsDir = path.join(
     resultsDir,
@@ -375,7 +383,7 @@ export async function openBoard(
   page: Page,
   target: PerformanceTarget,
   scenario: Pick<BoardScenario, 'boardTestId'>,
-) {
+): Promise<void> {
   await page.goto(target.url);
   await page.getByTestId(scenario.boardTestId).click();
 }
@@ -384,7 +392,7 @@ export async function addTaskToColumn(
   page: Page,
   columnType: ColumnType,
   taskTitle: string,
-) {
+): Promise<void> {
   await page.getByTestId(`add-task-button-${columnType}`).click();
   await page.getByTestId('task-title-input').fill(taskTitle);
   await page.getByTestId(`save-button-${columnType}`).click();
@@ -395,7 +403,7 @@ export async function editTaskTitle(
   columnType: ColumnType,
   taskIndex: number,
   taskTitle: string,
-) {
+): Promise<void> {
   const dropdownTestId = taskDropdownTestId(columnType, taskIndex);
 
   await page.getByTestId(dropdownTestId).click();
@@ -408,7 +416,7 @@ export async function deleteTask(
   page: Page,
   columnType: ColumnType,
   taskIndex: number,
-) {
+): Promise<void> {
   const dropdownTestId = taskDropdownTestId(columnType, taskIndex);
 
   await page.getByTestId(dropdownTestId).click();
@@ -420,7 +428,7 @@ export async function moveTaskToColumnEnd(
   fromColumnType: ColumnType,
   fromTaskIndex: number,
   toColumnType: ColumnType,
-) {
+): Promise<void> {
   await taskDraggable(page, fromColumnType, fromTaskIndex).dragTo(
     columnDropZone(page, toColumnType),
   );
@@ -432,25 +440,34 @@ export async function moveTaskBeforeTask(
   fromTaskIndex: number,
   toColumnType: ColumnType,
   beforeTaskIndex: number,
-) {
+): Promise<void> {
   await taskDraggable(page, fromColumnType, fromTaskIndex).dragTo(
     taskDropTarget(page, toColumnType, beforeTaskIndex),
   );
 }
 
-export function taskDropdownTestId(columnType: ColumnType, taskIndex: number) {
+export function taskDropdownTestId(
+  columnType: ColumnType,
+  taskIndex: number,
+): string {
   return `${columnType}-task-dropdown-${taskIndex}`;
 }
 
-function taskDraggableTestId(columnType: ColumnType, taskIndex: number) {
+function taskDraggableTestId(
+  columnType: ColumnType,
+  taskIndex: number,
+): string {
   return `${columnType}-task-draggable-${taskIndex}`;
 }
 
-function taskDropTargetTestId(columnType: ColumnType, taskIndex: number) {
+function taskDropTargetTestId(
+  columnType: ColumnType,
+  taskIndex: number,
+): string {
   return `${columnType}-task-drop-target-${taskIndex}`;
 }
 
-function columnDropZoneTestId(columnType: ColumnType) {
+function columnDropZoneTestId(columnType: ColumnType): string {
   return `${columnType}-column-drop-zone`;
 }
 
@@ -564,11 +581,11 @@ function serializePerformanceLogEntry(
   return serializedEntry;
 }
 
-function browserNameFromTestInfo(testInfo: TestInfo) {
+function browserNameFromTestInfo(testInfo: TestInfo): string {
   return testInfo.project.name || testInfo.project.use.browserName || 'unknown';
 }
 
-function getRequestedPerformanceTargets() {
+function getRequestedPerformanceTargets(): PerformanceTarget[] {
   const requestedTargets = new Set(
     (process.env.PERFORMANCE_TARGETS ?? 'react,leptos')
       .split(',')
@@ -588,10 +605,10 @@ function getRequestedPerformanceTargets() {
   return selectedTargets.length > 0 ? selectedTargets : allPerformanceTargets;
 }
 
-function roundToTwoDecimals(value: number) {
+function roundToTwoDecimals(value: number): number {
   return Math.round(value * 100) / 100;
 }
 
-function isWarmUpRun(run: number) {
+function isWarmUpRun(run: number): boolean {
   return run <= warmUpRuns;
 }

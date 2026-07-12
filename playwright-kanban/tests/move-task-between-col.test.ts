@@ -33,7 +33,7 @@ async function moveOneTaskBetweenColumnsRepeatedly(
   testInfo: TestInfo,
   target: PerformanceTarget,
   scenario: BoardScenario,
-) {
+): Promise<void> {
   const action = 'task-move-between-columns';
   const resultFileName = `move-task-between-cols-on-${scenario.resultSlug}.json`;
   await repeatLoggedPerformanceAction(page, testInfo, target, {

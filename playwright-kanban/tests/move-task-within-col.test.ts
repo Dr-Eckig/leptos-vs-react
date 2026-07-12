@@ -28,7 +28,7 @@ async function moveOneTaskWithinColumnRepeatedly(
   testInfo: TestInfo,
   target: PerformanceTarget,
   scenario: BoardScenario,
-) {
+): Promise<void> {
   const action = 'task-move-within-column';
   const resultFileName = `move-task-within-col-on-${scenario.resultSlug}.json`;
   await repeatLoggedPerformanceAction(page, testInfo, target, {

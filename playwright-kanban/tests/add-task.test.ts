@@ -28,7 +28,7 @@ async function addOneTaskToBoardRepeatedly(
   testInfo: TestInfo,
   target: PerformanceTarget,
   scenario: BoardScenario,
-) {
+): Promise<void> {
   const action = 'task-create';
   const resultFileName = `add-task-to-${scenario.resultSlug}.json`;
   await repeatLoggedPerformanceAction(page, testInfo, target, {

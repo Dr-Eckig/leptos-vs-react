@@ -43,7 +43,7 @@ async function collectDomMutationsOncePerScenario(
   page: Page,
   testInfo: TestInfo,
   target: PerformanceTarget,
-) {
+): Promise<void> {
   const entries: DomMutationResultEntry[] = [];
 
   for (const scenario of domMutationScenarios()) {

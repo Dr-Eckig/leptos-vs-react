@@ -28,7 +28,7 @@ async function editOneTaskOnBoardRepeatedly(
   testInfo: TestInfo,
   target: PerformanceTarget,
   scenario: BoardScenario,
-) {
+): Promise<void> {
   const action = 'task-edit';
   const resultFileName = `edit-task-on-${scenario.resultSlug}.json`;
   await repeatLoggedPerformanceAction(page, testInfo, target, {
