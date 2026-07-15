@@ -17,7 +17,7 @@ from plots import (
     configure_plot_theme,
     create_browser_boxplot,
     create_bundle_size_barplot,
-    create_dom_mutation_scenario_barplots,
+    create_dom_mutation_barplot,
     create_initial_load_boxplot,
 )
 from tables import create_dom_mutation_summary_table, create_performance_summary_table
@@ -54,7 +54,10 @@ def main() -> None:
         output_paths.append(bundle_size_plot)
 
     dom_mutation_measurements = load_dom_mutation_measurements(DOM_MUTATION_DATA_DIR)
-    output_paths.extend(create_dom_mutation_scenario_barplots(dom_mutation_measurements))
+    dom_mutation_plot = create_dom_mutation_barplot(dom_mutation_measurements)
+
+    if dom_mutation_plot is not None:
+        output_paths.append(dom_mutation_plot)
 
     table_paths = create_performance_summary_table(measurements, PLOTS_DIR)
     table_paths.extend(

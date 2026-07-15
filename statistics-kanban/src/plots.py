@@ -179,58 +179,64 @@ def create_bundle_size_barplot(measurements: pd.DataFrame) -> Path | None:
     return output_path
 
 
-def create_dom_mutation_scenario_barplots(measurements: pd.DataFrame) -> list[Path]:
+def create_dom_mutation_barplot(measurements: pd.DataFrame) -> Path | None:
     if measurements.empty:
-        return []
+        return None
 
-    scenario_labels = ordered_values(
-        measurements["scenario"],
-        scenario_order(),
+    measurements = measurements.copy()
+    board_independent_actions = {
+        "task-create",
+        "task-edit",
+        "task-move-within-column",
+        "board-switch",
+    }
+    measurements["scenario_display"] = measurements.apply(
+        lambda row: str(row["scenario"]).split(" | ", maxsplit=1)[0]
+        if row["action"] in board_independent_actions
+        else str(row["scenario"]),
+        axis=1,
     )
-    output_dir = PLOTS_DIR / "dom-mutations"
-    output_dir.mkdir(exist_ok=True)
-    output_paths = []
+    scenario_labels = list(dict.fromkeys(measurements["scenario_display"]))
 
-    for scenario in scenario_labels:
-        scenario_measurements = measurements[
-            measurements["scenario"] == scenario
-        ].copy()
+    height = max(7, len(scenario_labels) * 0.48)
+    grid = sns.catplot(
+        data=measurements,
+        kind="bar",
+        x="mutationRecords",
+        y="scenario_display",
+        hue="framework",
+        order=scenario_labels,
+        hue_order=FRAMEWORK_ORDER,
+        palette=FRAMEWORK_PALETTE,
+        errorbar=None,
+        height=height,
+        aspect=13 / height,
+    )
+    ax = grid.ax
 
-        if scenario_measurements.empty:
-            continue
+    annotate_bars(ax)
+    ax.set_title("DOM-Mutationen nach Szenario", pad=12)
+    ax.set_xlabel("Mutation Records")
+    ax.set_ylabel("Szenario")
+    ax.set_xlim(0, max(1, measurements["mutationRecords"].max()) * 1.18)
+    ax.grid(axis="x", linestyle="--", linewidth=0.5, alpha=0.55)
+    ax.grid(axis="y", visible=False)
+    sns.move_legend(
+        grid,
+        "center left",
+        title="Framework",
+        bbox_to_anchor=(1.01, 0.5),
+        frameon=True,
+    )
 
-        grid = sns.catplot(
-            data=scenario_measurements,
-            kind="bar",
-            x="framework",
-            y="mutationRecords",
-            order=FRAMEWORK_ORDER,
-            palette=FRAMEWORK_PALETTE,
-            hue="framework",
-            hue_order=FRAMEWORK_ORDER,
-            legend=False,
-            errorbar=None,
-            height=4.4,
-            aspect=6.8 / 4.4,
-        )
-        ax = grid.ax
+    sns.despine(left=True, bottom=False)
+    grid.figure.tight_layout()
 
-        annotate_bars(ax)
-        ax.set_title(f"DOM-Mutationen - {scenario}", pad=12)
-        ax.set_xlabel("Framework")
-        ax.set_ylabel("Mutation Records")
-        ax.set_ylim(0, max(1, scenario_measurements["mutationRecords"].max()) * 1.18)
-        ax.grid(axis="y", linestyle="--", linewidth=0.5, alpha=0.55)
-        ax.grid(axis="x", visible=False)
-        sns.despine(left=False, bottom=False)
-        grid.figure.tight_layout()
+    output_path = PLOTS_DIR / "dom-mutations.png"
+    grid.figure.savefig(output_path, dpi=300, bbox_inches="tight")
+    close_grid(grid)
 
-        output_path = output_dir / f"{slugify(scenario)}.png"
-        grid.figure.savefig(output_path, dpi=300, bbox_inches="tight")
-        close_grid(grid)
-        output_paths.append(output_path)
-
-    return output_paths
+    return output_path
 
 
 def close_grid(grid) -> None:
@@ -244,29 +250,6 @@ def annotate_bars(ax, decimal_places: int = 0) -> None:
 
     for container in ax.containers:
         ax.bar_label(container, fmt=value_format, padding=3, fontsize=9)
-
-
-def slugify(value: str) -> str:
-    replacements = {
-        "ä": "ae",
-        "ö": "oe",
-        "ü": "ue",
-        "Ä": "ae",
-        "Ö": "oe",
-        "Ü": "ue",
-        "ß": "ss",
-    }
-    normalized = value
-
-    for source, target in replacements.items():
-        normalized = normalized.replace(source, target)
-
-    slug = "".join(
-        character.lower() if character.isalnum() else "-"
-        for character in normalized
-    )
-
-    return "-".join(part for part in slug.split("-") if part)
 
 
 def configure_millisecond_axis(ax) -> None:
