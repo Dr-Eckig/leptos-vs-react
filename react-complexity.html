@@ -1,0 +1,4427 @@
+<!DOCTYPE HTML PUBLIC
+"-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Code complexity report</title>
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <!-- DataTables JS -->
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <style>
+    h2
+    {
+          text-align: center;
+    }
+        td.footer
+        {
+          text-align: center;
+          padding-top: 3px;
+          font-family: sans-serif;
+        }
+    td.greater-value
+        {
+          padding-top: 2px;
+          text-align: center;
+          padding-left: 10px;
+          padding-right: 10px;
+          font-family: sans-serif;
+          white-space: nowrap;
+      background-color: LightPink;
+        }
+    td.lesser-value
+        {
+          padding-top: 2px;
+          text-align: center;
+          padding-left: 10px;
+          padding-right: 10px;
+          font-family: sans-serif;
+          white-space: nowrap;
+      background-color: LightGreen;
+        }
+    td.value
+        {
+          padding-top: 2px;
+          text-align: center;
+          padding-left: 10px;
+          padding-right: 10px;
+          font-family: sans-serif;
+          white-space: nowrap;
+        }
+    td.file-header
+        {
+          background-color: LightBlue;
+          font-weight: bold;
+        }
+    td.function-name
+        {
+          background-color: LightSteelBlue;
+        }
+    /* DataTables wrapper styling */
+    .dataTables_wrapper {
+          margin: 0 auto;
+          width: 95%;
+        }
+    /* Fallback styling if DataTables CSS doesn't load */
+    table#complexityTable {
+          border-collapse: collapse;
+          width: 95%;
+          margin: 0 auto;
+        }
+    table#complexityTable th {
+          background-color: #4CAF50;
+          color: white;
+          padding: 10px;
+          text-align: left;
+          border: 1px solid #ddd;
+        }
+    table#complexityTable td {
+          border: 1px solid #ddd;
+        }
+    table#complexityTable tr:nth-child(even) {
+          background-color: #f2f2f2;
+        }
+    table#complexityTable tr:hover {
+          background-color: #ddd;
+        }
+  </style>
+ </head>
+ <body>
+<h2>Code Complexity Report</h2>
+
+<center>
+
+<table id="complexityTable" class="display" style="width:100%">
+  <thead>
+    <tr>
+      <th>File</th>
+      <th>Function name</th>
+      <th>Cyclomatic complexity (15)</th>
+      <th>LOC (1000000)</th>
+      <th>
+        
+           Token count
+        
+      </th>
+      <th>Parameter count (100)</th>
+    </tr>
+  </thead>
+  <tbody>
+
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/types/state/board.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">1</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/board.ts</td>
+    <td class="function-name">addTaskToBoardColumn</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">15</td>
+    
+
+    
+       <td class="value">64</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/board.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">8</td>
+    
+
+    
+       <td class="value">26</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/board.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">5</td>
+    
+
+    
+       <td class="value">35</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/board.ts</td>
+    <td class="function-name">updateBoardTask</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">6</td>
+    
+
+    
+       <td class="value">51</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/board.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">6</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/board.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">8</td>
+    
+
+    
+       <td class="value">46</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/board.ts</td>
+    <td class="function-name">deleteBoardTask</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">6</td>
+    
+
+    
+       <td class="value">47</td>
+    
+
+    
+       <td class="lesser-value">2</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/board.ts</td>
+    <td class="function-name">canMoveBoardTask</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">9</td>
+    
+
+    
+       <td class="value">39</td>
+    
+
+    
+       <td class="lesser-value">5</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/board.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">6</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/board.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">6</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/board.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">7</td>
+    
+
+    
+       <td class="lesser-value">22</td>
+    
+
+    
+       <td class="value">132</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/board.ts</td>
+    <td class="function-name">moveBoardTask</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">20</td>
+    
+
+    
+       <td class="value">85</td>
+    
+
+    
+       <td class="lesser-value">5</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/board.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">1</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/board.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">6</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/board.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="value">7</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/board.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">6</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/board.ts</td>
+    <td class="function-name">getMoveTaskContext</td>
+    
+       <td class="lesser-value">6</td>
+    
+
+    
+       <td class="lesser-value">30</td>
+    
+
+    
+       <td class="value">144</td>
+    
+
+    
+       <td class="lesser-value">5</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/types/state/column.ts</td>
+    <td class="function-name">canColumnAcceptTaskFrom</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">10</td>
+    
+
+    
+       <td class="value">35</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/column.ts</td>
+    <td class="function-name">isColumnWipLimitReached</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="value">26</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/types/state/all_boards.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">8</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/all_boards.ts</td>
+    <td class="function-name">getCurrentBoard</td>
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="lesser-value">7</td>
+    
+
+    
+       <td class="value">30</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/all_boards.ts</td>
+    <td class="function-name">setCurrentBoard</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">10</td>
+    
+
+    
+       <td class="value">26</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/all_boards.ts</td>
+    <td class="function-name">addBoardToAllBoards</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">10</td>
+    
+
+    
+       <td class="value">36</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/all_boards.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">1</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/all_boards.ts</td>
+    <td class="function-name">updateAllBoardsBoardTitle</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">13</td>
+    
+
+    
+       <td class="value">55</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/all_boards.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">1</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/all_boards.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">6</td>
+    
+
+    
+       <td class="value">37</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/all_boards.ts</td>
+    <td class="function-name">updateCurrentBoardColumnWipLimit</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">8</td>
+    
+
+    
+       <td class="value">32</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/all_boards.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">1</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/all_boards.ts</td>
+    <td class="function-name">addTaskToCurrentBoard</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">10</td>
+    
+
+    
+       <td class="value">39</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/all_boards.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">1</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/all_boards.ts</td>
+    <td class="function-name">updateTaskOnCurrentBoard</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">10</td>
+    
+
+    
+       <td class="value">39</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/all_boards.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">1</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/all_boards.ts</td>
+    <td class="function-name">deleteTaskFromCurrentBoard</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">9</td>
+    
+
+    
+       <td class="value">33</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/all_boards.ts</td>
+    <td class="function-name">canMoveTaskInCurrentBoard</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">12</td>
+    
+
+    
+       <td class="value">49</td>
+    
+
+    
+       <td class="lesser-value">5</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/all_boards.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">1</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/all_boards.ts</td>
+    <td class="function-name">moveTaskInCurrentBoard</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">11</td>
+    
+
+    
+       <td class="value">47</td>
+    
+
+    
+       <td class="lesser-value">5</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/all_boards.ts</td>
+    <td class="function-name">updateCurrentBoard</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="value">16</td>
+    
+
+    
+       <td class="lesser-value">2</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/state/all_boards.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="lesser-value">8</td>
+    
+
+    
+       <td class="value">35</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/types/serialize/task.ts</td>
+    <td class="function-name">createTask</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">14</td>
+    
+
+    
+       <td class="value">46</td>
+    
+
+    
+       <td class="lesser-value">5</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/types/serialize/index.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">6</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/serialize/index.ts</td>
+    <td class="function-name">deserializeAllBoards</td>
+    
+       <td class="lesser-value">6</td>
+    
+
+    
+       <td class="lesser-value">13</td>
+    
+
+    
+       <td class="value">68</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/serialize/index.ts</td>
+    <td class="function-name">deserializeBoard</td>
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="lesser-value">10</td>
+    
+
+    
+       <td class="value">50</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/serialize/index.ts</td>
+    <td class="function-name">deserializeColumn</td>
+    
+       <td class="lesser-value">7</td>
+    
+
+    
+       <td class="lesser-value">9</td>
+    
+
+    
+       <td class="value">53</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/serialize/index.ts</td>
+    <td class="function-name">deserializeTask</td>
+    
+       <td class="lesser-value">5</td>
+    
+
+    
+       <td class="lesser-value">10</td>
+    
+
+    
+       <td class="value">55</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/serialize/index.ts</td>
+    <td class="function-name">deserializeDueDate</td>
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="lesser-value">12</td>
+    
+
+    
+       <td class="value">64</td>
+    
+
+    
+       <td class="lesser-value">2</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/types/serialize/board.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">7</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/serialize/board.ts</td>
+    <td class="function-name">createBoard</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">8</td>
+    
+
+    
+       <td class="value">34</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/serialize/board.ts</td>
+    <td class="function-name">createDefaultBoard</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">8</td>
+    
+
+    
+       <td class="value">27</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/types/serialize/column.ts</td>
+    <td class="function-name">createColumn</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">12</td>
+    
+
+    
+       <td class="value">36</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/serialize/column.ts</td>
+    <td class="function-name">createDefaultColumns</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">7</td>
+    
+
+    
+       <td class="value">39</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/types/validation/task.ts</td>
+    <td class="function-name">parseDateFromString</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">6</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/validation/task.ts</td>
+    <td class="function-name">validateTask</td>
+    
+       <td class="lesser-value">8</td>
+    
+
+    
+       <td class="lesser-value">28</td>
+    
+
+    
+       <td class="value">185</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/types/validation/board.ts</td>
+    <td class="function-name">validateBoard</td>
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="lesser-value">15</td>
+    
+
+    
+       <td class="value">93</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/types/validation/column.ts</td>
+    <td class="function-name">validateColumn</td>
+    
+       <td class="lesser-value">6</td>
+    
+
+    
+       <td class="lesser-value">26</td>
+    
+
+    
+       <td class="value">143</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/types/modals.ts</td>
+    <td class="function-name">openTaskModal</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">7</td>
+    
+
+    
+       <td class="value">22</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/modals.ts</td>
+    <td class="function-name">openTaskModalWithTask</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">10</td>
+    
+
+    
+       <td class="value">23</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/modals.ts</td>
+    <td class="function-name">openColumnModalWithColumn</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="value">15</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/modals.ts</td>
+    <td class="function-name">openBoardModal</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="value">14</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/modals.ts</td>
+    <td class="function-name">openBoardModalWithBoard</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="value">14</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/types/drag_and_drop.ts</td>
+    <td class="function-name">createDraggableItemDto</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">10</td>
+    
+
+    
+       <td class="value">23</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/drag_and_drop.ts</td>
+    <td class="function-name">draggableItemFromPayload</td>
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="lesser-value">17</td>
+    
+
+    
+       <td class="value">70</td>
+    
+
+    
+       <td class="lesser-value">2</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/drag_and_drop.ts</td>
+    <td class="function-name">draggableItemToPayload</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">7</td>
+    
+
+    
+       <td class="value">28</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/types/date.ts</td>
+    <td class="function-name">parseDateFromString</td>
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="lesser-value">11</td>
+    
+
+    
+       <td class="value">54</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/date.ts</td>
+    <td class="function-name">formatDateToString</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="value">19</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/date.ts</td>
+    <td class="function-name">formatDateToDisplay</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">8</td>
+    
+
+    
+       <td class="value">49</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/types/date.ts</td>
+    <td class="function-name">formatDatePart</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="value">22</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/types/utility.ts</td>
+    <td class="function-name">createId</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">11</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+
+  
+
+  
+
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/hooks/useClickOutside.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">2</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/hooks/useClickOutside.ts</td>
+    <td class="function-name">handleClickOutside</td>
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="lesser-value">8</td>
+    
+
+    
+       <td class="value">33</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/hooks/useClickOutside.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">9</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/hooks/useClickOutside.ts</td>
+    <td class="function-name">useEffect</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">5</td>
+    
+
+    
+       <td class="value">23</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/hooks/appContext.ts</td>
+    <td class="function-name">useBoardsState</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="value">18</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/hooks/appContext.ts</td>
+    <td class="function-name">useBoardsActions</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="value">18</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/hooks/appContext.ts</td>
+    <td class="function-name">useModalsState</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="value">18</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/hooks/appContext.ts</td>
+    <td class="function-name">useModalsActions</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="value">18</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/hooks/appContext.ts</td>
+    <td class="function-name">useDragAndDropState</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">7</td>
+    
+
+    
+       <td class="value">19</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/hooks/appContext.ts</td>
+    <td class="function-name">useDragAndDropActions</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">7</td>
+    
+
+    
+       <td class="value">19</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/hooks/appContext.ts</td>
+    <td class="function-name">useAppContext</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">17</td>
+    
+
+    
+       <td class="value">44</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/hooks/AppContextProvider.tsx</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">7</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/hooks/AppContextProvider.tsx</td>
+    <td class="function-name">setCurrentBoard</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="value">16</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/hooks/AppContextProvider.tsx</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">7</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/hooks/AppContextProvider.tsx</td>
+    <td class="function-name">addBoard</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="value">16</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/hooks/AppContextProvider.tsx</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">1</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/hooks/AppContextProvider.tsx</td>
+    <td class="function-name">updateBoardTitle</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">5</td>
+    
+
+    
+       <td class="value">29</td>
+    
+
+    
+       <td class="lesser-value">2</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/hooks/AppContextProvider.tsx</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">1</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/hooks/AppContextProvider.tsx</td>
+    <td class="function-name">updateColumnWipLimit</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">5</td>
+    
+
+    
+       <td class="value">31</td>
+    
+
+    
+       <td class="lesser-value">2</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/hooks/AppContextProvider.tsx</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">1</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/hooks/AppContextProvider.tsx</td>
+    <td class="function-name">addTaskToCurrentBoard</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">5</td>
+    
+
+    
+       <td class="value">29</td>
+    
+
+    
+       <td class="lesser-value">2</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/hooks/AppContextProvider.tsx</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">1</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/hooks/AppContextProvider.tsx</td>
+    <td class="function-name">updateTaskOnCurrentBoard</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">5</td>
+    
+
+    
+       <td class="value">29</td>
+    
+
+    
+       <td class="lesser-value">2</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/hooks/AppContextProvider.tsx</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">1</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/hooks/AppContextProvider.tsx</td>
+    <td class="function-name">deleteTaskFromCurrentBoard</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">5</td>
+    
+
+    
+       <td class="value">23</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/hooks/AppContextProvider.tsx</td>
+    <td class="function-name">moveTaskInCurrentBoard</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">17</td>
+    
+
+    
+       <td class="value">53</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/hooks/AppContextProvider.tsx</td>
+    <td class="function-name">AppContextProvider</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">65</td>
+    
+
+    
+       <td class="value">319</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/components/drag_and_drop/DropZone.tsx</td>
+    <td class="function-name">readDraggedItem</td>
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="lesser-value">6</td>
+    
+
+    
+       <td class="value">40</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/drag_and_drop/DropZone.tsx</td>
+    <td class="function-name">handleDragEnter</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">6</td>
+    
+
+    
+       <td class="value">32</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/drag_and_drop/DropZone.tsx</td>
+    <td class="function-name">handleDragOver</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">5</td>
+    
+
+    
+       <td class="value">33</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/drag_and_drop/DropZone.tsx</td>
+    <td class="function-name">handleDragLeave</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">9</td>
+    
+
+    
+       <td class="value">48</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/drag_and_drop/DropZone.tsx</td>
+    <td class="function-name">handleDrop</td>
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="lesser-value">10</td>
+    
+
+    
+       <td class="value">53</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/drag_and_drop/DropZone.tsx</td>
+    <td class="function-name">DropZone</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">30</td>
+    
+
+    
+       <td class="value">119</td>
+    
+
+    
+       <td class="lesser-value">6</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/components/drag_and_drop/DraggableItem.tsx</td>
+    <td class="function-name">handleDragStart</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">10</td>
+    
+
+    
+       <td class="value">63</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/drag_and_drop/DraggableItem.tsx</td>
+    <td class="function-name">handleDragEnd</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="value">15</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/drag_and_drop/DraggableItem.tsx</td>
+    <td class="function-name">DraggableItem</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">22</td>
+    
+
+    
+       <td class="value">88</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+  </tr>
+  
+
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/TaskModal.tsx</td>
+    <td class="function-name">TaskModal</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="value">22</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/TaskModal.tsx</td>
+    <td class="function-name">closeModal</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">10</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/TaskModal.tsx</td>
+    <td class="function-name">saveTask</td>
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="lesser-value">16</td>
+    
+
+    
+       <td class="value">74</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/TaskModal.tsx</td>
+    <td class="function-name">TaskModalContent</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">8</td>
+    
+
+    
+       <td class="value">51</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/TaskModal.tsx</td>
+    <td class="function-name">userTask</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">15</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/TaskModal.tsx</td>
+    <td class="function-name">clearErrors</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">5</td>
+    
+
+    
+       <td class="value">20</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/TaskModal.tsx</td>
+    <td class="function-name">setValidationError</td>
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="lesser-value">11</td>
+    
+
+    
+       <td class="value">57</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/TaskModal.tsx</td>
+    <td class="function-name">useTaskForm</td>
+    
+       <td class="lesser-value">12</td>
+    
+
+    
+       <td class="lesser-value">30</td>
+    
+
+    
+       <td class="value">173</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/TaskModal.tsx</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">9</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/TaskModal.tsx</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">7</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/TaskModal.tsx</td>
+    <td class="function-name">TaskFormFields</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">42</td>
+    
+
+    
+       <td class="value">82</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/TaskModal.tsx</td>
+    <td class="function-name">saveValidatedTask</td>
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="lesser-value">26</td>
+    
+
+    
+       <td class="value">103</td>
+    
+
+    
+       <td class="lesser-value">6</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/TaskModal.tsx</td>
+    <td class="function-name">updateTask</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">10</td>
+    
+
+    
+       <td class="value">33</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/TaskModal.tsx</td>
+    <td class="function-name">startTaskMeasurement</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">9</td>
+    
+
+    
+       <td class="value">29</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/BoardModal.tsx</td>
+    <td class="function-name">BoardModal</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="value">22</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/BoardModal.tsx</td>
+    <td class="function-name">closeModal</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">10</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/BoardModal.tsx</td>
+    <td class="function-name">saveBoard</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">10</td>
+    
+
+    
+       <td class="value">58</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/BoardModal.tsx</td>
+    <td class="function-name">BoardModalContent</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">19</td>
+    
+
+    
+       <td class="value">73</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/BoardModal.tsx</td>
+    <td class="function-name">userBoard</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">9</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/BoardModal.tsx</td>
+    <td class="function-name">clearError</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">8</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/BoardModal.tsx</td>
+    <td class="function-name">setValidationError</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">7</td>
+    
+
+    
+       <td class="value">20</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/BoardModal.tsx</td>
+    <td class="function-name">useBoardForm</td>
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="lesser-value">15</td>
+    
+
+    
+       <td class="value">68</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/BoardModal.tsx</td>
+    <td class="function-name">BoardFormFields</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">10</td>
+    
+
+    
+       <td class="value">30</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/BoardModal.tsx</td>
+    <td class="function-name">saveValidatedBoard</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">11</td>
+    
+
+    
+       <td class="value">43</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/BoardModal.tsx</td>
+    <td class="function-name">updateBoard</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">7</td>
+    
+
+    
+       <td class="value">29</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+  </tr>
+  
+
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/ColumnModal.tsx</td>
+    <td class="function-name">ColumnModal</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="value">22</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/ColumnModal.tsx</td>
+    <td class="function-name">closeModal</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">10</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/ColumnModal.tsx</td>
+    <td class="function-name">saveColumn</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">10</td>
+    
+
+    
+       <td class="value">58</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/ColumnModal.tsx</td>
+    <td class="function-name">ColumnModalContent</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">18</td>
+    
+
+    
+       <td class="value">64</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/ColumnModal.tsx</td>
+    <td class="function-name">userColumn</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="value">19</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/ColumnModal.tsx</td>
+    <td class="function-name">clearError</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">8</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/ColumnModal.tsx</td>
+    <td class="function-name">setValidationError</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="value">10</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/ColumnModal.tsx</td>
+    <td class="function-name">useColumnForm</td>
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="lesser-value">15</td>
+    
+
+    
+       <td class="value">70</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/ColumnModal.tsx</td>
+    <td class="function-name">ColumnFormFields</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">12</td>
+    
+
+    
+       <td class="value">32</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/modals/ColumnModal.tsx</td>
+    <td class="function-name">updateColumn</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">7</td>
+    
+
+    
+       <td class="value">29</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+  </tr>
+  
+
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/TaskCard.tsx</td>
+    <td class="function-name">TaskCard</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">19</td>
+    
+
+    
+       <td class="value">40</td>
+    
+
+    
+       <td class="lesser-value">6</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/TaskCard.tsx</td>
+    <td class="function-name">TaskCardHeader</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">20</td>
+    
+
+    
+       <td class="value">40</td>
+    
+
+    
+       <td class="lesser-value">6</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/TaskCard.tsx</td>
+    <td class="function-name">editTask</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="value">14</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/TaskCard.tsx</td>
+    <td class="function-name">deleteTask</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">9</td>
+    
+
+    
+       <td class="value">34</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/TaskCard.tsx</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">12</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/TaskCard.tsx</td>
+    <td class="function-name">TaskActionsDropdown</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">45</td>
+    
+
+    
+       <td class="value">128</td>
+    
+
+    
+       <td class="lesser-value">5</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/TaskCard.tsx</td>
+    <td class="function-name">TaskCardContent</td>
+    
+       <td class="lesser-value">5</td>
+    
+
+    
+       <td class="lesser-value">12</td>
+    
+
+    
+       <td class="value">64</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/TaskCard.tsx</td>
+    <td class="function-name">priorityColor</td>
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="lesser-value">11</td>
+    
+
+    
+       <td class="value">44</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/TaskCard.tsx</td>
+    <td class="function-name">priorityBorderClass</td>
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="lesser-value">10</td>
+    
+
+    
+       <td class="value">39</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/Column.tsx</td>
+    <td class="function-name">moveTaskToColumnEnd</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="value">23</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/Column.tsx</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">10</td>
+    
+
+    
+       <td class="value">18</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/Column.tsx</td>
+    <td class="function-name">TaskColumn</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">24</td>
+    
+
+    
+       <td class="value">93</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/Column.tsx</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="value">12</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/Column.tsx</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="value">14</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/Column.tsx</td>
+    <td class="function-name">TaskColumnHeader</td>
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="lesser-value">36</td>
+    
+
+    
+       <td class="value">100</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/Column.tsx</td>
+    <td class="function-name">onDrop</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">9</td>
+    
+
+    
+       <td class="value">26</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/Column.tsx</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="value">16</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/Column.tsx</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="value">11</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/Column.tsx</td>
+    <td class="function-name">TaskDropTarget</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">33</td>
+    
+
+    
+       <td class="value">90</td>
+    
+
+    
+       <td class="lesser-value">6</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/Column.tsx</td>
+    <td class="function-name">moveTask</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">21</td>
+    
+
+    
+       <td class="value">72</td>
+    
+
+    
+       <td class="lesser-value">6</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/Column.tsx</td>
+    <td class="function-name">movePerformanceAction</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">8</td>
+    
+
+    
+       <td class="value">27</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/Sidebar.tsx</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="value">11</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/Sidebar.tsx</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">11</td>
+    
+
+    
+       <td class="value">43</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/Sidebar.tsx</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="value">12</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/Sidebar.tsx</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">10</td>
+    
+
+    
+       <td class="value">30</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/Sidebar.tsx</td>
+    <td class="function-name">Sidebar</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">22</td>
+    
+
+    
+       <td class="value">59</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/Sidebar.tsx</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="value">12</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/Sidebar.tsx</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">16</td>
+    
+
+    
+       <td class="value">33</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/Sidebar.tsx</td>
+    <td class="function-name">SidebarItem</td>
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="lesser-value">23</td>
+    
+
+    
+       <td class="value">60</td>
+    
+
+    
+       <td class="lesser-value">7</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/Board.tsx</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="value">10</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/kanban/Board.tsx</td>
+    <td class="function-name">Board</td>
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="lesser-value">17</td>
+    
+
+    
+       <td class="value">53</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/components/ui/IconText.tsx</td>
+    <td class="function-name">IconText</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">29</td>
+    
+
+    
+       <td class="value">96</td>
+    
+
+    
+       <td class="lesser-value">5</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/components/ui/IconButton.tsx</td>
+    <td class="function-name">IconButton</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">34</td>
+    
+
+    
+       <td class="value">130</td>
+    
+
+    
+       <td class="lesser-value">8</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/components/ui/Textarea.tsx</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">9</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/ui/Textarea.tsx</td>
+    <td class="function-name">Textarea</td>
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="lesser-value">31</td>
+    
+
+    
+       <td class="value">87</td>
+    
+
+    
+       <td class="lesser-value">7</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/components/ui/Tag.tsx</td>
+    <td class="function-name">Tag</td>
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="lesser-value">22</td>
+    
+
+    
+       <td class="value">71</td>
+    
+
+    
+       <td class="lesser-value">6</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/components/ui/Select.tsx</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">9</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/ui/Select.tsx</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">5</td>
+    
+
+    
+       <td class="value">10</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/ui/Select.tsx</td>
+    <td class="function-name">Select</td>
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="lesser-value">26</td>
+    
+
+    
+       <td class="value">69</td>
+    
+
+    
+       <td class="lesser-value">6</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/components/ui/Dropdown.tsx</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">5</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/ui/Dropdown.tsx</td>
+    <td class="function-name">Dropdown</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">23</td>
+    
+
+    
+       <td class="value">76</td>
+    
+
+    
+       <td class="lesser-value">6</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/components/ui/DownloadLogsButton.tsx</td>
+    <td class="function-name">handleClick</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">5</td>
+    
+
+    
+       <td class="value">26</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/ui/DownloadLogsButton.tsx</td>
+    <td class="function-name">DownloadLogsButton</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">13</td>
+    
+
+    
+       <td class="value">16</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/ui/DownloadLogsButton.tsx</td>
+    <td class="function-name">downloadFile</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">9</td>
+    
+
+    
+       <td class="value">67</td>
+    
+
+    
+       <td class="lesser-value">2</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/components/ui/Modal.tsx</td>
+    <td class="function-name">Modal</td>
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="lesser-value">52</td>
+    
+
+    
+       <td class="value">105</td>
+    
+
+    
+       <td class="lesser-value">8</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/components/ui/Input.tsx</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">9</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/components/ui/Input.tsx</td>
+    <td class="function-name">Input</td>
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="lesser-value">31</td>
+    
+
+    
+       <td class="value">129</td>
+    
+
+    
+       <td class="lesser-value">9</td>
+    
+  </tr>
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/components/ui/Button.tsx</td>
+    <td class="function-name">Button</td>
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="lesser-value">38</td>
+    
+
+    
+       <td class="value">146</td>
+    
+
+    
+       <td class="lesser-value">10</td>
+    
+  </tr>
+  
+
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/App.tsx</td>
+    <td class="function-name">App</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">8</td>
+    
+
+    
+       <td class="value">23</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+
+  
+
+  
+
+  
+  <tr>
+    <td>../react-kanban/src/performance.ts</td>
+    <td class="function-name">performanceContextFromBoard</td>
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="lesser-value">8</td>
+    
+
+    
+       <td class="value">32</td>
+    
+
+    
+       <td class="lesser-value">2</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/performance.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">2</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/performance.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">2</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/performance.ts</td>
+    <td class="function-name">return</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">5</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/performance.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="lesser-value">27</td>
+    
+
+    
+       <td class="value">136</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/performance.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">7</td>
+    
+
+    
+       <td class="value">22</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/performance.ts</td>
+    <td class="function-name">start</td>
+    
+       <td class="lesser-value">6</td>
+    
+
+    
+       <td class="lesser-value">31</td>
+    
+
+    
+       <td class="value">168</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/performance.ts</td>
+    <td class="function-name">afterNextPaint</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="value">8</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/performance.ts</td>
+    <td class="function-name">channel.port1.onmessage</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="value">6</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/performance.ts</td>
+    <td class="function-name">(anonymous)</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">5</td>
+    
+
+    
+       <td class="value">30</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/performance.ts</td>
+    <td class="function-name">clearPerformanceEntries</td>
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="lesser-value">19</td>
+    
+
+    
+       <td class="value">59</td>
+    
+
+    
+       <td class="lesser-value">5</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/performance.ts</td>
+    <td class="function-name">sanitizeLogSegment</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="value">19</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/performance.ts</td>
+    <td class="function-name">emptyDomMutationSummary</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">11</td>
+    
+
+    
+       <td class="value">36</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/performance.ts</td>
+    <td class="function-name">domMutationConsoleSummary</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">12</td>
+    
+
+    
+       <td class="value">63</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/performance.ts</td>
+    <td class="function-name">initPerformanceLogSession</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="value">15</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/performance.ts</td>
+    <td class="function-name">createPerformanceLogFileName</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">9</td>
+    
+
+    
+       <td class="value">57</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/performance.ts</td>
+    <td class="function-name">padDatePart</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">4</td>
+    
+
+    
+       <td class="value">28</td>
+    
+
+    
+       <td class="lesser-value">2</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/performance.ts</td>
+    <td class="function-name">appendPerformanceLog</td>
+    
+       <td class="lesser-value">1</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="value">14</td>
+    
+
+    
+       <td class="lesser-value">1</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/performance.ts</td>
+    <td class="function-name">performanceLogFileContent</td>
+    
+       <td class="lesser-value">2</td>
+    
+
+    
+       <td class="lesser-value">8</td>
+    
+
+    
+       <td class="value">28</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+  <tr>
+    <td>../react-kanban/src/performance.ts</td>
+    <td class="function-name">performanceLogFileName</td>
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="lesser-value">3</td>
+    
+
+    
+       <td class="value">14</td>
+    
+
+    
+       <td class="lesser-value">0</td>
+    
+  </tr>
+  
+
+  </tbody>
+</table>
+<center>
+
+<br>
+<table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="footer">Generated by
+    <a href="http://www.lizard.ws/">Lizard</a> on 2026-07-15 21:51
+    </td></tr>
+</table>
+
+<script>
+// Gracefully degrade if CDN is unavailable
+if (typeof jQuery !== 'undefined' && typeof jQuery.fn.dataTable !== 'undefined') {
+    $(document).ready(function() {
+        try {
+            $('#complexityTable').DataTable({
+                "pageLength": 25,
+                "order": [[2, "desc"]],  // Sort by cyclomatic complexity descending by default
+                "columnDefs": [
+                    { "type": "num", "targets": [2, 3, 4, 5] }  // Ensure numeric sorting for metric columns
+                ]
+            });
+        } catch (e) {
+            console.warn('DataTables initialization failed. Displaying static table.', e);
+        }
+    });
+} else {
+    // Fallback: Table will display as static HTML
+    console.info('DataTables not available. Displaying static HTML table.');
+}
+</script>
+
+ </body>
+</html>
+
