@@ -1,72 +1,103 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   useBoardsActions,
   useModalsActions,
   useModalsState,
+  type BoardsActions,
 } from "../../../hooks";
+import type { OpenColumnModal } from "../../../types/modals";
+import {
+  columnDisplayNames,
+  type Column,
+} from "../../../types/serialize";
 import { validateColumn } from "../../../types/validation";
 import { Input } from "../../ui/Input";
 import { Modal } from "../../ui/Modal";
-import { columnDisplayNames } from "../../../types/serialize";
 
 export function ColumnModal() {
-  const modals = useModalsState();
-  const column = modals.column?.column ?? null;
-  const isOpen = modals.column !== null;
+  const { column } = useModalsState();
 
-  const boards = useBoardsActions();
+  return column ? <ColumnModalContent data={column} /> : null;
+}
+
+type ColumnModalContentProps = {
+  data: OpenColumnModal;
+};
+
+function ColumnModalContent({ data }: ColumnModalContentProps) {
+  const boardActions = useBoardsActions();
   const modalActions = useModalsActions();
-  const [wipLimit, setWipLimit] = useState("");
-  const [limitError, setLimitError] = useState<string | undefined>();
+  const column = data.column;
+  const form = useColumnForm(column);
 
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    setWipLimit(column?.wipLimit?.toString() ?? "");
-    setLimitError(undefined);
-  }, [column, isOpen]);
-
-  const closeModal = () => {
-    modalActions.setColumn(null);
-  };
-
+  const closeModal = () => modalActions.setColumn(null);
   const saveColumn = () => {
-    if (!column) {
-      modalActions.setColumn(null);
-      return;
-    }
+    form.clearError();
 
-    const result = validateColumn({
-      columnType: column.columnType,
-      wipLimit,
-    });
-
+    const result = validateColumn(form.userColumn(column));
     if (!result.ok) {
-      setLimitError("Please enter a valid number.");
+      form.setValidationError();
       return;
     }
 
-    boards.updateColumnWipLimit(column.id, result.column.wipLimit);
-    modalActions.setColumn(null);
+    updateColumn(boardActions, column, result.column.wipLimit);
+    closeModal();
   };
 
   return (
     <Modal
-      title={`Edit Column: ${column ? columnDisplayNames[column.columnType] : ""}`}
-      isOpen={isOpen}
-      onClose={closeModal}
+      title={`Edit Column: ${columnDisplayNames[column.columnType]}`}
+      isOpen={true}
+      close={closeModal}
       onSave={saveColumn}
     >
-      <Input
-        label="WIP Limit"
-        value={wipLimit}
-        setValue={setWipLimit}
-        inputType="number"
-        min={0}
-        errorMessage={limitError}
-      />
+      <ColumnFormFields form={form} />
     </Modal>
   );
+}
+
+function useColumnForm(column: Column) {
+  const [wipLimit, setWipLimit] = useState(column.wipLimit?.toString() ?? "");
+  const [limitError, setLimitError] = useState<string>();
+
+  const userColumn = (currentColumn: Column) => ({
+    columnType: currentColumn.columnType,
+    wipLimit,
+  });
+  const clearError = () => setLimitError(undefined);
+  const setValidationError = () => {
+    setLimitError("Please enter a valid number.");
+  };
+
+  return {
+    wipLimit,
+    setWipLimit,
+    limitError,
+    userColumn,
+    clearError,
+    setValidationError,
+  };
+}
+
+type ColumnForm = ReturnType<typeof useColumnForm>;
+
+function ColumnFormFields({ form }: { form: ColumnForm }) {
+  return (
+    <Input
+      label="WIP Limit"
+      value={form.wipLimit}
+      setValue={form.setWipLimit}
+      inputType="number"
+      errorMessage={form.limitError}
+      min={0}
+    />
+  );
+}
+
+function updateColumn(
+  boardActions: BoardsActions,
+  column: Column,
+  wipLimit: number | null,
+) {
+  boardActions.updateColumnWipLimit(column.id, wipLimit);
 }

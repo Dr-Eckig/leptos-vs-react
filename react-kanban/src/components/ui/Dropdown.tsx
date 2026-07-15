@@ -1,5 +1,9 @@
-import { useEffect, useRef, type ReactNode } from "react";
-import { type Alignment, alignmentClasses } from "../../types/ui";
+import type { ReactNode } from "react";
+import { useClickOutside } from "../../hooks";
+import {
+  type Alignment,
+  alignmentClasses,
+} from "../../types/ui";
 
 type DropdownProps = {
   isVisible: boolean;
@@ -16,24 +20,7 @@ export function Dropdown({
   alignment = "left",
   children,
 }: DropdownProps) {
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsVisible(false);
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [setIsVisible]);
+  const dropdownRef = useClickOutside<HTMLDivElement>(() => setIsVisible(false));
 
   const className = [
     "dropdown",
@@ -47,7 +34,7 @@ export function Dropdown({
     <div ref={dropdownRef} className={className}>
       <div className="dropdown-trigger">{trigger}</div>
 
-      <div className="dropdown-menu" role="menu">
+      <div className="dropdown-menu" id="dropdown-menu" role="menu">
         <div className="dropdown-content">{children}</div>
       </div>
     </div>

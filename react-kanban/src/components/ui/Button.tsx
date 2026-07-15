@@ -1,4 +1,3 @@
-import type { ButtonHTMLAttributes } from "react";
 import type { FontawesomeIcon } from "./icons";
 import { iconClasses } from "./icons";
 import {
@@ -20,7 +19,7 @@ type ButtonProps = {
   ariaLabel: string;
   dataTestId?: string;
   onClick: () => void;
-} & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick">;
+};
 
 export function Button({
   text,
@@ -32,7 +31,6 @@ export function Button({
   ariaLabel,
   dataTestId,
   onClick,
-  ...buttonProps
 }: ButtonProps) {
   const buttonClassName = [
     "button",
@@ -52,7 +50,6 @@ export function Button({
 
   return (
     <button
-      {...buttonProps}
       className={buttonClassName}
       disabled={state === "disabled"}
       onClick={onClick}

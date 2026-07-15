@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   useBoardsActions,
   useBoardsState,
   useModalsActions,
   useModalsState,
+  type BoardsActions,
+  type BoardsState,
 } from "../../../hooks";
 import {
   PerformanceAction,
@@ -11,8 +13,17 @@ import {
   start as startPerformanceMeasurement,
   type FinishPerformanceMeasurement,
 } from "../../../performance";
-import { Priority } from "../../../types/serialize";
-import { validateTask } from "../../../types/validation";
+import {
+  Priority,
+  type ColumnType,
+  type Task,
+  type TaskId,
+} from "../../../types/serialize";
+import {
+  validateTask,
+  type TaskValidationError,
+} from "../../../types/validation";
+import type { OpenTaskModal } from "../../../types/modals";
 import { formatDateToString } from "../../../types/date";
 import { IconButton } from "../../ui/IconButton";
 import { Input } from "../../ui/Input";
@@ -23,139 +34,139 @@ import { Textarea } from "../../ui/Textarea";
 const priorityOptions: Priority[] = Object.values(Priority);
 
 export function TaskModal() {
-  const modals = useModalsState();
-  const data = modals.task ?? { columnType: null, task: null };
-  const isOpen = modals.task !== null;
+  const { task } = useModalsState();
 
-  const task = data.task;
-  const columnType = data.columnType;
+  return task ? <TaskModalContent data={task} /> : null;
+}
 
+type TaskModalContentProps = {
+  data: OpenTaskModal;
+};
+
+function TaskModalContent({ data }: TaskModalContentProps) {
   const boardActions = useBoardsActions();
   const { currentBoard } = useBoardsState();
   const modalActions = useModalsActions();
+  const form = useTaskForm(data.task);
+
+  const closeModal = () => modalActions.setTask(null);
+  const saveTask = () => {
+    form.clearErrors();
+
+    const result = validateTask(form.userTask());
+    if (!result.ok) {
+      form.setValidationError(result.error);
+      return;
+    }
+
+    const finishMeasurement = saveValidatedTask(
+      boardActions,
+      currentBoard,
+      data.task,
+      data.columnType,
+      result.task,
+    );
+    closeModal();
+    finishMeasurement?.();
+  };
+
+  const modalTitle = data.task ? "Edit Task" : "Add Task";
+  const saveDataTestId = `save-button-${data.columnType ?? "unknown-column"}`;
+
+  return (
+    <Modal
+      title={modalTitle}
+      isOpen={true}
+      close={closeModal}
+      onSave={saveTask}
+      saveDataTestId={saveDataTestId}
+    >
+      <TaskFormFields form={form} />
+    </Modal>
+  );
+}
+
+function useTaskForm(task: Task | null) {
   const [title, setTitle] = useState(task?.title ?? "");
   const [description, setDescription] = useState(task?.description ?? "");
   const [priority, setPriority] = useState<Priority>(task?.priority ?? Priority.Medium);
   const [dueDate, setDueDate] = useState(
     task?.dueDate ? formatDateToString(task.dueDate) : "",
   );
+  const [titleError, setTitleError] = useState<string>();
+  const [priorityError, setPriorityError] = useState<string>();
+  const [dueDateError, setDueDateError] = useState<string>();
 
-  const [titleError, setTitleError] = useState<string | undefined>();
-  const [priorityError, setPriorityError] = useState<string | undefined>();
-  const [dueDateError, setDueDateError] = useState<string | undefined>();
-
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    setTitle(task?.title ?? "");
-    setDescription(task?.description ?? "");
-    setPriority(task?.priority ?? Priority.Medium);
-    setDueDate(task?.dueDate ? formatDateToString(task.dueDate) : "");
-    setTitleError(undefined);
-    setPriorityError(undefined);
-    setDueDateError(undefined);
-  }, [task, isOpen]);
-
-  const resetForm = () => {
-    setTitle("");
-    setDescription("");
-    setPriority(Priority.Medium);
-    setDueDate("");
+  const userTask = () => ({ title, description, priority, dueDate });
+  const clearErrors = () => {
     setTitleError(undefined);
     setPriorityError(undefined);
     setDueDateError(undefined);
   };
-
-  const closeModal = () => {
-    resetForm();
-    modalActions.setTask(null);
+  const setValidationError = (error: TaskValidationError) => {
+    if (error === "TitleTooLong") {
+      setTitleError("Please enter a title with at most 200 characters.");
+    } else if (error === "EmptyTitle") {
+      setTitleError("The title must not be empty.");
+    } else if (error === "InvalidDueDate") {
+      setDueDateError("Please enter a valid date.");
+    } else {
+      setPriorityError("Please select a valid priority.");
+    }
   };
 
-  const saveTask = () => {
-    const result = validateTask({
-      title,
-      description,
-      dueDate,
-      priority,
-    });
-
-    if (!result.ok) {
-      if (result.error === "TitleTooLong") {
-        setTitleError("Please enter a title with at most 200 characters.");
-      } else if (result.error === "EmptyTitle") {
-        setTitleError("The title must not be empty.");
-      } else if (result.error === "InvalidDueDate") {
-        setDueDateError("Please enter a valid date.");
-      } else {
-        setPriorityError("Please select a valid priority.");
-      }
-      return;
-    }
-
-    let finishMeasurement: FinishPerformanceMeasurement | null = null;
-
-    if (task) {
-      finishMeasurement = startPerformanceMeasurement(
-        PerformanceAction.TaskEdit,
-        performanceContextFromBoard(currentBoard),
-      );
-      boardActions.updateTaskOnCurrentBoard(task.id, {
-        ...result.task,
-        id: task.id,
-      });
-    } else if (columnType) {
-      finishMeasurement = startPerformanceMeasurement(
-        PerformanceAction.TaskCreate,
-        performanceContextFromBoard(currentBoard),
-      );
-      boardActions.addTaskToCurrentBoard(columnType, result.task);
-    }
-
-    closeModal();
-    finishMeasurement?.();
+  return {
+    title,
+    setTitle,
+    description,
+    setDescription,
+    priority,
+    setPriority,
+    dueDate,
+    setDueDate,
+    titleError,
+    priorityError,
+    dueDateError,
+    userTask,
+    clearErrors,
+    setValidationError,
   };
+}
 
-  const saveDataTestId = `save-button-${columnType ?? "unknown-column"}`;
+type TaskForm = ReturnType<typeof useTaskForm>;
 
+function TaskFormFields({ form }: { form: TaskForm }) {
   return (
-    <Modal
-      title={task ? "Edit Task" : "Add Task"}
-      isOpen={isOpen}
-      onClose={closeModal}
-      onSave={saveTask}
-      saveDataTestId={saveDataTestId}
-    >
+    <>
       <Input
         label="Title"
-        value={title}
-        setValue={setTitle}
-        errorMessage={titleError}
+        value={form.title}
+        setValue={form.setTitle}
+        errorMessage={form.titleError}
         dataTestId="task-title-input"
       />
 
       <Textarea
         label="Description"
-        value={description}
-        setValue={setDescription}
+        value={form.description}
+        setValue={form.setDescription}
       />
 
       <Select
         label="Priority"
         options={priorityOptions}
-        value={priority}
-        setValue={(value) => setPriority(value as Priority)}
-        errorMessage={priorityError}
+        value={form.priority}
+        setValue={(value) => form.setPriority(value as Priority)}
+        errorMessage={form.priorityError}
       />
 
       <div className="is-flex">
         <Input
           label="Due Date"
-          value={dueDate}
-          setValue={setDueDate}
+          value={form.dueDate}
+          setValue={form.setDueDate}
           inputType="date"
-          errorMessage={dueDateError}
+          errorMessage={form.dueDateError}
         />
 
         <div className="is-flex is-align-items-end pl-2 mb-4">
@@ -163,11 +174,60 @@ export function TaskModal() {
             icon="reset"
             color="light"
             size="small"
-            onClick={() => setDueDate("")}
             ariaLabel="Reset due date"
+            onClick={() => form.setDueDate("")}
           />
         </div>
       </div>
-    </Modal>
+    </>
+  );
+}
+
+function saveValidatedTask(
+  boardActions: BoardsActions,
+  currentBoard: BoardsState["currentBoard"],
+  editedTask: Task | null,
+  columnType: ColumnType | null,
+  validatedTask: Task,
+): FinishPerformanceMeasurement | null {
+  if (editedTask) {
+    const finishMeasurement = startTaskMeasurement(
+      currentBoard,
+      PerformanceAction.TaskEdit,
+    );
+    updateTask(boardActions, editedTask.id, validatedTask);
+    return finishMeasurement;
+  }
+
+  if (columnType) {
+    const finishMeasurement = startTaskMeasurement(
+      currentBoard,
+      PerformanceAction.TaskCreate,
+    );
+    boardActions.addTaskToCurrentBoard(columnType, validatedTask);
+    return finishMeasurement;
+  }
+
+  return null;
+}
+
+function updateTask(
+  boardActions: BoardsActions,
+  taskId: TaskId,
+  validatedTask: Task,
+) {
+  boardActions.updateTaskOnCurrentBoard(taskId, {
+    ...validatedTask,
+    id: taskId,
+  });
+}
+
+function startTaskMeasurement(
+  currentBoard: BoardsState["currentBoard"],
+  action: PerformanceAction,
+): FinishPerformanceMeasurement {
+  return startPerformanceMeasurement(
+    action,
+    performanceContextFromBoard(currentBoard),
   );
 }

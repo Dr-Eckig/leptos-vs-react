@@ -1,4 +1,3 @@
-import type { InputHTMLAttributes } from "react";
 import {
   type InputType,
   inputHtmlTypes,
@@ -13,10 +12,7 @@ type InputProps = {
   min?: number;
   placeholder?: string;
   dataTestId?: string;
-} & Omit<
-  InputHTMLAttributes<HTMLInputElement>,
-  "value" | "onChange" | "type" | "min" | "placeholder"
->;
+};
 
 export function Input({
   label,
@@ -27,17 +23,15 @@ export function Input({
   min,
   placeholder = "",
   dataTestId,
-  ...inputProps
 }: InputProps) {
   const hasError = Boolean(errorMessage);
 
   return (
     <div className="field">
-      {label && <label className="label">{label}</label>}
+      <label className="label">{label}</label>
 
       <div className="control">
         <input
-          {...inputProps}
           style={inputType === "date" ? { width: "auto" } : undefined}
           className={["input", hasError && "is-danger"]
             .filter(Boolean)

@@ -1,4 +1,5 @@
 export { AppContextProvider } from "./AppContextProvider";
+export { useClickOutside } from "./useClickOutside";
 export {
   useAppContext,
   useBoardsActions,

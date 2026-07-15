@@ -1,115 +1,164 @@
 import { useState } from "react";
-import {
-  useBoardsActions,
-  useBoardsState,
-  useModalsActions,
-} from "../../hooks";
+import { useBoardsState } from "../../hooks";
 import {
   PerformanceAction,
   performanceContextFromBoard,
   start as startPerformanceMeasurement,
 } from "../../performance";
-import { openTaskModalWithTask } from "../../types/modals";
 import { formatDateToDisplay } from "../../types/date";
 import { Dropdown } from "../ui/Dropdown";
 import { IconText } from "../ui/IconText";
 import { Tag } from "../ui/Tag";
-import { Priority, type ColumnType, type Task } from "../../types/serialize";
+import { Priority, type Task } from "../../types/serialize";
 
 type TaskCardProps = {
   task: Task;
-  columnType: ColumnType;
+  columnName: string;
   taskIndex: number;
-};
-
-const priorityColors: Record<Priority, "success" | "warning" | "danger"> = {
-  [Priority.Low]: "success",
-  [Priority.Medium]: "warning",
-  [Priority.High]: "danger",
-};
-
-const priorityBorderClasses: Record<Priority, string> = {
-  [Priority.Low]: "border-color-success",
-  [Priority.Medium]: "border-color-warning",
-  [Priority.High]: "border-color-danger",
+  onEdit: () => void;
+  onDelete: () => void;
 };
 
 export function TaskCard({
   task,
-  columnType,
+  columnName,
   taskIndex,
+  onEdit,
+  onDelete,
 }: TaskCardProps) {
-  const boardActions = useBoardsActions();
+  return (
+    <div className={`card m-4 ${priorityBorderClass(task.priority)}`}>
+      <TaskCardHeader
+        task={task}
+        columnName={columnName}
+        taskIndex={taskIndex}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />
+      <TaskCardContent task={task} />
+    </div>
+  );
+}
+
+function TaskCardHeader({
+  task,
+  columnName,
+  taskIndex,
+  onEdit,
+  onDelete,
+}: TaskCardProps) {
+  return (
+    <header className="card-header">
+      <p className="card-header-title">
+        <span className="pr-2">{task.title}</span>
+      </p>
+      <TaskActionsDropdown
+        columnName={columnName}
+        taskIndex={taskIndex}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />
+    </header>
+  );
+}
+
+type TaskActionsDropdownProps = Pick<
+  TaskCardProps,
+  "columnName" | "taskIndex" | "onEdit" | "onDelete"
+>;
+
+function TaskActionsDropdown({
+  columnName,
+  taskIndex,
+  onEdit,
+  onDelete,
+}: TaskActionsDropdownProps) {
   const { currentBoard } = useBoardsState();
-  const modals = useModalsActions();
-  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-  const formattedDueDate = task.dueDate ? formatDateToDisplay(task.dueDate) : null;
-  const dropdownDataTestId = `${columnType}-task-dropdown-${taskIndex}`;
+  const [isVisible, setIsVisible] = useState(false);
+  const dataTestId = `${columnName}-task-dropdown-${taskIndex}`;
 
   const editTask = () => {
-    modals.setTask(openTaskModalWithTask(columnType, task));
-    setIsDropdownVisible(false);
+    onEdit();
+    setIsVisible(false);
   };
-
   const deleteTask = () => {
     const finishMeasurement = startPerformanceMeasurement(
       PerformanceAction.TaskDelete,
       performanceContextFromBoard(currentBoard),
     );
-    boardActions.deleteTaskFromCurrentBoard(task.id);
-    setIsDropdownVisible(false);
+    onDelete();
+    setIsVisible(false);
     finishMeasurement();
   };
 
   return (
-    <div className={`card m-4 ${priorityBorderClasses[task.priority]}`}>
-      <header className="card-header">
-        <p className="card-header-title">
-          <span className="pr-2">{task.title}</span>
-        </p>
-
-        <Dropdown
-          isVisible={isDropdownVisible}
-          setIsVisible={setIsDropdownVisible}
-          alignment="right"
-          trigger={
-            <button
-              className="card-header-icon"
-              aria-label="options"
-              data-testid={dropdownDataTestId}
-              onClick={() => setIsDropdownVisible((current) => !current)}
-            >
-              <span className="icon">
-                <i className="fa-solid fa-ellipsis-vertical" />
-              </span>
-            </button>
-          }
+    <Dropdown
+      isVisible={isVisible}
+      setIsVisible={setIsVisible}
+      alignment="right"
+      trigger={
+        <button
+          className="card-header-icon"
+          aria-label="options"
+          data-testid={dataTestId}
+          onClick={() => setIsVisible((visible) => !visible)}
         >
-          <button
-            className="dropdown-item"
-            data-testid={`${dropdownDataTestId}-edit`}
-            onClick={editTask}
-          >
-            <IconText icon="edit" text="Edit" color="warning" />
-          </button>
-          <button
-            className="dropdown-item"
-            data-testid={`${dropdownDataTestId}-delete`}
-            onClick={deleteTask}
-          >
-            <IconText icon="trash" text="Delete" color="danger" />
-          </button>
-        </Dropdown>
-      </header>
+          <span className="icon">
+            <i className="fa-solid fa-ellipsis-vertical" />
+          </span>
+        </button>
+      }
+    >
+      <button
+        className="dropdown-item"
+        data-testid={`${dataTestId}-edit`}
+        onClick={editTask}
+      >
+        <IconText icon="edit" text="Edit" color="warning" />
+      </button>
+      <button
+        className="dropdown-item"
+        data-testid={`${dataTestId}-delete`}
+        onClick={deleteTask}
+      >
+        <IconText icon="trash" text="Delete" color="danger" />
+      </button>
+    </Dropdown>
+  );
+}
 
-      <div className="card-content">
-        <div className="tags mb-2">
-          <Tag text={task.priority} color={priorityColors[task.priority]} />
-          {formattedDueDate && <Tag text={formattedDueDate} />}
-        </div>
+function TaskCardContent({ task }: Pick<TaskCardProps, "task">) {
+  const dueDateText = task.dueDate ? formatDateToDisplay(task.dueDate) : null;
 
-        <p>{task.description ?? ""}</p>
+  return (
+    <div className="card-content">
+      <div className="tags mb-2">
+        <Tag text={task.priority} color={priorityColor(task.priority)} />
+        {dueDateText && <Tag text={dueDateText} />}
       </div>
+      <p>{task.description ?? ""}</p>
     </div>
   );
+}
+
+function priorityColor(priority: Priority): "success" | "warning" | "danger" {
+  switch (priority) {
+    case Priority.Low:
+      return "success";
+    case Priority.Medium:
+      return "warning";
+    case Priority.High:
+      return "danger";
+  }
+}
+
+function priorityBorderClass(priority: Priority): string {
+  switch (priority) {
+    case Priority.Low:
+      return "border-color-success";
+    case Priority.Medium:
+      return "border-color-warning";
+    case Priority.High:
+      return "border-color-danger";
+  }
 }

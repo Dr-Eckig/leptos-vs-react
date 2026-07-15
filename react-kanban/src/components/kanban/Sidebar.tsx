@@ -16,7 +16,7 @@ type SidebarItemProps = {
   label: string;
   isActive: boolean;
   onClick: () => void;
-  dataTestId?: string;
+  dataTestId: string;
   icon?: FontawesomeIcon;
   onEdit?: () => void;
 };

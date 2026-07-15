@@ -1,4 +1,3 @@
-import type { HTMLAttributes } from "react";
 import {
   type Color,
   type Size,
@@ -12,7 +11,7 @@ type TagProps = {
   size?: Size;
   isRounded?: boolean;
   isLight?: boolean;
-} & HTMLAttributes<HTMLSpanElement>;
+};
 
 export function Tag({
   text,
@@ -20,7 +19,6 @@ export function Tag({
   size = "normal",
   isRounded = false,
   isLight = false,
-  ...spanProps
 }: TagProps) {
   const className = [
     "tag",
@@ -33,7 +31,7 @@ export function Tag({
     .join(" ");
 
   return (
-    <span {...spanProps} className={className}>
+    <span className={className}>
       {text}
     </span>
   );

@@ -44,7 +44,7 @@ export function DraggableItem({
   return (
     <div
       className={htmlClass}
-      draggable
+      draggable={true}
       data-testid={dataTestId}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}

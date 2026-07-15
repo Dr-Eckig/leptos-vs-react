@@ -1,12 +1,10 @@
-import type { SelectHTMLAttributes } from "react";
-
 type SelectProps = {
   label: string;
   options: string[];
   value: string;
   setValue: (value: string) => void;
   errorMessage?: string;
-} & Omit<SelectHTMLAttributes<HTMLSelectElement>, "value" | "onChange">;
+};
 
 export function Select({
   label,
@@ -14,7 +12,6 @@ export function Select({
   value,
   setValue,
   errorMessage,
-  ...selectProps
 }: SelectProps) {
   const hasError = Boolean(errorMessage);
 
@@ -23,9 +20,9 @@ export function Select({
       <label className="label">{label}</label>
 
       <div className="control">
-        <div className={["select", hasError && "is-danger"].filter(Boolean).join(" ")}>
+        <div className="select">
           <select
-            {...selectProps}
+            className={hasError ? "is-danger" : undefined}
             value={value}
             onChange={(event) => setValue(event.target.value)}
           >
