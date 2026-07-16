@@ -68,7 +68,6 @@ struct DomMutationSummary {
     attribute_changes: usize,
     added_elements: usize,
     removed_elements: usize,
-    affected_dom_areas: Vec<String>,
 }
 
 impl PerformanceContext {
@@ -257,7 +256,6 @@ fn finish_dom_mutation_measurement(measurement_id: &JsValue) -> DomMutationSumma
         attribute_changes: js_property_usize(&summary, "attributeChanges").unwrap_or(0),
         added_elements: js_property_usize(&summary, "addedElements").unwrap_or(0),
         removed_elements: js_property_usize(&summary, "removedElements").unwrap_or(0),
-        affected_dom_areas: js_property_string_array(&summary, "affectedDomAreas"),
     }
 }
 
@@ -276,21 +274,6 @@ fn js_property_usize(value: &JsValue, property: &str) -> Option<usize> {
         .map(|value| value as usize)
 }
 
-fn js_property_string_array(value: &JsValue, property: &str) -> Vec<String> {
-    let Ok(value) = js_sys::Reflect::get(value, &JsValue::from_str(property)) else {
-        return Vec::new();
-    };
-
-    if !js_sys::Array::is_array(&value) {
-        return Vec::new();
-    }
-
-    js_sys::Array::from(&value)
-        .iter()
-        .filter_map(|value| value.as_string())
-        .collect()
-}
-
 fn empty_dom_mutation_summary() -> DomMutationSummary {
     DomMutationSummary {
         mutation_records: 0,
@@ -298,24 +281,18 @@ fn empty_dom_mutation_summary() -> DomMutationSummary {
         attribute_changes: 0,
         added_elements: 0,
         removed_elements: 0,
-        affected_dom_areas: Vec::new(),
     }
 }
 
 fn dom_mutation_console_summary(dom_mutations: &DomMutationSummary) -> String {
     format!(
-        "dom: records={} text={} attributes={} added={} removed={} areas={}",
+        "dom: records={} text={} attributes={} added={} removed={}",
         dom_mutations.mutation_records,
         dom_mutations.text_changes,
         dom_mutations.attribute_changes,
         dom_mutations.added_elements,
         dom_mutations.removed_elements,
-        encode_dom_areas(&dom_mutations.affected_dom_areas),
     )
-}
-
-fn encode_dom_areas(areas: &[String]) -> String {
-    areas.join("|").replace(' ', "%20")
 }
 
 pub fn init_performance_log_session() {

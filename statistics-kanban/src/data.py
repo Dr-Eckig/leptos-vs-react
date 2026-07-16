@@ -157,7 +157,6 @@ def required_dom_mutation_columns() -> set[str]:
         "attributeChanges",
         "addedElements",
         "removedElements",
-        "affectedDomAreas",
     }
 
 

@@ -55,7 +55,6 @@ export type PerformanceLogEntry = {
   domAttributeChanges?: number;
   domAddedElements?: number;
   domRemovedElements?: number;
-  domAffectedAreas?: string[];
 };
 
 type CollectedPerformanceLogEntry = Omit<PerformanceLogEntry, 'browser'>;
@@ -95,7 +94,6 @@ export type DomMutationResultEntry = {
   attributeChanges: number;
   addedElements: number;
   removedElements: number;
-  affectedDomAreas: string[];
 };
 
 export type BundleSizeResultEntry = {
@@ -258,8 +256,7 @@ export async function collectLoggedDomMutationAction(
       entry.domTextChanges === undefined ||
       entry.domAttributeChanges === undefined ||
       entry.domAddedElements === undefined ||
-      entry.domRemovedElements === undefined ||
-      entry.domAffectedAreas === undefined
+      entry.domRemovedElements === undefined
     ) {
       return;
     }
@@ -300,7 +297,6 @@ export async function collectLoggedDomMutationAction(
     ),
     addedElements: requireDomMetric(entry.domAddedElements, 'addedElements'),
     removedElements: requireDomMetric(entry.domRemovedElements, 'removedElements'),
-    affectedDomAreas: entry.domAffectedAreas ?? [],
   };
 }
 
@@ -498,7 +494,7 @@ function parsePerformanceLog(
   text: string,
 ): Omit<CollectedPerformanceLogEntry, 'run' | 'warmUp'> | null {
   const match = text.match(
-    /^\[(leptos|react)-kanban-performance\]\s+(\d+)\s+-\s+(.+)\s+-\s+([a-z-]+)\s+-\s+(\d+(?:\.\d+)?)\s+ms(?:\s+-\s+dom:\s+records=(\d+)\s+text=(\d+)\s+attributes=(\d+)\s+added=(\d+)\s+removed=(\d+)\s+areas=(.*))?$/,
+    /^\[(leptos|react)-kanban-performance\]\s+(\d+)\s+-\s+(.+)\s+-\s+([a-z-]+)\s+-\s+(\d+(?:\.\d+)?)\s+ms(?:\s+-\s+dom:\s+records=(\d+)\s+text=(\d+)\s+attributes=(\d+)\s+added=(\d+)\s+removed=(\d+))?$/,
   );
 
   if (!match) {
@@ -517,7 +513,6 @@ function parsePerformanceLog(
     domAttributeChanges,
     domAddedElements,
     domRemovedElements,
-    domAffectedAreas,
   ] = match;
   const framework = targetId === 'leptos' ? 'Leptos' : 'React';
 
@@ -531,26 +526,11 @@ function parsePerformanceLog(
     domAttributeChanges: parseOptionalInteger(domAttributeChanges),
     domAddedElements: parseOptionalInteger(domAddedElements),
     domRemovedElements: parseOptionalInteger(domRemovedElements),
-    domAffectedAreas: parseOptionalDomAreas(domAffectedAreas),
   };
 }
 
 function parseOptionalInteger(value: string | undefined): number | undefined {
   return value === undefined ? undefined : Number.parseInt(value, 10);
-}
-
-function parseOptionalDomAreas(value: string | undefined): string[] | undefined {
-  if (value === undefined) {
-    return undefined;
-  }
-
-  const decodedValue = decodeURIComponent(value);
-
-  if (!decodedValue) {
-    return [];
-  }
-
-  return decodedValue.split('|').filter(Boolean);
 }
 
 function requireDomMetric(value: number | undefined, metric: string): number {
@@ -578,7 +558,6 @@ function serializePerformanceLogEntry(
     domAttributeChanges: entry.domAttributeChanges,
     domAddedElements: entry.domAddedElements,
     domRemovedElements: entry.domRemovedElements,
-    domAffectedAreas: entry.domAffectedAreas,
   };
 
   return serializedEntry;

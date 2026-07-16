@@ -32,7 +32,6 @@ type DomMutationSummary = {
   attributeChanges: number;
   addedElements: number;
   removedElements: number;
-  affectedDomAreas: string[];
 };
 
 type DomMutationMetrics = {
@@ -182,7 +181,6 @@ function emptyDomMutationSummary(): DomMutationSummary {
     attributeChanges: 0,
     addedElements: 0,
     removedElements: 0,
-    affectedDomAreas: [],
   };
 }
 
@@ -194,7 +192,6 @@ function domMutationConsoleSummary(domMutations: DomMutationSummary): string {
     `attributes=${domMutations.attributeChanges}`,
     `added=${domMutations.addedElements}`,
     `removed=${domMutations.removedElements}`,
-    `areas=${encodeURIComponent(domMutations.affectedDomAreas.join("|"))}`,
   ].join(" ");
 }
 
