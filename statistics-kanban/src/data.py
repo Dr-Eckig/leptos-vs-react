@@ -122,6 +122,23 @@ def load_bundle_size_measurements(data_dir: Path) -> pd.DataFrame:
         pd.to_numeric(measurements["bundleSizeBytes"]) / 1024
     )
 
+    breakdown_columns = {
+        "scriptSizeBytes": "script_size_kib",
+        "stylesheetSizeBytes": "stylesheet_size_kib",
+        "wasmSizeBytes": "wasm_size_kib",
+    }
+    for source_column, target_column in breakdown_columns.items():
+        if source_column not in measurements.columns:
+            measurements[source_column] = 0
+        measurements[target_column] = (
+            pd.to_numeric(measurements[source_column]).fillna(0) / 1024
+        )
+
+    measured_size_kib = measurements[list(breakdown_columns.values())].sum(axis=1)
+    measurements["other_size_kib"] = (
+        measurements["bundle_size_kib"] - measured_size_kib
+    ).clip(lower=0)
+
     return measurements.sort_values(["browser", "framework", "run"])
 
 

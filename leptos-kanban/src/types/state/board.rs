@@ -67,6 +67,10 @@ impl BoardState {
             return false;
         }
 
+        if source_column.id == target_column.id {
+            return source_column.move_task(task_id, before_task_id);
+        }
+
         let Some(task) = source_column.remove_task(task_id) else {
             return false;
         };

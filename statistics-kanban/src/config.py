@@ -71,3 +71,172 @@ FRAMEWORK_PALETTE = {
 BROWSER_ORDER = ["chromium", "firefox", "webkit"]
 
 MILLISECOND_TICKS = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000]
+
+# Shared plot appearance
+PLOT_THEME_STYLE = "whitegrid"
+PLOT_THEME_CONTEXT = "paper"
+PLOT_THEME_RC = {"figure.max_open_warning": 0}
+PLOT_DPI = 300
+PLOT_BBOX_INCHES = "tight"
+PLOT_TITLE_PAD = 12
+PLOT_GRID_LINESTYLE = "--"
+PLOT_GRID_LINEWIDTH = 0.5
+PLOT_GRID_ALPHA = 0.55
+PLOT_VALUE_LIMIT_FACTOR = 1.18
+PLOT_LEGEND_TITLE = "Framework"
+PLOT_LEGEND_FRAME = True
+PLOT_VALUE_SCALE = "log"
+PLOT_DESPINE_LEFT = True
+PLOT_DESPINE_BOTTOM = False
+BAR_LABEL_PADDING = 3
+BAR_LABEL_FONT_SIZE = 9
+
+# Scenario boxplots
+SCENARIO_PLOT_MIN_HEIGHT = 7
+SCENARIO_PLOT_HEIGHT_PER_ROW = 0.48
+SCENARIO_PLOT_WIDTH = 13
+BOXPLOT_FLIER_SIZE = 2.5
+BOXPLOT_LINEWIDTH = 1
+BOXPLOT_DODGE = True
+PERFORMANCE_PLOT_TITLE = "Kanban-Performance nach Szenario - {browser}"
+PERFORMANCE_PLOT_X_LABEL = "Ausführungsdauer in Millisekunden"
+PERFORMANCE_PLOT_Y_LABEL = "Szenario: Aktion und Boardgröße"
+PERFORMANCE_PLOT_FILENAME = "performance-boxplots-{browser}.png"
+SCENARIO_LEGEND_LOCATION = "center left"
+SCENARIO_LEGEND_ANCHOR = (1.01, 0.5)
+
+# Initial-load boxplot
+INITIAL_LOAD_PLOT_HEIGHT = 4.2
+INITIAL_LOAD_PLOT_ASPECT = 1.15
+INITIAL_LOAD_SHARE_Y = True
+INITIAL_LOAD_PLOT_TITLE = "Initial Load: FCP und LCP nach Browser"
+INITIAL_LOAD_PLOT_TITLE_Y = 1.02
+INITIAL_LOAD_PLOT_X_LABEL = "Zeit in Millisekunden"
+INITIAL_LOAD_PLOT_Y_LABEL = "Metrik"
+INITIAL_LOAD_SUBPLOT_TITLE_PAD = 10
+INITIAL_LOAD_LEGEND_LOCATION = "center right"
+INITIAL_LOAD_LEGEND_ANCHOR = (1.0, 0.5)
+INITIAL_LOAD_LAYOUT_RECT = (0, 0, 0.91, 1)
+INITIAL_LOAD_PLOT_FILENAME = "initial-load-boxplots.png"
+
+# Bundle-size plot
+BUNDLE_SIZE_PARTS = (
+    ("stylesheet_size_kib", "CSS", "#2965F1"),
+    ("script_size_kib", "JavaScript", "#F7DD1E"),
+    ("wasm_size_kib", "WebAssembly", "#654FF0"),
+    ("other_size_kib", "Nicht aufgeschlüsselt", "#94a3b8"),
+)
+BUNDLE_SIZE_FIGURE_SIZE = (6.8, 4.8)
+BUNDLE_SIZE_BAR_EDGE_COLOR = "white"
+BUNDLE_SIZE_BAR_LINEWIDTH = 0.7
+BUNDLE_SIZE_TOTAL_FONT_SIZE = 9
+BUNDLE_SIZE_TOTAL_FONT_WEIGHT = "bold"
+BUNDLE_SIZE_TOTAL_HORIZONTAL_ALIGNMENT = "center"
+BUNDLE_SIZE_TOTAL_VERTICAL_ALIGNMENT = "bottom"
+BUNDLE_SIZE_TOTAL_FORMAT = "{value:.2f} KiB"
+BUNDLE_SIZE_PLOT_TITLE = "Bundle-Größe"
+BUNDLE_SIZE_PLOT_X_LABEL = "Framework"
+BUNDLE_SIZE_PLOT_Y_LABEL = "Bundle-Größe in KiB"
+BUNDLE_SIZE_LEGEND_TITLE = "Bestandteil"
+BUNDLE_SIZE_PLOT_FILENAME = "bundle-size.png"
+
+# DOM-mutation plot
+DOM_BOARD_INDEPENDENT_ACTIONS = {
+    "task-create",
+    "task-edit",
+    "task-move-within-column",
+    "board-switch",
+}
+DOM_MUTATION_PLOT_TITLE = "DOM-Mutationen nach Szenario"
+DOM_MUTATION_PLOT_X_LABEL = "Mutation Records"
+DOM_MUTATION_PLOT_Y_LABEL = "Szenario"
+DOM_MUTATION_PLOT_FILENAME = "dom-mutations.png"
+
+# Summary tables
+PERFORMANCE_SUMMARY_COLUMNS = [
+    "framework",
+    "browser",
+    "action",
+    "board",
+    "min",
+    "max",
+    "mean",
+    "median",
+    "standardabweichung",
+]
+PERFORMANCE_TABLE_COLUMN_LABELS = {
+    "framework": "Framework",
+    "browser": "Browser",
+    "action": "Action",
+    "board": "Board",
+    "min": "Min",
+    "max": "Max",
+    "mean": "Mean",
+    "median": "Median",
+    "standardabweichung": "Standardabweichung",
+}
+PERFORMANCE_TABLE_NUMBER_COLUMNS = [
+    "Min",
+    "Max",
+    "Mean",
+    "Median",
+    "Standardabweichung",
+]
+PERFORMANCE_TABLE_FILENAME = "performance-summary-table-{framework}.png"
+PERFORMANCE_TABLE_TITLE = "Performance Summary – {framework}"
+PERFORMANCE_TABLE_FIGURE_WIDTH = 16
+PERFORMANCE_TABLE_MIN_HEIGHT = 8
+PERFORMANCE_TABLE_ROW_HEIGHT = 0.27
+PERFORMANCE_TABLE_HEIGHT_PADDING = 1.6
+PERFORMANCE_TABLE_COLUMN_WIDTHS = [
+    0.075,
+    0.075,
+    0.16,
+    0.16,
+    0.07,
+    0.07,
+    0.075,
+    0.075,
+    0.15,
+]
+PERFORMANCE_TABLE_FONT_SIZE = 7.5
+PERFORMANCE_TABLE_SCALE = (1, 1.25)
+PERFORMANCE_TABLE_LOCATION = "center"
+
+DOM_TABLE_COLUMN_LABELS = {
+    "framework": "Framework",
+    "action": "Action",
+    "board": "Board",
+    "mutationRecords": "Mutation Records",
+    "textChanges": "Textänderungen",
+    "attributeChanges": "Attributänderungen",
+    "addedElements": "Hinzugefügte Elemente",
+    "removedElements": "Entfernte Elemente",
+}
+DOM_TABLE_FILENAME = "dom-mutations-summary-table.png"
+DOM_TABLE_TITLE = "DOM-Mutationen Summary"
+DOM_TABLE_FIGURE_WIDTH = 18
+DOM_TABLE_MIN_HEIGHT = 8
+DOM_TABLE_ROW_HEIGHT = 0.34
+DOM_TABLE_HEIGHT_PADDING = 1.8
+DOM_TABLE_BBOX = (0, 0, 1, 0.95)
+DOM_TABLE_COLUMN_WIDTHS = [0.09, 0.2, 0.15, 0.1, 0.11, 0.125, 0.14, 0.125]
+DOM_TABLE_FONT_SIZE = 7.2
+DOM_TABLE_SCALE = (1, 1.35)
+DOM_TABLE_LOCATION = "upper center"
+
+TABLE_CELL_ALIGNMENT = "left"
+TABLE_AXIS_VISIBILITY = "off"
+TABLE_HEADER_COLOR = "#f0f2f5"
+TABLE_BORDER_COLOR = "#d8dde3"
+TABLE_ODD_ROW_COLOR = "#ffffff"
+TABLE_EVEN_ROW_COLOR = "#f8fafc"
+TABLE_HEADER_TEXT_COLOR = "#1f2933"
+TABLE_BODY_TEXT_COLOR = "#263238"
+TABLE_FRAMEWORK_TEXT_COLOR = "#111827"
+TABLE_BORDER_LINEWIDTH = 0.45
+TABLE_TITLE_PAD = 18
+TABLE_TITLE_FONT_SIZE = 14
+TABLE_TITLE_FONT_WEIGHT = "bold"
+TABLE_NUMBER_FORMAT = "{value:.2f}"
+INITIAL_LOAD_BOARD_LABEL = "Initial Load"

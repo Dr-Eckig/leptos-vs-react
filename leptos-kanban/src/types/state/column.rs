@@ -46,6 +46,26 @@ impl ColumnState {
         removed_task
     }
 
+    pub fn move_task(&self, task_id: &TaskId, before_task_id: Option<TaskId>) -> bool {
+        let mut moved = false;
+
+        self.tasks.update(|tasks| {
+            let Some(task_index) = tasks.iter().position(|task| &task.id == task_id) else {
+                return;
+            };
+
+            let task = tasks.remove(task_index);
+            let insert_index = before_task_id
+                .and_then(|before_task_id| tasks.iter().position(|task| task.id == before_task_id))
+                .unwrap_or(tasks.len());
+
+            tasks.insert(insert_index, task);
+            moved = true;
+        });
+
+        moved
+    }
+
     pub fn insert_task(&self, task: TaskState, before_task_id: Option<TaskId>) {
         self.tasks.update(|tasks| {
             let insert_index = before_task_id

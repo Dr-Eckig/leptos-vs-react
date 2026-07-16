@@ -1,18 +1,9 @@
 from pathlib import Path
 
+import matplotlib.pyplot as plt
 import pandas as pd
 
-from config import (
-    BROWSER_LABELS,
-    BROWSER_ORDER,
-    FRAMEWORK_ORDER,
-    FRAMEWORK_PALETTE,
-    INITIAL_LOAD_LABELS,
-    INITIAL_LOAD_ORDER,
-    MILLISECOND_TICKS,
-    PERFORMANCE_RESULTS_DIR,
-    REACTIVITY_RESULTS_DIR,
-)
+import config as cfg
 from data import ordered_values, scenario_order
 
 import seaborn as sns
@@ -20,9 +11,9 @@ import seaborn as sns
 
 def configure_plot_theme() -> None:
     sns.set_theme(
-        style="whitegrid",
-        context="paper",
-        rc={"figure.max_open_warning": 0},
+        style=cfg.PLOT_THEME_STYLE,
+        context=cfg.PLOT_THEME_CONTEXT,
+        rc=cfg.PLOT_THEME_RC,
     )
 
 
@@ -33,7 +24,10 @@ def create_browser_boxplot(measurements: pd.DataFrame, browser: str) -> Path:
         scenario_order(),
     )
 
-    height = max(7, len(scenario_labels) * 0.48)
+    height = max(
+        cfg.SCENARIO_PLOT_MIN_HEIGHT,
+        len(scenario_labels) * cfg.SCENARIO_PLOT_HEIGHT_PER_ROW,
+    )
     grid = sns.catplot(
         data=browser_measurements,
         kind="box",
@@ -41,37 +35,45 @@ def create_browser_boxplot(measurements: pd.DataFrame, browser: str) -> Path:
         y="scenario",
         hue="framework",
         order=scenario_labels,
-        hue_order=FRAMEWORK_ORDER,
-        palette=FRAMEWORK_PALETTE,
-        dodge=True,
-        fliersize=2.5,
-        linewidth=1,
+        hue_order=cfg.FRAMEWORK_ORDER,
+        palette=cfg.FRAMEWORK_PALETTE,
+        dodge=cfg.BOXPLOT_DODGE,
+        fliersize=cfg.BOXPLOT_FLIER_SIZE,
+        linewidth=cfg.BOXPLOT_LINEWIDTH,
         height=height,
-        aspect=13 / height,
+        aspect=cfg.SCENARIO_PLOT_WIDTH / height,
     )
     ax = grid.ax
 
-    browser_label = BROWSER_LABELS.get(browser, browser.title())
-    ax.set_title(f"Kanban-Performance nach Szenario - {browser_label}", pad=12)
-    ax.set_xlabel("Ausführungsdauer in Millisekunden")
-    ax.set_ylabel("Szenario: Aktion und Boardgröße")
-    ax.set_xscale("log")
+    browser_label = cfg.BROWSER_LABELS.get(browser, browser.title())
+    ax.set_title(
+        cfg.PERFORMANCE_PLOT_TITLE.format(browser=browser_label),
+        pad=cfg.PLOT_TITLE_PAD,
+    )
+    ax.set_xlabel(cfg.PERFORMANCE_PLOT_X_LABEL)
+    ax.set_ylabel(cfg.PERFORMANCE_PLOT_Y_LABEL)
+    ax.set_xscale(cfg.PLOT_VALUE_SCALE)
     configure_millisecond_axis(ax)
-    ax.grid(axis="x", which="both", linestyle="--", linewidth=0.5, alpha=0.55)
+    configure_value_grid(ax, "x", which="both")
     ax.grid(axis="y", visible=False)
     sns.move_legend(
         grid,
-        "center left",
-        title="Framework",
-        bbox_to_anchor=(1.01, 0.5),
-        frameon=True,
+        cfg.SCENARIO_LEGEND_LOCATION,
+        title=cfg.PLOT_LEGEND_TITLE,
+        bbox_to_anchor=cfg.SCENARIO_LEGEND_ANCHOR,
+        frameon=cfg.PLOT_LEGEND_FRAME,
     )
 
-    sns.despine(left=True, bottom=False)
+    sns.despine(
+        left=cfg.PLOT_DESPINE_LEFT,
+        bottom=cfg.PLOT_DESPINE_BOTTOM,
+    )
     grid.figure.tight_layout()
 
-    output_path = PERFORMANCE_RESULTS_DIR / f"performance-boxplots-{browser}.png"
-    grid.figure.savefig(output_path, dpi=300, bbox_inches="tight")
+    output_path = cfg.PERFORMANCE_RESULTS_DIR / cfg.PERFORMANCE_PLOT_FILENAME.format(
+        browser=browser,
+    )
+    save_figure(grid.figure, output_path)
     close_grid(grid)
 
     return output_path
@@ -79,22 +81,27 @@ def create_browser_boxplot(measurements: pd.DataFrame, browser: str) -> Path:
 
 def create_initial_load_boxplot(measurements: pd.DataFrame) -> Path | None:
     initial_load_measurements = measurements[
-        measurements["action"].isin(INITIAL_LOAD_ORDER)
+        measurements["action"].isin(cfg.INITIAL_LOAD_ORDER)
     ].copy()
 
     if initial_load_measurements.empty:
         return None
 
     initial_load_measurements["metric"] = initial_load_measurements["action"].map(
-        INITIAL_LOAD_LABELS,
+        cfg.INITIAL_LOAD_LABELS,
     )
     initial_load_measurements["metric"] = pd.Categorical(
         initial_load_measurements["metric"],
-        categories=[INITIAL_LOAD_LABELS[action] for action in INITIAL_LOAD_ORDER],
+        categories=[
+            cfg.INITIAL_LOAD_LABELS[action] for action in cfg.INITIAL_LOAD_ORDER
+        ],
         ordered=True,
     )
 
-    browsers = ordered_values(initial_load_measurements["browser"], BROWSER_ORDER)
+    browsers = ordered_values(
+        initial_load_measurements["browser"],
+        cfg.BROWSER_ORDER,
+    )
     grid = sns.catplot(
         data=initial_load_measurements,
         kind="box",
@@ -103,41 +110,47 @@ def create_initial_load_boxplot(measurements: pd.DataFrame) -> Path | None:
         x="performance_ms",
         y="metric",
         hue="framework",
-        order=[INITIAL_LOAD_LABELS[action] for action in INITIAL_LOAD_ORDER],
-        hue_order=FRAMEWORK_ORDER,
-        palette=FRAMEWORK_PALETTE,
-        dodge=True,
-        fliersize=2.5,
-        linewidth=1,
-        height=4.2,
-        aspect=1.15,
-        sharey=True,
+        order=[cfg.INITIAL_LOAD_LABELS[action] for action in cfg.INITIAL_LOAD_ORDER],
+        hue_order=cfg.FRAMEWORK_ORDER,
+        palette=cfg.FRAMEWORK_PALETTE,
+        dodge=cfg.BOXPLOT_DODGE,
+        fliersize=cfg.BOXPLOT_FLIER_SIZE,
+        linewidth=cfg.BOXPLOT_LINEWIDTH,
+        height=cfg.INITIAL_LOAD_PLOT_HEIGHT,
+        aspect=cfg.INITIAL_LOAD_PLOT_ASPECT,
+        sharey=cfg.INITIAL_LOAD_SHARE_Y,
     )
 
     for index, (ax, browser) in enumerate(zip(grid.axes.flat, browsers)):
-        browser_label = BROWSER_LABELS.get(browser, browser.title())
-        ax.set_title(browser_label, pad=10)
-        ax.set_xlabel("Zeit in Millisekunden")
-        ax.set_ylabel("Metrik" if index == 0 else "")
-        ax.set_xscale("log")
+        browser_label = cfg.BROWSER_LABELS.get(browser, browser.title())
+        ax.set_title(browser_label, pad=cfg.INITIAL_LOAD_SUBPLOT_TITLE_PAD)
+        ax.set_xlabel(cfg.INITIAL_LOAD_PLOT_X_LABEL)
+        ax.set_ylabel(cfg.INITIAL_LOAD_PLOT_Y_LABEL if index == 0 else "")
+        ax.set_xscale(cfg.PLOT_VALUE_SCALE)
         configure_millisecond_axis(ax)
-        ax.grid(axis="x", which="both", linestyle="--", linewidth=0.5, alpha=0.55)
+        configure_value_grid(ax, "x", which="both")
         ax.grid(axis="y", visible=False)
 
     sns.move_legend(
         grid,
-        "center right",
-        title="Framework",
-        bbox_to_anchor=(1.0, 0.5),
-        frameon=True,
+        cfg.INITIAL_LOAD_LEGEND_LOCATION,
+        title=cfg.PLOT_LEGEND_TITLE,
+        bbox_to_anchor=cfg.INITIAL_LOAD_LEGEND_ANCHOR,
+        frameon=cfg.PLOT_LEGEND_FRAME,
     )
 
-    grid.figure.suptitle("Initial Load: FCP und LCP nach Browser", y=1.02)
-    sns.despine(left=True, bottom=False)
-    grid.figure.tight_layout(rect=(0, 0, 0.91, 1))
+    grid.figure.suptitle(
+        cfg.INITIAL_LOAD_PLOT_TITLE,
+        y=cfg.INITIAL_LOAD_PLOT_TITLE_Y,
+    )
+    sns.despine(
+        left=cfg.PLOT_DESPINE_LEFT,
+        bottom=cfg.PLOT_DESPINE_BOTTOM,
+    )
+    grid.figure.tight_layout(rect=cfg.INITIAL_LOAD_LAYOUT_RECT)
 
-    output_path = PERFORMANCE_RESULTS_DIR / "initial-load-boxplots.png"
-    grid.figure.savefig(output_path, dpi=300, bbox_inches="tight")
+    output_path = cfg.PERFORMANCE_RESULTS_DIR / cfg.INITIAL_LOAD_PLOT_FILENAME
+    save_figure(grid.figure, output_path)
     close_grid(grid)
 
     return output_path
@@ -147,35 +160,65 @@ def create_bundle_size_barplot(measurements: pd.DataFrame) -> Path | None:
     if measurements.empty:
         return None
 
-    grid = sns.catplot(
-        data=measurements,
-        kind="bar",
-        x="framework",
-        y="bundle_size_kib",
-        order=FRAMEWORK_ORDER,
-        palette=FRAMEWORK_PALETTE,
-        hue="framework",
-        hue_order=FRAMEWORK_ORDER,
-        legend=False,
-        errorbar=None,
-        height=4.4,
-        aspect=6.8 / 4.4,
+    summary = (
+        measurements.groupby("framework", observed=True)[
+            [column for column, _label, _color in cfg.BUNDLE_SIZE_PARTS]
+            + ["bundle_size_kib"]
+        ]
+        .mean()
+        .reindex(cfg.FRAMEWORK_ORDER)
+        .dropna(how="all")
     )
-    ax = grid.ax
+    frameworks = list(summary.index)
+    fig, ax = plt.subplots(figsize=cfg.BUNDLE_SIZE_FIGURE_SIZE)
+    bottoms = pd.Series(0.0, index=summary.index)
 
-    annotate_bars(ax, decimal_places=2)
-    ax.set_title("Bundle-Größe", pad=12)
-    ax.set_xlabel("Framework")
-    ax.set_ylabel("Bundle-Größe in KiB")
-    ax.set_ylim(0, max(1, measurements["bundle_size_kib"].max()) * 1.18)
-    ax.grid(axis="y", linestyle="--", linewidth=0.5, alpha=0.55)
+    for column, label, color in cfg.BUNDLE_SIZE_PARTS:
+        values = summary[column].fillna(0)
+        if values.max() <= 0:
+            continue
+        ax.bar(
+            frameworks,
+            values,
+            bottom=bottoms,
+            label=label,
+            color=color,
+            edgecolor=cfg.BUNDLE_SIZE_BAR_EDGE_COLOR,
+            linewidth=cfg.BUNDLE_SIZE_BAR_LINEWIDTH,
+        )
+        bottoms += values
+
+    for index, framework in enumerate(frameworks):
+        total = summary.loc[framework, "bundle_size_kib"]
+        ax.text(
+            index,
+            total,
+            cfg.BUNDLE_SIZE_TOTAL_FORMAT.format(value=total),
+            ha=cfg.BUNDLE_SIZE_TOTAL_HORIZONTAL_ALIGNMENT,
+            va=cfg.BUNDLE_SIZE_TOTAL_VERTICAL_ALIGNMENT,
+            fontsize=cfg.BUNDLE_SIZE_TOTAL_FONT_SIZE,
+            fontweight=cfg.BUNDLE_SIZE_TOTAL_FONT_WEIGHT,
+        )
+
+    ax.set_title(cfg.BUNDLE_SIZE_PLOT_TITLE, pad=cfg.PLOT_TITLE_PAD)
+    ax.set_xlabel(cfg.BUNDLE_SIZE_PLOT_X_LABEL)
+    ax.set_ylabel(cfg.BUNDLE_SIZE_PLOT_Y_LABEL)
+    ax.set_ylim(
+        0,
+        max(1, summary["bundle_size_kib"].max()) * cfg.PLOT_VALUE_LIMIT_FACTOR,
+    )
+    configure_value_grid(ax, "y")
     ax.grid(axis="x", visible=False)
-    sns.despine(left=False, bottom=False)
-    grid.figure.tight_layout()
+    ax.legend(
+        title=cfg.BUNDLE_SIZE_LEGEND_TITLE,
+        frameon=cfg.PLOT_LEGEND_FRAME,
+    )
+    sns.despine(left=False, bottom=cfg.PLOT_DESPINE_BOTTOM)
+    fig.tight_layout()
 
-    output_path = PERFORMANCE_RESULTS_DIR / "bundle-size.png"
-    grid.figure.savefig(output_path, dpi=300, bbox_inches="tight")
-    close_grid(grid)
+    output_path = cfg.PERFORMANCE_RESULTS_DIR / cfg.BUNDLE_SIZE_PLOT_FILENAME
+    save_figure(fig, output_path)
+    plt.close(fig)
 
     return output_path
 
@@ -185,21 +228,18 @@ def create_dom_mutation_barplot(measurements: pd.DataFrame) -> Path | None:
         return None
 
     measurements = measurements.copy()
-    board_independent_actions = {
-        "task-create",
-        "task-edit",
-        "task-move-within-column",
-        "board-switch",
-    }
     measurements["scenario_display"] = measurements.apply(
         lambda row: str(row["scenario"]).split(" | ", maxsplit=1)[0]
-        if row["action"] in board_independent_actions
+        if row["action"] in cfg.DOM_BOARD_INDEPENDENT_ACTIONS
         else str(row["scenario"]),
         axis=1,
     )
     scenario_labels = list(dict.fromkeys(measurements["scenario_display"]))
 
-    height = max(7, len(scenario_labels) * 0.48)
+    height = max(
+        cfg.SCENARIO_PLOT_MIN_HEIGHT,
+        len(scenario_labels) * cfg.SCENARIO_PLOT_HEIGHT_PER_ROW,
+    )
     grid = sns.catplot(
         data=measurements,
         kind="bar",
@@ -207,34 +247,41 @@ def create_dom_mutation_barplot(measurements: pd.DataFrame) -> Path | None:
         y="scenario_display",
         hue="framework",
         order=scenario_labels,
-        hue_order=FRAMEWORK_ORDER,
-        palette=FRAMEWORK_PALETTE,
+        hue_order=cfg.FRAMEWORK_ORDER,
+        palette=cfg.FRAMEWORK_PALETTE,
         errorbar=None,
         height=height,
-        aspect=13 / height,
+        aspect=cfg.SCENARIO_PLOT_WIDTH / height,
     )
     ax = grid.ax
 
     annotate_bars(ax)
-    ax.set_title("DOM-Mutationen nach Szenario", pad=12)
-    ax.set_xlabel("Mutation Records")
-    ax.set_ylabel("Szenario")
-    ax.set_xlim(0, max(1, measurements["mutationRecords"].max()) * 1.18)
-    ax.grid(axis="x", linestyle="--", linewidth=0.5, alpha=0.55)
+    ax.set_title(cfg.DOM_MUTATION_PLOT_TITLE, pad=cfg.PLOT_TITLE_PAD)
+    ax.set_xlabel(cfg.DOM_MUTATION_PLOT_X_LABEL)
+    ax.set_ylabel(cfg.DOM_MUTATION_PLOT_Y_LABEL)
+    ax.set_xlim(
+        0,
+        max(1, measurements["mutationRecords"].max())
+        * cfg.PLOT_VALUE_LIMIT_FACTOR,
+    )
+    configure_value_grid(ax, "x")
     ax.grid(axis="y", visible=False)
     sns.move_legend(
         grid,
-        "center left",
-        title="Framework",
-        bbox_to_anchor=(1.01, 0.5),
-        frameon=True,
+        cfg.SCENARIO_LEGEND_LOCATION,
+        title=cfg.PLOT_LEGEND_TITLE,
+        bbox_to_anchor=cfg.SCENARIO_LEGEND_ANCHOR,
+        frameon=cfg.PLOT_LEGEND_FRAME,
     )
 
-    sns.despine(left=True, bottom=False)
+    sns.despine(
+        left=cfg.PLOT_DESPINE_LEFT,
+        bottom=cfg.PLOT_DESPINE_BOTTOM,
+    )
     grid.figure.tight_layout()
 
-    output_path = REACTIVITY_RESULTS_DIR / "dom-mutations.png"
-    grid.figure.savefig(output_path, dpi=300, bbox_inches="tight")
+    output_path = cfg.REACTIVITY_RESULTS_DIR / cfg.DOM_MUTATION_PLOT_FILENAME
+    save_figure(grid.figure, output_path)
     close_grid(grid)
 
     return output_path
@@ -250,14 +297,37 @@ def annotate_bars(ax, decimal_places: int = 0) -> None:
     value_format = f"%.{decimal_places}f"
 
     for container in ax.containers:
-        ax.bar_label(container, fmt=value_format, padding=3, fontsize=9)
+        ax.bar_label(
+            container,
+            fmt=value_format,
+            padding=cfg.BAR_LABEL_PADDING,
+            fontsize=cfg.BAR_LABEL_FONT_SIZE,
+        )
+
+
+def configure_value_grid(ax, axis: str, **kwargs) -> None:
+    ax.grid(
+        axis=axis,
+        linestyle=cfg.PLOT_GRID_LINESTYLE,
+        linewidth=cfg.PLOT_GRID_LINEWIDTH,
+        alpha=cfg.PLOT_GRID_ALPHA,
+        **kwargs,
+    )
+
+
+def save_figure(figure, output_path: Path) -> None:
+    figure.savefig(
+        output_path,
+        dpi=cfg.PLOT_DPI,
+        bbox_inches=cfg.PLOT_BBOX_INCHES,
+    )
 
 
 def configure_millisecond_axis(ax) -> None:
     lower, upper = ax.get_xlim()
     ticks = [
         tick
-        for tick in MILLISECOND_TICKS
+        for tick in cfg.MILLISECOND_TICKS
         if lower <= tick <= upper
     ]
 

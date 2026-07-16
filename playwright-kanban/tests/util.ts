@@ -103,6 +103,9 @@ export type BundleSizeResultEntry = {
   browser: string;
   framework: string;
   bundleSizeBytes: number;
+  scriptSizeBytes: number;
+  stylesheetSizeBytes: number;
+  wasmSizeBytes: number;
 };
 
 const allPerformanceTargets: PerformanceTarget[] = [

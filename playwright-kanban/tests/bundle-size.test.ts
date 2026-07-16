@@ -8,6 +8,20 @@ import {
   type PerformanceTarget,
 } from './util';
 
+type BundleAssetType = 'script' | 'stylesheet' | 'wasm';
+
+type BundleAsset = {
+  response: Response;
+  type: BundleAssetType;
+};
+
+type BundleSizes = {
+  bundleSizeBytes: number;
+  scriptSizeBytes: number;
+  stylesheetSizeBytes: number;
+  wasmSizeBytes: number;
+};
+
 test.setTimeout(performanceTestTimeout);
 
 for (const target of performanceTargets) {
@@ -30,12 +44,13 @@ async function measureBundleSizeRepeatedly(
     await test.step(`run ${run}`, async () => {
       const context = await browser.newContext();
       const page = await context.newPage();
-      const assetResponses = new Map<string, Response>();
+      const bundleAssets = new Map<string, BundleAsset>();
       const targetOrigin = new URL(target.url).origin;
 
       page.on('response', (response) => {
-        if (isBundleAsset(response, targetOrigin)) {
-          assetResponses.set(response.url(), response);
+        const type = bundleAssetType(response, targetOrigin);
+        if (type) {
+          bundleAssets.set(response.url(), { response, type });
         }
       });
 
@@ -43,15 +58,13 @@ async function measureBundleSizeRepeatedly(
         await page.goto(target.url, { waitUntil: 'networkidle' });
         await expect(page.getByTestId('sidebar-board-0')).toBeVisible();
 
-        const bundleSizeBytes = await sumResponseBodySizes(
-          assetResponses.values(),
-        );
+        const bundleSizes = await measureBundleSizes(bundleAssets.values());
 
-        expect(bundleSizeBytes).toBeGreaterThan(0);
+        expect(bundleSizes.bundleSizeBytes).toBeGreaterThan(0);
         entries.push({
           run,
           framework: target.framework,
-          bundleSizeBytes,
+          ...bundleSizes,
         });
       } finally {
         await context.close();
@@ -63,31 +76,53 @@ async function measureBundleSizeRepeatedly(
   expect(entries).toHaveLength(runs);
 }
 
-function isBundleAsset(response: Response, targetOrigin: string): boolean {
+function bundleAssetType(
+  response: Response,
+  targetOrigin: string,
+): BundleAssetType | null {
   const url = new URL(response.url());
 
   if (url.origin !== targetOrigin || !response.ok()) {
-    return false;
+    return null;
   }
 
   const resourceType = response.request().resourceType();
   const contentType = response.headers()['content-type']?.toLowerCase() ?? '';
 
-  return (
-    resourceType === 'script' ||
-    resourceType === 'stylesheet' ||
-    contentType.includes('javascript') ||
-    contentType.includes('text/css') ||
-    contentType.includes('application/wasm') ||
-    url.pathname.endsWith('.wasm')
-  );
+  if (contentType.includes('application/wasm') || url.pathname.endsWith('.wasm')) {
+    return 'wasm';
+  }
+  if (resourceType === 'stylesheet' || contentType.includes('text/css')) {
+    return 'stylesheet';
+  }
+  if (resourceType === 'script' || contentType.includes('javascript')) {
+    return 'script';
+  }
+
+  return null;
 }
 
-async function sumResponseBodySizes(
-  responses: Iterable<Response>,
-): Promise<number> {
-  const bodies = await Promise.all(
-    Array.from(responses, (response) => response.body()),
+async function measureBundleSizes(
+  assets: Iterable<BundleAsset>,
+): Promise<BundleSizes> {
+  const measuredAssets = await Promise.all(
+    Array.from(assets, async ({ response, type }) => ({
+      type,
+      size: (await response.body()).byteLength,
+    })),
   );
-  return bodies.reduce((total, body) => total + body.byteLength, 0);
+
+  const sizes: BundleSizes = {
+    bundleSizeBytes: 0,
+    scriptSizeBytes: 0,
+    stylesheetSizeBytes: 0,
+    wasmSizeBytes: 0,
+  };
+
+  for (const asset of measuredAssets) {
+    sizes.bundleSizeBytes += asset.size;
+    sizes[`${asset.type}SizeBytes`] += asset.size;
+  }
+
+  return sizes;
 }
