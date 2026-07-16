@@ -2,7 +2,6 @@ import { expect, test, type Browser, type Response, type TestInfo } from '@playw
 import {
   performanceTargets,
   performanceTestTimeout,
-  runs,
   writeBundleSizeResults,
   type BundleSizeResultEntry,
   type PerformanceTarget,
@@ -26,54 +25,46 @@ test.setTimeout(performanceTestTimeout);
 
 for (const target of performanceTargets) {
   test(
-    `${target.framework}: measure bundle size repeatedly`,
+    `${target.framework}: measure bundle size`,
     async ({ browser }, testInfo) => {
-      await measureBundleSizeRepeatedly(browser, testInfo, target);
+      await measureBundleSize(browser, testInfo, target);
     },
   );
 }
 
-async function measureBundleSizeRepeatedly(
+async function measureBundleSize(
   browser: Browser,
   testInfo: TestInfo,
   target: PerformanceTarget,
 ): Promise<void> {
-  const entries: Omit<BundleSizeResultEntry, 'browser'>[] = [];
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  const bundleAssets = new Map<string, BundleAsset>();
+  const targetOrigin = new URL(target.url).origin;
 
-  for (let run = 1; run <= runs; run++) {
-    await test.step(`run ${run}`, async () => {
-      const context = await browser.newContext();
-      const page = await context.newPage();
-      const bundleAssets = new Map<string, BundleAsset>();
-      const targetOrigin = new URL(target.url).origin;
+  page.on('response', (response) => {
+    const type = bundleAssetType(response, targetOrigin);
+    if (type) {
+      bundleAssets.set(response.url(), { response, type });
+    }
+  });
 
-      page.on('response', (response) => {
-        const type = bundleAssetType(response, targetOrigin);
-        if (type) {
-          bundleAssets.set(response.url(), { response, type });
-        }
-      });
+  try {
+    await page.goto(target.url, { waitUntil: 'networkidle' });
+    await expect(page.getByTestId('sidebar-board-0')).toBeVisible();
 
-      try {
-        await page.goto(target.url, { waitUntil: 'networkidle' });
-        await expect(page.getByTestId('sidebar-board-0')).toBeVisible();
+    const bundleSizes = await measureBundleSizes(bundleAssets.values());
+    expect(bundleSizes.bundleSizeBytes).toBeGreaterThan(0);
 
-        const bundleSizes = await measureBundleSizes(bundleAssets.values());
-
-        expect(bundleSizes.bundleSizeBytes).toBeGreaterThan(0);
-        entries.push({
-          run,
-          framework: target.framework,
-          ...bundleSizes,
-        });
-      } finally {
-        await context.close();
-      }
-    });
+    const entry: Omit<BundleSizeResultEntry, 'browser'> = {
+      run: 1,
+      framework: target.framework,
+      ...bundleSizes,
+    };
+    await writeBundleSizeResults(testInfo, target, [entry]);
+  } finally {
+    await context.close();
   }
-
-  await writeBundleSizeResults(testInfo, target, entries);
-  expect(entries).toHaveLength(runs);
 }
 
 function bundleAssetType(
