@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 # python3 shared/decision-density.py
-# python3 shared/decision-density.py --state-details
-# python3 shared/decision-density.py --details --notes
 
 from __future__ import annotations
 
 import argparse
+import html
+import json
 import re
+import subprocess
 from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -27,22 +28,6 @@ class Metrics:
     non_empty_loc: int = 0
     comment_lines: int = 0
     components: int = 0
-    functions: int = 0
-    types: int = 0
-    decision_points: int = 0
-    highest_decision_file: str = "-"
-    highest_decision_file_points: int = 0
-    highest_decision_file_breakdown: dict[str, int] = field(default_factory=dict)
-
-    @property
-    def decision_density(self) -> float:
-        if self.non_empty_loc == 0:
-            return 0.0
-        return self.decision_points / self.non_empty_loc
-
-    @property
-    def approximate_complexity(self) -> int:
-        return self.functions + self.decision_points
 
 
 @dataclass
@@ -80,40 +65,9 @@ REACT_BUILTIN_HOOKS = frozenset(
 )
 
 
-RUST_DECISION_PATTERNS = (
-    ("if", r"\bif\b"),
-    ("else if", r"\belse\s+if\b"),
-    ("match", r"\bmatch\b"),
-    ("for", r"\bfor\b"),
-    ("while", r"\bwhile\b"),
-    ("loop", r"\bloop\b"),
-    ("&&", r"&&"),
-    ("||", r"\|\|"),
-    ("?", r"\?"),
-    (".map", r"\.map\("),
-    (".and_then", r"\.and_then\("),
-    (".filter", r"\.filter\("),
-)
-
-TS_DECISION_PATTERNS = (
-    ("if", r"\bif\b"),
-    ("else if", r"\belse\s+if\b"),
-    ("switch", r"\bswitch\b"),
-    ("case", r"\bcase\b"),
-    ("for", r"\bfor\b"),
-    ("while", r"\bwhile\b"),
-    ("ternary", r"\?\s*[^?:\n]+\s*:"),
-    ("&&", r"&&"),
-    ("||", r"\|\|"),
-    (".map", r"\.map\("),
-    (".filter", r"\.filter\("),
-    (".find", r"\.find\("),
-    (".some", r"\.some\("),
-)
-
-
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPT_DIR.parent
+HTML_OUTPUT_PATH = REPO_ROOT / "results/implementation/implementation-metrics.html"
 
 if not (REPO_ROOT / "leptos-kanban/src").is_dir():
     raise RuntimeError(f"Leptos source directory not found below {REPO_ROOT}")
@@ -135,88 +89,82 @@ DEFAULT_PROJECTS = (
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Measure LOC and a decision-density proxy for Leptos/React source code.",
+        description="Measure implementation and reactivity metrics for Leptos/React source code.",
     )
     parser.add_argument(
-        "paths",
-        nargs="*",
-        type=Path,
-        help="Optional custom source paths. If omitted, leptos-kanban/src and react-kanban/src are used.",
-    )
-    parser.add_argument(
-        "--csv",
+        "--console",
         action="store_true",
-        help="Print machine-readable CSV instead of the table.",
-    )
-    parser.add_argument(
-        "--notes",
-        action="store_true",
-        help="Print the decision-pattern definition below the table.",
-    )
-    parser.add_argument(
-        "--details",
-        action="store_true",
-        help="Print how the highest decision file was selected.",
-    )
-    parser.add_argument(
-        "--state-details",
-        action="store_true",
-        help="Print detailed hook and signal breakdowns for the state/reactivity metrics.",
+        help="Additionally print the metrics to the console.",
     )
     args = parser.parse_args()
 
-    if args.paths:
-        projects = tuple(
-            ProjectConfig(path.name, path, (".rs", ".ts", ".tsx"))
-            for path in args.paths
-        )
-    else:
-        projects = DEFAULT_PROJECTS
-
-    rows = [(project.name, measure_project(project)) for project in projects]
+    rows = [(project.name, measure_project(project)) for project in DEFAULT_PROJECTS]
     reactivity_rows = [
-        (project.name, measure_reactivity_project(project)) for project in projects
+        (project.name, measure_reactivity_project(project))
+        for project in DEFAULT_PROJECTS
     ]
 
-    if args.csv:
-        print_csv(rows)
-    else:
+    write_html_report(
+        HTML_OUTPUT_PATH,
+        rows,
+        reactivity_rows,
+    )
+
+    if args.console:
         print_table(rows)
         print_reactivity_table(reactivity_rows)
-        if args.state_details:
-            print_state_details(reactivity_rows)
-        if args.notes:
-            print_notes()
-            print_reactivity_notes()
-        if args.details:
-            print_highest_file_details(rows)
+        print_state_details(reactivity_rows)
 
     return 0
 
 
 def measure_project(project: ProjectConfig) -> Metrics:
-    metrics = Metrics()
+    paths = source_files(project)
+    metrics = measure_tokei(paths)
 
-    for path in source_files(project):
+    for path in paths:
         text = path.read_text(encoding="utf-8")
-        file_decision_breakdown = count_decision_points(path, text)
-        file_decision_points = sum(file_decision_breakdown.values())
-
-        metrics.files += 1
-        metrics.loc += len(text.splitlines())
-        metrics.non_empty_loc += count_non_empty_lines(text)
-        metrics.comment_lines += count_comment_lines(text)
         metrics.components += count_components(path, text)
-        metrics.functions += count_functions(path, text)
-        metrics.types += count_types(path, text)
-        metrics.decision_points += file_decision_points
-
-        if file_decision_points > metrics.highest_decision_file_points:
-            metrics.highest_decision_file = str(path)
-            metrics.highest_decision_file_points = file_decision_points
-            metrics.highest_decision_file_breakdown = file_decision_breakdown
 
     return metrics
+
+
+def measure_tokei(paths: list[Path]) -> Metrics:
+    if not paths:
+        return Metrics()
+
+    try:
+        result = subprocess.run(
+            ["tokei", "--output", "json", *(str(path) for path in paths)],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except FileNotFoundError as error:
+        raise RuntimeError("tokei is required to collect file and LOC metrics") from error
+    except subprocess.CalledProcessError as error:
+        message = error.stderr.strip() or "unknown tokei error"
+        raise RuntimeError(f"tokei failed: {message}") from error
+
+    report = json.loads(result.stdout)
+    totals = report["Total"]
+    file_names = {
+        file_report["name"]
+        for language, language_report in report.items()
+        if language != "Total"
+        for file_report in language_report.get("reports", [])
+    }
+
+    code = int(totals["code"])
+    comments = int(totals["comments"])
+    blanks = int(totals["blanks"])
+
+    return Metrics(
+        files=len(file_names),
+        loc=code + comments + blanks,
+        non_empty_loc=code + comments,
+        comment_lines=comments,
+    )
 
 
 def measure_reactivity_project(project: ProjectConfig) -> ReactivityMetrics:
@@ -291,18 +239,6 @@ def source_files(project: ProjectConfig) -> list[Path]:
     ]
 
 
-def count_non_empty_lines(text: str) -> int:
-    return sum(1 for line in text.splitlines() if line.strip())
-
-
-def count_comment_lines(text: str) -> int:
-    return sum(
-        1
-        for line in text.splitlines()
-        if line.strip().startswith(("//", "/*", "*"))
-    )
-
-
 def count_components(path: Path, text: str) -> int:
     if path.suffix == ".rs":
         return len(re.findall(r"#\[component\]", text))
@@ -313,43 +249,6 @@ def count_components(path: Path, text: str) -> int:
             text,
         )
     )
-
-
-def count_functions(path: Path, text: str) -> int:
-    if path.suffix == ".rs":
-        return len(
-            re.findall(
-                r"(?m)^\s*(?:pub\s+)?(?:async\s+)?fn\s+\w+",
-                text,
-            )
-        )
-
-    named_functions = len(
-        re.findall(r"(?m)^\s*(?:export\s+)?function\s+\w+\s*\(", text)
-    )
-    arrow_functions = len(
-        re.findall(
-            r"(?m)^\s*(?:export\s+)?const\s+\w+\s*=\s*(?:\([^=]*\)|\w+)\s*=>",
-            text,
-        )
-    )
-    return named_functions + arrow_functions
-
-
-def count_types(path: Path, text: str) -> int:
-    if path.suffix == ".rs":
-        return len(re.findall(r"(?m)^\s*(?:pub\s+)?(?:struct|enum)\s+\w+", text))
-
-    return len(
-        re.findall(
-            r"(?m)^\s*(?:export\s+)?(?:type|interface|enum)\s+\w+",
-            text,
-        )
-    )
-
-
-def count_state_types(path: Path, text: str) -> int:
-    return len(collect_state_type_names(path, text))
 
 
 def collect_state_type_names(path: Path, text: str) -> list[str]:
@@ -407,72 +306,6 @@ def add_counts(left: dict[str, int], right: dict[str, int]) -> dict[str, int]:
     counts = Counter(left)
     counts.update(right)
     return dict(counts)
-
-
-def count_decision_points(path: Path, text: str) -> dict[str, int]:
-    patterns = RUST_DECISION_PATTERNS if path.suffix == ".rs" else TS_DECISION_PATTERNS
-    counts = {}
-
-    for label, pattern in patterns:
-        if label == "||":
-            count = count_logical_or(text)
-        else:
-            count = len(re.findall(pattern, text))
-
-        if count > 0:
-            counts[label] = count
-
-    return counts
-
-
-def count_logical_or(text: str) -> int:
-    count = 0
-
-    for match in re.finditer(r"\|\|", text):
-        line_start = text.rfind("\n", 0, match.start()) + 1
-        line_end = text.find("\n", match.end())
-        if line_end == -1:
-            line_end = len(text)
-
-        left = text[line_start:match.start()].rstrip()
-        right = text[match.end():line_end].lstrip()
-
-        if is_logical_or_context(left, right):
-            count += 1
-
-    return count
-
-
-def is_logical_or_context(left: str, right: str) -> bool:
-    if not left or not right:
-        return False
-
-    if left.endswith("move"):
-        return False
-
-    if left[-1] in "=([{,;":
-        return False
-
-    if right[0] in "{),];":
-        return False
-
-    return True
-
-
-def print_csv(rows: list[tuple[str, Metrics]]) -> None:
-    print(
-        "project,files,loc,non_empty_loc,comment_lines,components,functions,"
-        "types,decision_points,decision_density,approximate_complexity,"
-        "highest_decision_file,highest_decision_file_points"
-    )
-    for name, metrics in rows:
-        print(
-            f"{name},{metrics.files},{metrics.loc},{metrics.non_empty_loc},"
-            f"{metrics.comment_lines},{metrics.components},{metrics.functions},"
-            f"{metrics.types},{metrics.decision_points},"
-            f"{metrics.decision_density:.4f},{metrics.approximate_complexity},"
-            f"{metrics.highest_decision_file},{metrics.highest_decision_file_points}"
-        )
 
 
 def print_table(rows: list[tuple[str, Metrics]]) -> None:
@@ -556,23 +389,6 @@ def comparison_table_rows(rows: list[tuple[str, Metrics]]) -> list[tuple[str, ..
         ("LOC gesamt", lambda metrics: str(metrics.loc)),
         ("Nicht-leere LOC", lambda metrics: str(metrics.non_empty_loc)),
         ("Komponenten", lambda metrics: str(metrics.components)),
-        ("Funktionen/Methoden", lambda metrics: str(metrics.functions)),
-        ("Typen/Structs/Enums/Interfaces", lambda metrics: str(metrics.types)),
-        (
-            "Komplexitäts-Proxy: Entscheidungsstellen",
-            lambda metrics: str(metrics.decision_points),
-        ),
-        (
-            "Approx. Gesamtkomplexität: Funktionen + Entscheidungsstellen",
-            lambda metrics: str(metrics.approximate_complexity),
-        ),
-        (
-            "Komplexeste Datei nach Proxy",
-            lambda metrics: (
-                f"`{Path(metrics.highest_decision_file).name}`, "
-                f"{metrics.highest_decision_file_points}"
-            ),
-        ),
     ]
 
     table_rows = []
@@ -604,44 +420,133 @@ def reactivity_table_rows(
     return table_rows
 
 
-def print_notes() -> None:
-    print()
-    print("Decision patterns:")
-    print("  Rust: if, else if, match, for, while, loop, &&, ||, ?, map, and_then, filter")
-    print("  TS/TSX: if, else if, switch, case, for, while, ternary, &&, ||, map, filter, find, some")
-    print()
-    print("Formula:")
-    print("  decision density = decision points / non-empty LOC")
+def write_html_report(
+    output_path: Path,
+    implementation_rows: list[tuple[str, Metrics]],
+    reactivity_rows: list[tuple[str, ReactivityMetrics]],
+) -> None:
+    sections = [
+        "<h1>Implementierungsmetriken</h1>",
+        html_table(
+            ("Kriterium", *(name for name, _metrics in implementation_rows)),
+            comparison_table_rows(implementation_rows),
+        ),
+    ]
+
+    sections.extend(
+        (
+            "<h2>State-/Reaktivitäts-Metriken</h2>",
+            html_table(
+                ("Kriterium", *(name for name, _metrics in reactivity_rows)),
+                reactivity_table_rows(reactivity_rows),
+            ),
+        )
+    )
+
+    sections.extend(
+        (
+            "<h2>State-/Reaktivitäts-Details</h2>",
+            html_state_details(reactivity_rows),
+        )
+    )
+
+    document = f"""<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Implementierungsmetriken</title>
+  <style>
+    :root {{ color-scheme: light; font-family: Inter, system-ui, sans-serif; }}
+    body {{ margin: 0 auto; max-width: 1100px; padding: 2rem; color: #1f2937; background: #f8fafc; }}
+    h1, h2, h3 {{ color: #111827; }}
+    h2 {{ margin-top: 2.5rem; }}
+    table {{ width: 100%; border-collapse: collapse; margin: 1rem 0; background: #fff; box-shadow: 0 1px 3px #0000001a; }}
+    th, td {{ padding: .7rem .85rem; border: 1px solid #dbe2ea; text-align: left; }}
+    th {{ background: #e8eef5; font-weight: 650; }}
+    tbody tr:nth-child(even) {{ background: #f8fafc; }}
+    .details {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }}
+    .card {{ padding: 1rem 1.2rem; border: 1px solid #dbe2ea; border-radius: .5rem; background: #fff; box-shadow: 0 1px 3px #00000012; }}
+    .card h3 {{ margin-top: 0; }}
+    .card table {{ box-shadow: none; font-size: .92rem; }}
+    code {{ padding: .1rem .25rem; border-radius: .2rem; background: #e8eef5; }}
+  </style>
+</head>
+<body>
+  {''.join(sections)}
+</body>
+</html>
+"""
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(document, encoding="utf-8")
 
 
-def print_reactivity_notes() -> None:
-    print()
-    print("State/reactivity patterns:")
-    print("  State objects: Leptos structs below src/types/state; React object types below src/types/serialize")
-    print("  React ID aliases and Raw DTO types are excluded from state objects")
-    print("  Hooks: React-style useX definitions and invocations, excluding definition lines")
-    print("  Signals: Leptos signal constructions via RwSignal::new, Signal::derive, Signal::from")
+def html_table(headers: tuple[str, ...], rows: list[tuple[str, ...]]) -> str:
+    header_cells = "".join(f"<th>{html.escape(value)}</th>" for value in headers)
+    body_rows = "".join(
+        "<tr>" + "".join(f"<td>{html.escape(value)}</td>" for value in row) + "</tr>"
+        for row in rows
+    )
+    return f"<table><thead><tr>{header_cells}</tr></thead><tbody>{body_rows}</tbody></table>"
 
 
-def print_highest_file_details(rows: list[tuple[str, Metrics]]) -> None:
-    print()
-    print("Highest decision file details:")
+def html_state_details(rows: list[tuple[str, ReactivityMetrics]]) -> str:
+    cards = []
     for name, metrics in rows:
-        print(f"  {name}: {format_path(metrics.highest_decision_file)}")
-        print(f"    decision points: {metrics.highest_decision_file_points}")
+        details = []
+
+        if metrics.state_type_names:
+            state_names = ", ".join(sorted(metrics.state_type_names))
+            details.append(
+                f"<p><strong>State-Objekte:</strong> {metrics.state_types} gesamt<br>"
+                f"{html.escape(state_names)}</p>"
+            )
+
+        if metrics.hook_calls:
+            details.append(
+                f"<p><strong>Hook-Aufrufe:</strong> {metrics.hook_calls} gesamt, "
+                f"{metrics.hook_builtin_calls} Built-in, "
+                f"{metrics.hook_custom_calls} Custom</p>"
+            )
+            details.append(
+                html_breakdown_table("Hook-Aufrufe nach Name", metrics.hook_call_breakdown)
+            )
+
+        if metrics.hook_definition_names:
+            hook_names = ", ".join(sorted(metrics.hook_definition_names))
+            details.append(
+                f"<p><strong>Hook-Definitionen:</strong> {html.escape(hook_names)}</p>"
+            )
+
+        if metrics.signal_constructions:
+            details.append(
+                f"<p><strong>Signal-Konstruktionen:</strong> "
+                f"{metrics.signal_constructions} gesamt</p>"
+            )
+            details.append(
+                html_breakdown_table(
+                    "Signal-Konstruktionen nach Typ",
+                    metrics.signal_breakdown,
+                )
+            )
+
+        cards.append(
+            f'<section class="card"><h3>{html.escape(name)}</h3>{"".join(details)}</section>'
+        )
+
+    return f'<div class="details">{"".join(cards)}</div>'
+
+
+def html_breakdown_table(title: str, counts: dict[str, int]) -> str:
+    rows = [
+        (label, str(count))
         for label, count in sorted(
-            metrics.highest_decision_file_breakdown.items(),
+            counts.items(),
             key=lambda item: (-item[1], item[0]),
-        ):
-            print(f"    {label}: {count}")
-
-
-def format_path(path: str) -> str:
-    path_value = Path(path)
-    try:
-        return str(path_value.relative_to(REPO_ROOT))
-    except ValueError:
-        return str(path_value)
+        )
+    ]
+    return f"<h4>{html.escape(title)}</h4>" + html_table(("Name", "Anzahl"), rows)
 
 
 if __name__ == "__main__":

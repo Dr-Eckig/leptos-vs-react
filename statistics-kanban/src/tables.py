@@ -33,11 +33,22 @@ def create_performance_summary_table(
     output_dir: Path,
 ) -> list[Path]:
     summary = summarize_performance(measurements)
-    png_path = output_dir / "performance-summary-table.png"
+    output_paths = []
 
-    create_performance_summary_table_image(summary, png_path)
+    for framework in FRAMEWORK_ORDER:
+        framework_summary = summary[summary["framework"] == framework]
+        if framework_summary.empty:
+            continue
 
-    return [png_path]
+        png_path = output_dir / f"performance-summary-table-{framework.lower()}.png"
+        create_performance_summary_table_image(
+            framework_summary,
+            png_path,
+            framework,
+        )
+        output_paths.append(png_path)
+
+    return output_paths
 
 
 def create_dom_mutation_summary_table(
@@ -101,6 +112,7 @@ def summarize_dom_mutations(measurements: pd.DataFrame) -> pd.DataFrame:
 def create_performance_summary_table_image(
     summary: pd.DataFrame,
     output_path: Path,
+    framework: str,
 ) -> None:
     display_summary = summary.rename(
         columns={
@@ -135,7 +147,12 @@ def create_performance_summary_table_image(
     table.scale(1, 1.25)
     style_table(table, display_summary)
 
-    ax.set_title("Performance Summary", pad=18, fontsize=14, weight="bold")
+    ax.set_title(
+        f"Performance Summary – {framework}",
+        pad=18,
+        fontsize=14,
+        weight="bold",
+    )
     fig.tight_layout()
     fig.savefig(output_path, dpi=300, bbox_inches="tight")
     plt.close(fig)

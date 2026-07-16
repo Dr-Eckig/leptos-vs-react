@@ -54,7 +54,10 @@ This can take some time.
 
 The Chromium-only bundle-size test opens every application in a fresh browser context
 and sums the response-body sizes of same-origin JavaScript, CSS, and WebAssembly
-assets. Its raw measurements are written to `statistics-kanban/bundle-size-data`.
+assets. Its raw measurements are written to
+`statistics-kanban/bundle-size-data`. The remaining performance measurements
+are stored below `statistics-kanban/data`; DOM observer measurements are stored
+below `statistics-kanban/dom-mutations-data`.
 
 Make sure that both application servers are already running before starting the tests.
 
@@ -66,9 +69,22 @@ After the Playwright tests have finished, run:
 ./scripts/generate-plots.sh
 ```
 
-This generates the plots and summary tables from the collected performance data to `ba-plots`.
-The generated files include the Chromium bundle-size bar chart
-`ba-plots/bundle-size.png`.
+This generates performance plots and tables in `results/performance`. The
+Chromium bundle-size bar chart is written to
+`results/performance/bundle-size.png`. DOM observer plots and tables are written
+to `results/reactivity`.
+
+## 6. Generate implementation metrics
+
+Run:
+
+```bash
+./scripts/analyze-code.sh
+```
+
+The cyclomatic-complexity reports and the table containing LOC, file count,
+component count, and the remaining implementation metrics are written to
+`results/implementation`.
 
 ## Terminal overview
 

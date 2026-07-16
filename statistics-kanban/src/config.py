@@ -5,10 +5,13 @@ PROJECT_DIR = Path(__file__).resolve().parent.parent
 REPO_ROOT = PROJECT_DIR.parent
 os.environ.setdefault("MPLCONFIGDIR", str(PROJECT_DIR / ".matplotlib-cache"))
 
+RESULTS_DIR = REPO_ROOT / "results"
+PERFORMANCE_RESULTS_DIR = RESULTS_DIR / "performance"
+REACTIVITY_RESULTS_DIR = RESULTS_DIR / "reactivity"
+
 DATA_DIR = PROJECT_DIR / "data"
 DOM_MUTATION_DATA_DIR = PROJECT_DIR / "dom-mutations-data"
 BUNDLE_SIZE_DATA_DIR = PROJECT_DIR / "bundle-size-data"
-PLOTS_DIR = REPO_ROOT / "ba-plots"
 DOM_MUTATION_BROWSER = "chromium"
 BUNDLE_SIZE_BROWSER = "chromium"
 

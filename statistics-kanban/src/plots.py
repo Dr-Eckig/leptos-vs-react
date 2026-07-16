@@ -10,7 +10,8 @@ from config import (
     INITIAL_LOAD_LABELS,
     INITIAL_LOAD_ORDER,
     MILLISECOND_TICKS,
-    PLOTS_DIR,
+    PERFORMANCE_RESULTS_DIR,
+    REACTIVITY_RESULTS_DIR,
 )
 from data import ordered_values, scenario_order
 
@@ -69,7 +70,7 @@ def create_browser_boxplot(measurements: pd.DataFrame, browser: str) -> Path:
     sns.despine(left=True, bottom=False)
     grid.figure.tight_layout()
 
-    output_path = PLOTS_DIR / f"performance-boxplots-{browser}.png"
+    output_path = PERFORMANCE_RESULTS_DIR / f"performance-boxplots-{browser}.png"
     grid.figure.savefig(output_path, dpi=300, bbox_inches="tight")
     close_grid(grid)
 
@@ -135,7 +136,7 @@ def create_initial_load_boxplot(measurements: pd.DataFrame) -> Path | None:
     sns.despine(left=True, bottom=False)
     grid.figure.tight_layout(rect=(0, 0, 0.91, 1))
 
-    output_path = PLOTS_DIR / "initial-load-boxplots.png"
+    output_path = PERFORMANCE_RESULTS_DIR / "initial-load-boxplots.png"
     grid.figure.savefig(output_path, dpi=300, bbox_inches="tight")
     close_grid(grid)
 
@@ -172,7 +173,7 @@ def create_bundle_size_barplot(measurements: pd.DataFrame) -> Path | None:
     sns.despine(left=False, bottom=False)
     grid.figure.tight_layout()
 
-    output_path = PLOTS_DIR / "bundle-size.png"
+    output_path = PERFORMANCE_RESULTS_DIR / "bundle-size.png"
     grid.figure.savefig(output_path, dpi=300, bbox_inches="tight")
     close_grid(grid)
 
@@ -232,7 +233,7 @@ def create_dom_mutation_barplot(measurements: pd.DataFrame) -> Path | None:
     sns.despine(left=True, bottom=False)
     grid.figure.tight_layout()
 
-    output_path = PLOTS_DIR / "dom-mutations.png"
+    output_path = REACTIVITY_RESULTS_DIR / "dom-mutations.png"
     grid.figure.savefig(output_path, dpi=300, bbox_inches="tight")
     close_grid(grid)
 

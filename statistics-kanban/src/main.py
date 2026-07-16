@@ -5,7 +5,8 @@ from config import (
     DATA_DIR,
     DOM_MUTATION_DATA_DIR,
     INITIAL_LOAD_ORDER,
-    PLOTS_DIR,
+    PERFORMANCE_RESULTS_DIR,
+    REACTIVITY_RESULTS_DIR,
 )
 from data import (
     load_bundle_size_measurements,
@@ -25,7 +26,8 @@ from tables import create_dom_mutation_summary_table, create_performance_summary
 
 def main() -> None:
     measurements = load_measurements(DATA_DIR)
-    PLOTS_DIR.mkdir(parents=True, exist_ok=True)
+    PERFORMANCE_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    REACTIVITY_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
     configure_plot_theme()
 
@@ -59,9 +61,15 @@ def main() -> None:
     if dom_mutation_plot is not None:
         output_paths.append(dom_mutation_plot)
 
-    table_paths = create_performance_summary_table(measurements, PLOTS_DIR)
+    table_paths = create_performance_summary_table(
+        measurements,
+        PERFORMANCE_RESULTS_DIR,
+    )
     table_paths.extend(
-        create_dom_mutation_summary_table(dom_mutation_measurements, PLOTS_DIR)
+        create_dom_mutation_summary_table(
+            dom_mutation_measurements,
+            REACTIVITY_RESULTS_DIR,
+        )
     )
 
     print(f"Loaded {len(measurements)} measurements from {DATA_DIR}")
