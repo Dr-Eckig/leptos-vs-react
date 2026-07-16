@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   useBoardsActions,
   useBoardsState,
@@ -13,18 +12,13 @@ import {
   start as startPerformanceMeasurement,
   type FinishPerformanceMeasurement,
 } from "../../../performance";
+import { Priority, type ColumnType, type Task, type TaskId } from "../../../types/serialize";
+import { validateTask } from "../../../types/validation";
 import {
-  Priority,
-  type ColumnType,
-  type Task,
-  type TaskId,
-} from "../../../types/serialize";
-import {
-  validateTask,
-  type TaskValidationError,
-} from "../../../types/validation";
-import type { OpenTaskModal } from "../../../types/modals";
-import { formatDateToString } from "../../../types/date";
+  useTaskForm,
+  type OpenTaskModal,
+  type TaskForm,
+} from "../../../types/modals";
 import { IconButton } from "../../ui/IconButton";
 import { Input } from "../../ui/Input";
 import { Modal } from "../../ui/Modal";
@@ -85,55 +79,6 @@ function TaskModalContent({ data }: TaskModalContentProps) {
     </Modal>
   );
 }
-
-function useTaskForm(task: Task | null) {
-  const [title, setTitle] = useState(task?.title ?? "");
-  const [description, setDescription] = useState(task?.description ?? "");
-  const [priority, setPriority] = useState<Priority>(task?.priority ?? Priority.Medium);
-  const [dueDate, setDueDate] = useState(
-    task?.dueDate ? formatDateToString(task.dueDate) : "",
-  );
-  const [titleError, setTitleError] = useState<string>();
-  const [priorityError, setPriorityError] = useState<string>();
-  const [dueDateError, setDueDateError] = useState<string>();
-
-  const userTask = () => ({ title, description, priority, dueDate });
-  const clearErrors = () => {
-    setTitleError(undefined);
-    setPriorityError(undefined);
-    setDueDateError(undefined);
-  };
-  const setValidationError = (error: TaskValidationError) => {
-    if (error === "TitleTooLong") {
-      setTitleError("Please enter a title with at most 200 characters.");
-    } else if (error === "EmptyTitle") {
-      setTitleError("The title must not be empty.");
-    } else if (error === "InvalidDueDate") {
-      setDueDateError("Please enter a valid date.");
-    } else {
-      setPriorityError("Please select a valid priority.");
-    }
-  };
-
-  return {
-    title,
-    setTitle,
-    description,
-    setDescription,
-    priority,
-    setPriority,
-    dueDate,
-    setDueDate,
-    titleError,
-    priorityError,
-    dueDateError,
-    userTask,
-    clearErrors,
-    setValidationError,
-  };
-}
-
-type TaskForm = ReturnType<typeof useTaskForm>;
 
 function TaskFormFields({ form }: { form: TaskForm }) {
   return (

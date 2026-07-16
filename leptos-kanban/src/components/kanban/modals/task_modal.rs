@@ -5,84 +5,12 @@ use crate::{
     performance::{self, FinishPerformanceMeasurement, PerformanceAction, PerformanceContext},
     types::{
         app_context::AppContext,
-        format_date_to_string,
-        modals::OpenTaskModal,
+        modals::{OpenTaskModal, TaskFormState},
         serialize::Task,
         state::TaskState,
         ui::{Color, InputType, Size},
-        validation::task::{TaskValidationError, UserTask},
     },
 };
-
-#[derive(Clone, Copy)]
-struct TaskFormState {
-    title: RwSignal<String>,
-    description: RwSignal<String>,
-    priority: RwSignal<String>,
-    due_date: RwSignal<String>,
-    title_error: RwSignal<Option<String>>,
-    priority_error: RwSignal<Option<String>>,
-    due_date_error: RwSignal<Option<String>>,
-}
-
-impl TaskFormState {
-    fn new(task: Option<TaskState>) -> Self {
-        Self {
-            title: RwSignal::new(
-                task.map(|task| task.title.get_untracked())
-                    .unwrap_or_default(),
-            ),
-            description: RwSignal::new(
-                task.and_then(|task| task.description.get_untracked())
-                    .unwrap_or_default(),
-            ),
-            priority: RwSignal::new(
-                task.map(|task| task.priority.get_untracked().to_string())
-                    .unwrap_or_else(|| String::from("Medium")),
-            ),
-            due_date: RwSignal::new(
-                task.and_then(|task| task.due_date.get_untracked())
-                    .map(|date| format_date_to_string(&date))
-                    .unwrap_or_default(),
-            ),
-            title_error: RwSignal::new(None),
-            priority_error: RwSignal::new(None),
-            due_date_error: RwSignal::new(None),
-        }
-    }
-
-    fn user_task(self) -> UserTask {
-        UserTask {
-            title: self.title.get_untracked(),
-            description: self.description.get_untracked(),
-            due_date: self.due_date.get_untracked(),
-            priority: self.priority.get_untracked(),
-        }
-    }
-
-    fn clear_errors(self) {
-        self.title_error.set(None);
-        self.priority_error.set(None);
-        self.due_date_error.set(None);
-    }
-
-    fn set_validation_error(self, error: TaskValidationError) {
-        match error {
-            TaskValidationError::TitleTooLong => self.title_error.set(Some(String::from(
-                "Please enter a title with at most 200 characters.",
-            ))),
-            TaskValidationError::EmptyTitle => self
-                .title_error
-                .set(Some(String::from("The title must not be empty."))),
-            TaskValidationError::InvalidDueDate => self
-                .due_date_error
-                .set(Some(String::from("Please enter a valid date."))),
-            TaskValidationError::InvalidPriority => self
-                .priority_error
-                .set(Some(String::from("Please select a valid priority."))),
-        }
-    }
-}
 
 #[component]
 pub fn TaskModal() -> impl IntoView {

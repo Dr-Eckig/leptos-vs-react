@@ -1,11 +1,14 @@
-import { useState } from "react";
 import {
   useBoardsActions,
   useModalsActions,
   useModalsState,
   type BoardsActions,
 } from "../../../hooks";
-import type { OpenColumnModal } from "../../../types/modals";
+import {
+  useColumnForm,
+  type ColumnForm,
+  type OpenColumnModal,
+} from "../../../types/modals";
 import {
   columnDisplayNames,
   type Column,
@@ -55,31 +58,6 @@ function ColumnModalContent({ data }: ColumnModalContentProps) {
     </Modal>
   );
 }
-
-function useColumnForm(column: Column) {
-  const [wipLimit, setWipLimit] = useState(column.wipLimit?.toString() ?? "");
-  const [limitError, setLimitError] = useState<string>();
-
-  const userColumn = (currentColumn: Column) => ({
-    columnType: currentColumn.columnType,
-    wipLimit,
-  });
-  const clearError = () => setLimitError(undefined);
-  const setValidationError = () => {
-    setLimitError("Please enter a valid number.");
-  };
-
-  return {
-    wipLimit,
-    setWipLimit,
-    limitError,
-    userColumn,
-    clearError,
-    setValidationError,
-  };
-}
-
-type ColumnForm = ReturnType<typeof useColumnForm>;
 
 function ColumnFormFields({ form }: { form: ColumnForm }) {
   return (

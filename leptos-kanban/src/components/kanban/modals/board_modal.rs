@@ -4,52 +4,11 @@ use crate::{
     components::{Input, Modal},
     types::{
         app_context::AppContext,
-        modals::OpenBoardModal,
+        modals::{BoardFormState, OpenBoardModal},
         serialize::Board,
         state::BoardState,
-        validation::board::{BoardValidationError, UserBoard},
     },
 };
-
-#[derive(Clone, Copy)]
-struct BoardFormState {
-    title: RwSignal<String>,
-    title_error: RwSignal<Option<String>>,
-}
-
-impl BoardFormState {
-    fn new(board: Option<BoardState>) -> Self {
-        Self {
-            title: RwSignal::new(
-                board
-                    .map(|board| board.title.get_untracked())
-                    .unwrap_or_default(),
-            ),
-            title_error: RwSignal::new(None),
-        }
-    }
-
-    fn user_board(self) -> UserBoard {
-        UserBoard {
-            title: self.title.get_untracked(),
-        }
-    }
-
-    fn clear_error(self) {
-        self.title_error.set(None);
-    }
-
-    fn set_validation_error(self, error: BoardValidationError) {
-        let message = match error {
-            BoardValidationError::EmptyTitle => "The title must not be empty",
-            BoardValidationError::TitleTooLong => {
-                "Please enter a title with at most 200 characters."
-            }
-        };
-
-        self.title_error.set(Some(String::from(message)));
-    }
-}
 
 #[component]
 pub fn BoardModal() -> impl IntoView {

@@ -1,16 +1,16 @@
-import { useState } from "react";
 import {
   useBoardsActions,
   useModalsActions,
   useModalsState,
   type BoardsActions,
 } from "../../../hooks";
-import type { OpenBoardModal } from "../../../types/modals";
-import type { Board } from "../../../types/serialize";
 import {
-  validateBoard,
-  type BoardValidationError,
-} from "../../../types/validation";
+  useBoardForm,
+  type BoardForm,
+  type OpenBoardModal,
+} from "../../../types/modals";
+import type { Board } from "../../../types/serialize";
+import { validateBoard } from "../../../types/validation";
 import { Input } from "../../ui/Input";
 import { Modal } from "../../ui/Modal";
 
@@ -57,32 +57,6 @@ function BoardModalContent({ data }: BoardModalContentProps) {
     </Modal>
   );
 }
-
-function useBoardForm(board: Board | null) {
-  const [title, setTitle] = useState(board?.title ?? "");
-  const [titleError, setTitleError] = useState<string>();
-
-  const userBoard = () => ({ title });
-  const clearError = () => setTitleError(undefined);
-  const setValidationError = (error: BoardValidationError) => {
-    setTitleError(
-      error === "EmptyTitle"
-        ? "The title must not be empty"
-        : "Please enter a title with at most 200 characters.",
-    );
-  };
-
-  return {
-    title,
-    setTitle,
-    titleError,
-    userBoard,
-    clearError,
-    setValidationError,
-  };
-}
-
-type BoardForm = ReturnType<typeof useBoardForm>;
 
 function BoardFormFields({ form }: { form: BoardForm }) {
   return (
