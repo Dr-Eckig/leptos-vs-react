@@ -17,7 +17,7 @@ import {
 import {
   canColumnAcceptTaskFrom,
   isColumnWipLimitReached,
-} from "../../types/state";
+} from "../../types/state/column";
 import {
   columnDisplayNames,
   type Column as ColumnState,

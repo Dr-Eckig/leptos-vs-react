@@ -24,7 +24,7 @@ impl DraggableItemDto {
         serde_json::from_str(payload).ok()
     }
 
-    pub fn to_payload(&self) -> Option<String> {
-        serde_json::to_string(self).ok()
+    pub fn to_payload(self) -> Option<String> {
+        serde_json::to_string(&self).ok()
     }
 }

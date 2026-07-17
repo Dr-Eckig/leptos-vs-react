@@ -10,7 +10,7 @@ import {
   updateAllBoardsBoardTitle,
   updateCurrentBoardColumnWipLimit,
   updateTaskOnCurrentBoard as updateTaskOnCurrentBoardState,
-} from "../types/state";
+} from "../types/state/all_boards";
 import type {
   Board,
   BoardId,
