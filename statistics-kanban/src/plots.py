@@ -79,6 +79,82 @@ def create_browser_boxplot(measurements: pd.DataFrame, browser: str) -> Path:
     return output_path
 
 
+def create_minimized_boxplot(
+    measurements: pd.DataFrame,
+    group_slug: str,
+    actions: tuple[str, ...],
+    group_label: str,
+    browser: str,
+) -> Path | None:
+    group_measurements = measurements[
+        measurements["action"].isin(actions)
+        & (measurements["browser"] == browser)
+    ].copy()
+
+    if group_measurements.empty:
+        return None
+
+    scenario_labels = ordered_values(
+        group_measurements["scenario"],
+        scenario_order(),
+    )
+    height = max(
+        cfg.MINIMIZED_PLOT_MIN_HEIGHT,
+        len(scenario_labels) * cfg.MINIMIZED_PLOT_HEIGHT_PER_ROW,
+    )
+    grid = sns.catplot(
+        data=group_measurements,
+        kind="box",
+        x="performance_ms",
+        y="scenario",
+        hue="framework",
+        order=scenario_labels,
+        hue_order=cfg.FRAMEWORK_ORDER,
+        palette=cfg.FRAMEWORK_PALETTE,
+        dodge=cfg.BOXPLOT_DODGE,
+        fliersize=cfg.BOXPLOT_FLIER_SIZE,
+        linewidth=cfg.BOXPLOT_LINEWIDTH,
+        height=height,
+        aspect=cfg.MINIMIZED_PLOT_WIDTH / height,
+    )
+    ax = grid.ax
+    browser_label = cfg.BROWSER_LABELS.get(browser, browser.title())
+    ax.set_title(
+        cfg.MINIMIZED_PLOT_TITLE.format(
+            group=group_label,
+            browser=browser_label,
+        ),
+        pad=cfg.PLOT_TITLE_PAD,
+    )
+    ax.set_xlabel(cfg.MINIMIZED_PLOT_X_LABEL)
+    ax.set_ylabel(cfg.MINIMIZED_PLOT_Y_LABEL)
+    ax.set_xscale(cfg.PLOT_VALUE_SCALE)
+    configure_millisecond_axis(ax, cfg.MINIMIZED_MILLISECOND_TICKS)
+    configure_value_grid(ax, "x", which="both")
+    ax.grid(axis="y", visible=False)
+
+    sns.move_legend(
+        grid,
+        cfg.MINIMIZED_PLOT_LEGEND_LOCATION,
+        title=cfg.PLOT_LEGEND_TITLE,
+        bbox_to_anchor=cfg.MINIMIZED_PLOT_LEGEND_ANCHOR,
+        frameon=cfg.PLOT_LEGEND_FRAME,
+    )
+    sns.despine(
+        left=cfg.PLOT_DESPINE_LEFT,
+        bottom=cfg.PLOT_DESPINE_BOTTOM,
+    )
+    grid.figure.tight_layout()
+
+    output_path = cfg.MINIMIZED_PERFORMANCE_RESULTS_DIR / (
+        cfg.MINIMIZED_PLOT_FILENAME.format(group=group_slug, browser=browser)
+    )
+    save_figure(grid.figure, output_path)
+    close_grid(grid)
+
+    return output_path
+
+
 def create_initial_load_boxplot(measurements: pd.DataFrame) -> Path | None:
     initial_load_measurements = measurements[
         measurements["action"].isin(cfg.INITIAL_LOAD_ORDER)
@@ -323,11 +399,14 @@ def save_figure(figure, output_path: Path) -> None:
     )
 
 
-def configure_millisecond_axis(ax) -> None:
+def configure_millisecond_axis(
+    ax,
+    configured_ticks: list[float] = cfg.MILLISECOND_TICKS,
+) -> None:
     lower, upper = ax.get_xlim()
     ticks = [
         tick
-        for tick in cfg.MILLISECOND_TICKS
+        for tick in configured_ticks
         if lower <= tick <= upper
     ]
 

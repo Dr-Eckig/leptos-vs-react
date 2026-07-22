@@ -5,6 +5,8 @@ from config import (
     DATA_DIR,
     DOM_MUTATION_DATA_DIR,
     INITIAL_LOAD_ORDER,
+    MINIMIZED_ACTION_GROUPS,
+    MINIMIZED_PERFORMANCE_RESULTS_DIR,
     PERFORMANCE_RESULTS_DIR,
     REACTIVITY_RESULTS_DIR,
 )
@@ -20,6 +22,7 @@ from plots import (
     create_bundle_size_barplot,
     create_dom_mutation_barplot,
     create_initial_load_boxplot,
+    create_minimized_boxplot,
 )
 from tables import create_dom_mutation_summary_table, create_performance_summary_table
 
@@ -27,6 +30,7 @@ from tables import create_dom_mutation_summary_table, create_performance_summary
 def main() -> None:
     measurements = load_measurements(DATA_DIR)
     PERFORMANCE_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    MINIMIZED_PERFORMANCE_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     REACTIVITY_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
     configure_plot_theme()
@@ -40,6 +44,22 @@ def main() -> None:
         create_browser_boxplot(action_measurements, browser)
         for browser in ordered_values(action_measurements["browser"], BROWSER_ORDER)
     ]
+
+    minimized_plot_paths = [
+        create_minimized_boxplot(
+            action_measurements,
+            group_slug,
+            actions,
+            group_label,
+            browser,
+        )
+        for group_slug, actions, group_label in MINIMIZED_ACTION_GROUPS
+        for browser in ordered_values(
+            action_measurements[action_measurements["action"].isin(actions)]["browser"],
+            BROWSER_ORDER,
+        )
+    ]
+    output_paths.extend(path for path in minimized_plot_paths if path is not None)
 
     initial_load_plot = create_initial_load_boxplot(measurements)
 

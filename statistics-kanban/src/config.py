@@ -7,6 +7,7 @@ os.environ.setdefault("MPLCONFIGDIR", str(PROJECT_DIR / ".matplotlib-cache"))
 
 RESULTS_DIR = REPO_ROOT / "results"
 PERFORMANCE_RESULTS_DIR = RESULTS_DIR / "performance"
+MINIMIZED_PERFORMANCE_RESULTS_DIR = PERFORMANCE_RESULTS_DIR / "minimized"
 REACTIVITY_RESULTS_DIR = RESULTS_DIR / "reactivity"
 
 DATA_DIR = PROJECT_DIR / "data"
@@ -65,7 +66,7 @@ BROWSER_LABELS = {
 
 FRAMEWORK_ORDER = ["Leptos", "React"]
 FRAMEWORK_PALETTE = {
-    "Leptos": "#E87F61",
+    "Leptos": "#EF3B39",
     "React": "#61dafb",
 }
 BROWSER_ORDER = ["chromium", "firefox", "webkit"]
@@ -104,6 +105,31 @@ PERFORMANCE_PLOT_Y_LABEL = "Szenario: Aktion und Boardgröße"
 PERFORMANCE_PLOT_FILENAME = "performance-boxplots-{browser}.png"
 SCENARIO_LEGEND_LOCATION = "center left"
 SCENARIO_LEGEND_ANCHOR = (1.01, 0.5)
+
+# Focused performance boxplots
+MINIMIZED_ACTION_GROUPS = (
+    (
+        "task-management",
+        ("task-create", "task-edit", "task-delete"),
+        "Aufgaben erstellen, bearbeiten und löschen",
+    ),
+    (
+        "task-movement",
+        ("task-move-within-column", "task-move-between-columns"),
+        "Aufgaben innerhalb und zwischen Spalten verschieben",
+    ),
+    ("board-switch", ("board-switch",), "Board wechseln"),
+)
+MINIMIZED_PLOT_MIN_HEIGHT = 4.8
+MINIMIZED_PLOT_HEIGHT_PER_ROW = 0.55
+MINIMIZED_PLOT_WIDTH = 10
+MINIMIZED_PLOT_TITLE = "Kanban-Performance: {group} - {browser}"
+MINIMIZED_PLOT_X_LABEL = "Ausführungsdauer in Millisekunden"
+MINIMIZED_PLOT_Y_LABEL = "Szenario: Aktion und Boardgröße"
+MINIMIZED_PLOT_FILENAME = "performance-boxplots-{group}-{browser}.png"
+MINIMIZED_PLOT_LEGEND_LOCATION = "center left"
+MINIMIZED_PLOT_LEGEND_ANCHOR = (1.01, 0.5)
+MINIMIZED_MILLISECOND_TICKS = [5, 20, 100, 500, 2000]
 
 # Initial-load boxplot
 INITIAL_LOAD_PLOT_HEIGHT = 4.2
