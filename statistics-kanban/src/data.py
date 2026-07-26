@@ -95,6 +95,15 @@ def load_dom_mutation_measurements(data_dir: Path) -> pd.DataFrame:
     for column in numeric_columns:
         measurements[column] = pd.to_numeric(measurements[column])
 
+    measurements["domMutations"] = measurements[
+        [
+            "textChanges",
+            "attributeChanges",
+            "addedElements",
+            "removedElements",
+        ]
+    ].sum(axis=1)
+
     return measurements.sort_values(["scenario", "framework"])
 
 

@@ -173,8 +173,10 @@ DOM_BOARD_INDEPENDENT_ACTIONS = {
     "task-move-within-column",
     "board-switch",
 }
-DOM_MUTATION_PLOT_TITLE = "DOM-Mutationen nach Szenario"
-DOM_MUTATION_PLOT_X_LABEL = "Mutation Records"
+DOM_MUTATION_PLOT_TITLE = "Erfasste DOM-Änderungen nach Szenario"
+DOM_MUTATION_PLOT_X_LABEL = (
+    "Anzahl (Text- und Attributänderungen, hinzugefügte und entfernte Elemente)"
+)
 DOM_MUTATION_PLOT_Y_LABEL = "Szenario"
 DOM_MUTATION_PLOT_FILENAME = "dom-mutations.png"
 

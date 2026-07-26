@@ -319,7 +319,7 @@ def create_dom_mutation_barplot(measurements: pd.DataFrame) -> Path | None:
     grid = sns.catplot(
         data=measurements,
         kind="bar",
-        x="mutationRecords",
+        x="domMutations",
         y="scenario_display",
         hue="framework",
         order=scenario_labels,
@@ -337,7 +337,7 @@ def create_dom_mutation_barplot(measurements: pd.DataFrame) -> Path | None:
     ax.set_ylabel(cfg.DOM_MUTATION_PLOT_Y_LABEL)
     ax.set_xlim(
         0,
-        max(1, measurements["mutationRecords"].max())
+        max(1, measurements["domMutations"].max())
         * cfg.PLOT_VALUE_LIMIT_FACTOR,
     )
     configure_value_grid(ax, "x")
