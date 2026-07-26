@@ -65,11 +65,17 @@
   }
 
   function summarizeRecords(records) {
+    const relevantRecords = records.filter(
+      (record) =>
+        record.type !== "attributes" ||
+        record.attributeName !== "data-testid",
+    );
+
     let textChanges = 0;
     let attributeChanges = 0;
     let addedElements = 0;
     let removedElements = 0;
-    for (const record of records) {
+    for (const record of relevantRecords) {
       if (record.type === "childList") {
         for (const node of record.addedNodes) {
           addedElements += countElementNodes(node);
@@ -86,7 +92,7 @@
     }
 
     return {
-      mutationRecords: records.length,
+      mutationRecords: relevantRecords.length,
       textChanges,
       attributeChanges,
       addedElements,
