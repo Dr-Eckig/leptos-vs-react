@@ -2,7 +2,6 @@ import {
   useBoardsActions,
   useBoardsState,
   useModalsActions,
-  useModalsState,
   type BoardsActions,
   type BoardsState,
 } from "../../../hooks";
@@ -27,17 +26,11 @@ import { Textarea } from "../../ui/Textarea";
 
 const priorityOptions: Priority[] = Object.values(Priority);
 
-export function TaskModal() {
-  const { task } = useModalsState();
-
-  return task ? <TaskModalContent data={task} /> : null;
-}
-
-type TaskModalContentProps = {
+type TaskModalProps = {
   data: OpenTaskModal;
 };
 
-function TaskModalContent({ data }: TaskModalContentProps) {
+export function TaskModal({ data }: TaskModalProps) {
   const boardActions = useBoardsActions();
   const { currentBoard } = useBoardsState();
   const modalActions = useModalsActions();

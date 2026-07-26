@@ -1,7 +1,6 @@
 import {
   useBoardsActions,
   useModalsActions,
-  useModalsState,
   type BoardsActions,
 } from "../../../hooks";
 import {
@@ -14,17 +13,11 @@ import { validateBoard } from "../../../types/validation";
 import { Input } from "../../ui/Input";
 import { Modal } from "../../ui/Modal";
 
-export function BoardModal() {
-  const { board } = useModalsState();
-
-  return board ? <BoardModalContent data={board} /> : null;
-}
-
-type BoardModalContentProps = {
+type BoardModalProps = {
   data: OpenBoardModal;
 };
 
-function BoardModalContent({ data }: BoardModalContentProps) {
+export function BoardModal({ data }: BoardModalProps) {
   const boardActions = useBoardsActions();
   const modalActions = useModalsActions();
   const board = data.board;

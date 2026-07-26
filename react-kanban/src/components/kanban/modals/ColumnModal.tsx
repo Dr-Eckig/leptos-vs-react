@@ -1,7 +1,6 @@
 import {
   useBoardsActions,
   useModalsActions,
-  useModalsState,
   type BoardsActions,
 } from "../../../hooks";
 import {
@@ -17,17 +16,11 @@ import { validateColumn } from "../../../types/validation";
 import { Input } from "../../ui/Input";
 import { Modal } from "../../ui/Modal";
 
-export function ColumnModal() {
-  const { column } = useModalsState();
-
-  return column ? <ColumnModalContent data={column} /> : null;
-}
-
-type ColumnModalContentProps = {
+type ColumnModalProps = {
   data: OpenColumnModal;
 };
 
-function ColumnModalContent({ data }: ColumnModalContentProps) {
+export function ColumnModal({ data }: ColumnModalProps) {
   const boardActions = useBoardsActions();
   const modalActions = useModalsActions();
   const column = data.column;

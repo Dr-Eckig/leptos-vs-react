@@ -1,4 +1,4 @@
-import { useBoardsState } from "../../hooks";
+import { useBoardsState, useModalsState } from "../../hooks";
 import { DownloadLogsButton } from "../ui/DownloadLogsButton";
 import { Sidebar } from "./Sidebar";
 import { TaskColumn } from "./Column";
@@ -6,6 +6,7 @@ import { BoardModal, ColumnModal, TaskModal } from "./modals";
 
 export function Board() {
   const { currentBoard } = useBoardsState();
+  const modals = useModalsState();
   const boardColumns = currentBoard?.columns ?? [];
 
   return (
@@ -21,9 +22,9 @@ export function Board() {
               <TaskColumn key={column.id} column={column} />
             ))}
           </div>
-          <BoardModal />
-          <ColumnModal />
-          <TaskModal />
+          {modals.board && <BoardModal data={modals.board} />}
+          {modals.column && <ColumnModal data={modals.column} />}
+          {modals.task && <TaskModal data={modals.task} />}
         </section>
       </div>
     </div>
