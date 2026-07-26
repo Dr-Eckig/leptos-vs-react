@@ -20,17 +20,23 @@ pub struct ColumnFormState {
 }
 
 impl ColumnFormState {
-    pub fn new(column: ColumnState) -> Self {
-        Self {
-            wip_limit: RwSignal::new(
-                column
-                    .wip_limit
-                    .get_untracked()
-                    .map(|limit| limit.to_string())
-                    .unwrap_or_default(),
-            ),
+    pub fn new(column: Option<ColumnState>) -> Self {
+        let form = Self {
+            wip_limit: RwSignal::new(String::new()),
             limit_error: RwSignal::new(None),
-        }
+        };
+        form.set_column(column);
+        form
+    }
+
+    pub fn set_column(self, column: Option<ColumnState>) {
+        self.wip_limit.set(
+            column
+                .and_then(|column| column.wip_limit.get_untracked())
+                .map(|limit| limit.to_string())
+                .unwrap_or_default(),
+        );
+        self.clear_error();
     }
 
     pub fn user_column(self, column: ColumnState) -> UserColumn {

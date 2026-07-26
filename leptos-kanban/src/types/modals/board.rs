@@ -28,14 +28,21 @@ pub struct BoardFormState {
 
 impl BoardFormState {
     pub fn new(board: Option<BoardState>) -> Self {
-        Self {
-            title: RwSignal::new(
-                board
-                    .map(|board| board.title.get_untracked())
-                    .unwrap_or_default(),
-            ),
+        let form = Self {
+            title: RwSignal::new(String::new()),
             title_error: RwSignal::new(None),
-        }
+        };
+        form.set_board(board);
+        form
+    }
+
+    pub fn set_board(self, board: Option<BoardState>) {
+        self.title.set(
+            board
+                .map(|board| board.title.get_untracked())
+                .unwrap_or_default(),
+        );
+        self.clear_error();
     }
 
     pub fn user_board(self) -> UserBoard {

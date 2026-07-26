@@ -42,28 +42,38 @@ pub struct TaskFormState {
 
 impl TaskFormState {
     pub fn new(task: Option<TaskState>) -> Self {
-        Self {
-            title: RwSignal::new(
-                task.map(|task| task.title.get_untracked())
-                    .unwrap_or_default(),
-            ),
-            description: RwSignal::new(
-                task.and_then(|task| task.description.get_untracked())
-                    .unwrap_or_default(),
-            ),
-            priority: RwSignal::new(
-                task.map(|task| task.priority.get_untracked().to_string())
-                    .unwrap_or_else(|| String::from("Medium")),
-            ),
-            due_date: RwSignal::new(
-                task.and_then(|task| task.due_date.get_untracked())
-                    .map(|date| format_date_to_string(&date))
-                    .unwrap_or_default(),
-            ),
+        let form = Self {
+            title: RwSignal::new(String::new()),
+            description: RwSignal::new(String::new()),
+            priority: RwSignal::new(String::new()),
+            due_date: RwSignal::new(String::new()),
             title_error: RwSignal::new(None),
             priority_error: RwSignal::new(None),
             due_date_error: RwSignal::new(None),
-        }
+        };
+        form.set_task(task);
+        form
+    }
+
+    pub fn set_task(self, task: Option<TaskState>) {
+        self.title.set(
+            task.map(|task| task.title.get_untracked())
+                .unwrap_or_default(),
+        );
+        self.description.set(
+            task.and_then(|task| task.description.get_untracked())
+                .unwrap_or_default(),
+        );
+        self.priority.set(
+            task.map(|task| task.priority.get_untracked().to_string())
+                .unwrap_or_else(|| String::from("Medium")),
+        );
+        self.due_date.set(
+            task.and_then(|task| task.due_date.get_untracked())
+                .map(|date| format_date_to_string(&date))
+                .unwrap_or_default(),
+        );
+        self.clear_errors();
     }
 
     pub fn user_task(self) -> UserTask {

@@ -5,7 +5,7 @@ use crate::{
     performance::{self, FinishPerformanceMeasurement, PerformanceAction, PerformanceContext},
     types::{
         app_context::AppContext,
-        modals::{OpenTaskModal, TaskFormState},
+        modals::TaskFormState,
         serialize::Task,
         state::TaskState,
         ui::{Color, InputType, Size},
@@ -15,32 +15,30 @@ use crate::{
 #[component]
 pub fn TaskModal() -> impl IntoView {
     let app: AppContext = expect_context();
+    let form = TaskFormState::new(None);
 
-    view! {
-        {move || {
-            app.modals
-                .task
-                .get()
-                .map(|data| view! { <TaskModalContent data /> })
-        }}
-    }
-}
+    Effect::new(move || {
+        if let Some(data) = app.modals.task.get() {
+            form.set_task(data.task);
+        }
+    });
 
-#[component]
-fn TaskModalContent(data: OpenTaskModal) -> impl IntoView {
-    let app: AppContext = expect_context();
-    let task = data.task;
-    let column_type = data.column_id;
-    let form = TaskFormState::new(task);
-
-    let close_modal = move || app.modals.task.set(None);
+    let close_modal = move || {
+        if app.modals.task.get_untracked().is_some() {
+            app.modals.task.set(None);
+        }
+    };
     let save_task = move || {
+        let Some(data) = app.modals.task.get_untracked() else {
+            return;
+        };
+
         form.clear_errors();
 
         match form.user_task().validate() {
             Ok(validated_task) => {
                 let finish_measurement =
-                    save_validated_task(app, task, column_type, validated_task);
+                    save_validated_task(app, data.task, data.column_id, validated_task);
                 close_modal();
 
                 if let Some(finish_measurement) = finish_measurement {
@@ -51,22 +49,31 @@ fn TaskModalContent(data: OpenTaskModal) -> impl IntoView {
         }
     };
 
-    let modal_title = if task.is_some() {
-        "Edit Task"
-    } else {
-        "Add Task"
-    };
-    let save_data_test_id = format!(
-        "save-button-{}",
-        column_type
-            .map(|column_type| column_type.name())
-            .unwrap_or("unknown-column"),
-    );
+    let is_open = Signal::derive(move || app.modals.task.get().is_some());
+    let modal_title = Signal::derive(move || {
+        app.modals
+            .task
+            .get()
+            .and_then(|data| data.task)
+            .map(|_| String::from("Edit Task"))
+            .unwrap_or_else(|| String::from("Add Task"))
+    });
+    let save_data_test_id = Signal::derive(move || {
+        format!(
+            "save-button-{}",
+            app.modals
+                .task
+                .get()
+                .and_then(|data| data.column_id)
+                .map(|column_type| column_type.name())
+                .unwrap_or("unknown-column"),
+        )
+    });
 
     view! {
         <Modal
             title=modal_title
-            is_open=Signal::derive(move || true)
+            is_open
             on_save=save_task
             close=close_modal
             save_data_test_id
