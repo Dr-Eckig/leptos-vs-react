@@ -4,7 +4,11 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 import config as cfg
-from data import ordered_values, scenario_order
+from data import (
+    collapse_equal_dom_mutation_boards,
+    ordered_values,
+    scenario_order,
+)
 
 import seaborn as sns
 
@@ -303,13 +307,7 @@ def create_dom_mutation_barplot(measurements: pd.DataFrame) -> Path | None:
     if measurements.empty:
         return None
 
-    measurements = measurements.copy()
-    measurements["scenario_display"] = measurements.apply(
-        lambda row: str(row["scenario"]).split(" | ", maxsplit=1)[0]
-        if row["action"] in cfg.DOM_BOARD_INDEPENDENT_ACTIONS
-        else str(row["scenario"]),
-        axis=1,
-    )
+    measurements = prepare_dom_mutation_plot_data(measurements)
     scenario_labels = list(dict.fromkeys(measurements["scenario_display"]))
 
     height = max(
@@ -361,6 +359,20 @@ def create_dom_mutation_barplot(measurements: pd.DataFrame) -> Path | None:
     close_grid(grid)
 
     return output_path
+
+
+def prepare_dom_mutation_plot_data(measurements: pd.DataFrame) -> pd.DataFrame:
+    prepared = collapse_equal_dom_mutation_boards(measurements)
+    prepared["scenario_display"] = prepared.apply(
+        lambda row: (
+            cfg.ACTION_LABELS.get(row["action"], row["action"])
+            if row["boards_collapsed"]
+            else str(row["scenario"])
+        ),
+        axis=1,
+    )
+
+    return prepared
 
 
 def close_grid(grid) -> None:

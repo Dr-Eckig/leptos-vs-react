@@ -107,6 +107,67 @@ def load_dom_mutation_measurements(data_dir: Path) -> pd.DataFrame:
     return measurements.sort_values(["scenario", "framework"])
 
 
+def collapse_equal_dom_mutation_boards(
+    measurements: pd.DataFrame,
+) -> pd.DataFrame:
+    prepared_actions: list[pd.DataFrame] = []
+    present_actions = set(measurements["action"].astype(str))
+    action_order = [
+        *[action for action in ACTION_ORDER if action in present_actions],
+        *sorted(present_actions - set(ACTION_ORDER)),
+    ]
+
+    for action in action_order:
+        action_measurements = measurements[
+            measurements["action"] == action
+        ].copy()
+        boards_collapsed = all_boards_have_same_dom_mutation_value(
+            action_measurements,
+            action,
+        )
+
+        if boards_collapsed:
+            action_measurements = action_measurements.drop_duplicates(
+                subset=["framework"],
+                keep="first",
+            )
+
+        action_measurements["boards_collapsed"] = boards_collapsed
+        prepared_actions.append(action_measurements)
+
+    if not prepared_actions:
+        return measurements.assign(
+            boards_collapsed=pd.Series(dtype=bool),
+        )
+
+    return pd.concat(prepared_actions, ignore_index=True)
+
+
+def all_boards_have_same_dom_mutation_value(
+    action_measurements: pd.DataFrame,
+    action: str,
+) -> bool:
+    expected_boards = set(boards_for_action(action))
+
+    if not expected_boards or action_measurements.empty:
+        return False
+
+    for _, framework_measurements in action_measurements.groupby(
+        "framework",
+        observed=True,
+    ):
+        measured_boards = set(framework_measurements["board"].astype(str))
+
+        if (
+            measured_boards != expected_boards
+            or len(framework_measurements) != len(expected_boards)
+            or framework_measurements["domMutations"].nunique(dropna=False) != 1
+        ):
+            return False
+
+    return True
+
+
 def load_bundle_size_measurements(data_dir: Path) -> pd.DataFrame:
     json_files = sorted(data_dir.rglob("bundle-size.json"))
 
@@ -214,7 +275,7 @@ def scenario_order() -> list[str]:
 
 
 def boards_for_action(action: str) -> list[str]:
-    if action in {"task-create", "board-switch"}:
+    if action == "task-create":
         return BOARD_ORDER
 
     return BOARD_ORDER[1:]

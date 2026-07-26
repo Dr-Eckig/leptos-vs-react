@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 import config as cfg
+from data import collapse_equal_dom_mutation_boards
 
 
 def create_performance_summary_table(
@@ -69,11 +70,12 @@ def summarize_performance(measurements: pd.DataFrame) -> pd.DataFrame:
 
 
 def summarize_dom_mutations(measurements: pd.DataFrame) -> pd.DataFrame:
-    summary = measurements[
+    summary = collapse_equal_dom_mutation_boards(measurements)[
         [
             "framework",
             "action",
             "board",
+            "boards_collapsed",
             "mutationRecords",
             "textChanges",
             "attributeChanges",
@@ -86,11 +88,16 @@ def summarize_dom_mutations(measurements: pd.DataFrame) -> pd.DataFrame:
     summary["action"] = summary["action"].map(
         lambda value: cfg.ACTION_LABELS.get(value, value)
     )
-    summary["board"] = summary["board"].map(
-        lambda value: cfg.BOARD_LABELS.get(value, value)
+    summary["board"] = summary.apply(
+        lambda row: (
+            cfg.DOM_TABLE_ALL_BOARDS_LABEL
+            if row["boards_collapsed"]
+            else cfg.BOARD_LABELS.get(row["board"], row["board"])
+        ),
+        axis=1,
     )
 
-    return summary
+    return summary.drop(columns="boards_collapsed")
 
 
 def create_performance_summary_table_image(

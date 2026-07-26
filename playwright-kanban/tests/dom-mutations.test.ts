@@ -1,8 +1,8 @@
 import { expect, test, type Page, type TestInfo } from '@playwright/test';
 import {
   addTaskToColumn,
+  boardScenarios,
   boardScenariosWithTasks,
-  boardSwitchScenarios,
   collectLoggedDomMutationAction,
   deleteTask,
   editTaskTitle,
@@ -64,17 +64,21 @@ async function collectDomMutationsOncePerScenario(
 }
 
 function domMutationScenarios(): DomMutationScenario[] {
-  const boardWith10Tasks = boardScenariosWithTasks[0];
-  const switchToBoardWith10Tasks = boardSwitchScenarios[0];
-
   return [
-    addTaskScenario(boardWith10Tasks),
-    editTaskScenario(boardWith10Tasks),
+    ...boardScenarios.map(addTaskScenario),
+    ...boardScenariosWithTasks.map(editTaskScenario),
     ...boardScenariosWithTasks.map(deleteTaskScenario),
-    moveTaskWithinColumnScenario(boardWith10Tasks),
+    ...boardScenariosWithTasks.map(moveTaskWithinColumnScenario),
     ...boardScenariosWithTasks.map(moveTaskBetweenColumnsScenario),
-    boardSwitchScenario(switchToBoardWith10Tasks),
+    ...domMutationBoardSwitchScenarios().map(boardSwitchScenario),
   ];
+}
+
+function domMutationBoardSwitchScenarios(): BoardSwitchScenario[] {
+  return boardScenariosWithTasks.map((scenario) => ({
+    ...scenario,
+    title: `switch to ${scenario.title}`,
+  }));
 }
 
 function addTaskScenario(scenario: BoardScenario): DomMutationScenario {

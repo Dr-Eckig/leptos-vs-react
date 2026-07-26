@@ -167,12 +167,6 @@ BUNDLE_SIZE_LEGEND_TITLE = "Bestandteil"
 BUNDLE_SIZE_PLOT_FILENAME = "bundle-size.png"
 
 # DOM-mutation plot
-DOM_BOARD_INDEPENDENT_ACTIONS = {
-    "task-create",
-    "task-edit",
-    "task-move-within-column",
-    "board-switch",
-}
 DOM_MUTATION_PLOT_TITLE = "Erfasste DOM-Änderungen nach Szenario"
 DOM_MUTATION_PLOT_X_LABEL = (
     "Anzahl (Text- und Attributänderungen, hinzugefügte und entfernte Elemente)"
@@ -243,6 +237,7 @@ DOM_TABLE_COLUMN_LABELS = {
 }
 DOM_TABLE_FILENAME = "dom-mutations-summary-table.png"
 DOM_TABLE_TITLE = "DOM-Mutationen Summary"
+DOM_TABLE_ALL_BOARDS_LABEL = "Alle Boards"
 DOM_TABLE_FIGURE_WIDTH = 18
 DOM_TABLE_MIN_HEIGHT = 8
 DOM_TABLE_ROW_HEIGHT = 0.34
