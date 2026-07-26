@@ -16,7 +16,6 @@ import { Priority, type ColumnType, type Task, type TaskId } from "../../../type
 import { validateTask } from "../../../types/validation";
 import {
   useTaskForm,
-  type OpenTaskModal,
   type TaskForm,
 } from "../../../types/modals";
 import { IconButton } from "../../ui/IconButton";
@@ -28,23 +27,18 @@ import { Textarea } from "../../ui/Textarea";
 const priorityOptions: Priority[] = Object.values(Priority);
 
 export function TaskModal() {
-  const { task } = useModalsState();
-
-  return task ? <TaskModalContent data={task} /> : null;
-}
-
-type TaskModalContentProps = {
-  data: OpenTaskModal;
-};
-
-function TaskModalContent({ data }: TaskModalContentProps) {
+  const { task: data } = useModalsState();
   const boardActions = useBoardsActions();
   const { currentBoard } = useBoardsState();
   const modalActions = useModalsActions();
-  const form = useTaskForm(data.task);
+  const form = useTaskForm(data?.task ?? null, data);
 
   const closeModal = () => modalActions.setTask(null);
   const saveTask = () => {
+    if (!data) {
+      return;
+    }
+
     form.clearErrors();
 
     const result = validateTask(form.userTask());
@@ -64,13 +58,13 @@ function TaskModalContent({ data }: TaskModalContentProps) {
     finishMeasurement?.();
   };
 
-  const modalTitle = data.task ? "Edit Task" : "Add Task";
-  const saveDataTestId = `save-button-${data.columnType ?? "unknown-column"}`;
+  const modalTitle = data?.task ? "Edit Task" : "Add Task";
+  const saveDataTestId = `save-button-${data?.columnType ?? "unknown-column"}`;
 
   return (
     <Modal
       title={modalTitle}
-      isOpen={true}
+      isOpen={data !== null}
       close={closeModal}
       onSave={saveTask}
       saveDataTestId={saveDataTestId}

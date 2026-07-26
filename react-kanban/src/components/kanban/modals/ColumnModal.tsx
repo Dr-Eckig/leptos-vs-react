@@ -7,7 +7,6 @@ import {
 import {
   useColumnForm,
   type ColumnForm,
-  type OpenColumnModal,
 } from "../../../types/modals";
 import {
   columnDisplayNames,
@@ -18,23 +17,18 @@ import { Input } from "../../ui/Input";
 import { Modal } from "../../ui/Modal";
 
 export function ColumnModal() {
-  const { column } = useModalsState();
-
-  return column ? <ColumnModalContent data={column} /> : null;
-}
-
-type ColumnModalContentProps = {
-  data: OpenColumnModal;
-};
-
-function ColumnModalContent({ data }: ColumnModalContentProps) {
+  const { column: data } = useModalsState();
   const boardActions = useBoardsActions();
   const modalActions = useModalsActions();
-  const column = data.column;
-  const form = useColumnForm(column);
+  const column = data?.column ?? null;
+  const form = useColumnForm(column, data);
 
   const closeModal = () => modalActions.setColumn(null);
   const saveColumn = () => {
+    if (!column) {
+      return;
+    }
+
     form.clearError();
 
     const result = validateColumn(form.userColumn(column));
@@ -49,8 +43,12 @@ function ColumnModalContent({ data }: ColumnModalContentProps) {
 
   return (
     <Modal
-      title={`Edit Column: ${columnDisplayNames[column.columnType]}`}
-      isOpen={true}
+      title={
+        column
+          ? `Edit Column: ${columnDisplayNames[column.columnType]}`
+          : "Edit Column"
+      }
+      isOpen={data !== null}
       close={closeModal}
       onSave={saveColumn}
     >

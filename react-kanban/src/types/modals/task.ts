@@ -25,7 +25,11 @@ export function openTaskModalWithTask(
   };
 }
 
-export function useTaskForm(task: Task | null) {
+export function useTaskForm(
+  task: Task | null,
+  modalData: OpenTaskModal | null,
+) {
+  const [formModalData, setFormModalData] = useState(modalData);
   const [title, setTitle] = useState(task?.title ?? "");
   const [description, setDescription] = useState(task?.description ?? "");
   const [priority, setPriority] = useState<Priority>(
@@ -37,6 +41,17 @@ export function useTaskForm(task: Task | null) {
   const [titleError, setTitleError] = useState<string>();
   const [priorityError, setPriorityError] = useState<string>();
   const [dueDateError, setDueDateError] = useState<string>();
+
+  if (modalData !== formModalData) {
+    setFormModalData(modalData);
+    setTitle(task?.title ?? "");
+    setDescription(task?.description ?? "");
+    setPriority(task?.priority ?? Priority.Medium);
+    setDueDate(task?.dueDate ? formatDateToString(task.dueDate) : "");
+    setTitleError(undefined);
+    setPriorityError(undefined);
+    setDueDateError(undefined);
+  }
 
   const userTask = (): UserTask => ({ title, description, priority, dueDate });
   const clearErrors = () => {

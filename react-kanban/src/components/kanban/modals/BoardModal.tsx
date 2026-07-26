@@ -7,7 +7,6 @@ import {
 import {
   useBoardForm,
   type BoardForm,
-  type OpenBoardModal,
 } from "../../../types/modals";
 import type { Board } from "../../../types/serialize";
 import { validateBoard } from "../../../types/validation";
@@ -15,23 +14,18 @@ import { Input } from "../../ui/Input";
 import { Modal } from "../../ui/Modal";
 
 export function BoardModal() {
-  const { board } = useModalsState();
-
-  return board ? <BoardModalContent data={board} /> : null;
-}
-
-type BoardModalContentProps = {
-  data: OpenBoardModal;
-};
-
-function BoardModalContent({ data }: BoardModalContentProps) {
+  const { board: data } = useModalsState();
   const boardActions = useBoardsActions();
   const modalActions = useModalsActions();
-  const board = data.board;
-  const form = useBoardForm(board);
+  const board = data?.board ?? null;
+  const form = useBoardForm(board, data);
 
   const closeModal = () => modalActions.setBoard(null);
   const saveBoard = () => {
+    if (!data) {
+      return;
+    }
+
     form.clearError();
 
     const result = validateBoard(form.userBoard());
@@ -49,7 +43,7 @@ function BoardModalContent({ data }: BoardModalContentProps) {
   return (
     <Modal
       title={modalTitle}
-      isOpen={true}
+      isOpen={data !== null}
       close={closeModal}
       onSave={saveBoard}
     >
