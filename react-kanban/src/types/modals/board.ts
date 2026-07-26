@@ -14,19 +14,9 @@ export function openBoardModalWithBoard(board: Board): OpenBoardModal {
   return { board };
 }
 
-export function useBoardForm(
-  board: Board | null,
-  modalData: OpenBoardModal | null,
-) {
-  const [formModalData, setFormModalData] = useState(modalData);
+export function useBoardForm(board: Board | null) {
   const [title, setTitle] = useState(board?.title ?? "");
   const [titleError, setTitleError] = useState<string>();
-
-  if (modalData !== formModalData) {
-    setFormModalData(modalData);
-    setTitle(board?.title ?? "");
-    setTitleError(undefined);
-  }
 
   const userBoard = (): UserBoard => ({ title });
   const clearError = () => setTitleError(undefined);
