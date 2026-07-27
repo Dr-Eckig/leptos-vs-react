@@ -11,7 +11,7 @@ Run the following commands once from the project `scripts` directory:
 ```bash
 chmod +x generate-plots.sh
 chmod +x start-npm.sh
-chmod +x start-playwright-tests.sh
+chmod +x playwright.sh
 chmod +x start-trunk.sh
 ```
 
@@ -46,7 +46,7 @@ Keep this terminal open as well. The server needs to stay active while the Playw
 Open a third terminal window and run:
 
 ```bash
-./scripts/start-playwright-tests.sh
+./scripts/playwright.sh
 ```
 
 This executes the automated Playwright tests against the running React and Leptos applications.
@@ -98,7 +98,7 @@ Terminal 2:
 ./start-trunk.sh
 
 Terminal 3:
-./start-playwright-tests.sh
+./playwright.sh
 ./generate-plots.sh
 ```
 
