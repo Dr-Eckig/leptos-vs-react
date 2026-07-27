@@ -304,6 +304,34 @@ def create_bundle_size_barplot(measurements: pd.DataFrame) -> Path | None:
 
 
 def create_dom_mutation_barplot(measurements: pd.DataFrame) -> Path | None:
+    return _create_dom_mutation_barplot(
+        measurements,
+        cfg.DOM_MUTATION_PLOT_TITLE,
+        cfg.DOM_MUTATION_PLOT_FILENAME,
+    )
+
+
+def create_dom_mutation_task_management_barplot(
+    measurements: pd.DataFrame,
+) -> Path | None:
+    task_management_measurements = measurements[
+        measurements["action"].isin(
+            cfg.DOM_MUTATION_TASK_MANAGEMENT_ACTIONS,
+        )
+    ]
+
+    return _create_dom_mutation_barplot(
+        task_management_measurements,
+        cfg.DOM_MUTATION_TASK_MANAGEMENT_PLOT_TITLE,
+        cfg.DOM_MUTATION_TASK_MANAGEMENT_PLOT_FILENAME,
+    )
+
+
+def _create_dom_mutation_barplot(
+    measurements: pd.DataFrame,
+    title: str,
+    filename: str,
+) -> Path | None:
     if measurements.empty:
         return None
 
@@ -330,7 +358,7 @@ def create_dom_mutation_barplot(measurements: pd.DataFrame) -> Path | None:
     ax = grid.ax
 
     annotate_bars(ax)
-    ax.set_title(cfg.DOM_MUTATION_PLOT_TITLE, pad=cfg.PLOT_TITLE_PAD)
+    ax.set_title(title, pad=cfg.PLOT_TITLE_PAD)
     ax.set_xlabel(cfg.DOM_MUTATION_PLOT_X_LABEL)
     ax.set_ylabel(cfg.DOM_MUTATION_PLOT_Y_LABEL)
     ax.set_xlim(
@@ -354,7 +382,7 @@ def create_dom_mutation_barplot(measurements: pd.DataFrame) -> Path | None:
     )
     grid.figure.tight_layout()
 
-    output_path = cfg.REACTIVITY_RESULTS_DIR / cfg.DOM_MUTATION_PLOT_FILENAME
+    output_path = cfg.REACTIVITY_RESULTS_DIR / filename
     save_figure(grid.figure, output_path)
     close_grid(grid)
 

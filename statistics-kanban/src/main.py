@@ -21,6 +21,7 @@ from plots import (
     create_browser_boxplot,
     create_bundle_size_barplot,
     create_dom_mutation_barplot,
+    create_dom_mutation_task_management_barplot,
     create_initial_load_boxplot,
     create_minimized_boxplot,
 )
@@ -80,6 +81,15 @@ def main() -> None:
 
     if dom_mutation_plot is not None:
         output_paths.append(dom_mutation_plot)
+
+    dom_mutation_task_management_plot = (
+        create_dom_mutation_task_management_barplot(
+            dom_mutation_measurements,
+        )
+    )
+
+    if dom_mutation_task_management_plot is not None:
+        output_paths.append(dom_mutation_task_management_plot)
 
     table_paths = create_performance_summary_table(
         measurements,

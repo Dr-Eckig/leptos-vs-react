@@ -173,6 +173,19 @@ DOM_MUTATION_PLOT_X_LABEL = (
 )
 DOM_MUTATION_PLOT_Y_LABEL = "Szenario"
 DOM_MUTATION_PLOT_FILENAME = "dom-mutations.png"
+DOM_MUTATION_TASK_MANAGEMENT_ACTIONS = (
+    "task-create",
+    "task-edit",
+    "task-delete",
+    "task-move-within-column",
+    "task-move-between-columns",
+)
+DOM_MUTATION_TASK_MANAGEMENT_PLOT_TITLE = (
+    "Erfasste DOM-Änderungen im Task-Management"
+)
+DOM_MUTATION_TASK_MANAGEMENT_PLOT_FILENAME = (
+    "dom-mutations-task-management.png"
+)
 
 # Summary tables
 PERFORMANCE_SUMMARY_COLUMNS = [
