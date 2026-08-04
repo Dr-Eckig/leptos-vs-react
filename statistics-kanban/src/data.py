@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from typing import Any
 
@@ -10,6 +11,77 @@ from config import (
     BOARD_ORDER,
     INITIAL_LOAD_ORDER,
 )
+
+
+COMPLEXITY_COLUMNS = [
+    "framework",
+    "language",
+    "file",
+    "function_name",
+    "long_name",
+    "start_line",
+    "end_line",
+    "nloc",
+    "cyclomatic_complexity",
+    "token_count",
+    "parameter_count",
+    "length",
+]
+
+
+def load_complexity_measurements(results_dir: Path) -> pd.DataFrame:
+    json_files = sorted(results_dir.glob("*-complexity.json"))
+    if not json_files:
+        return pd.DataFrame(columns=COMPLEXITY_COLUMNS)
+
+    records = []
+    for json_file in json_files:
+        report = json.loads(json_file.read_text(encoding="utf-8"))
+        if not isinstance(report, dict):
+            raise ValueError(f"Invalid complexity report: {json_file}")
+
+        framework = report.get("framework")
+        languages = report.get("languages")
+        functions = report.get("functions")
+
+        if not isinstance(framework, str) or not isinstance(functions, list):
+            raise ValueError(f"Invalid complexity report: {json_file}")
+
+        language_label = ", ".join(languages) if isinstance(languages, list) else ""
+        for function in functions:
+            records.append(
+                {
+                    "framework": framework,
+                    "language": language_label,
+                    **function,
+                }
+            )
+
+    measurements = pd.DataFrame.from_records(records)
+    if measurements.empty:
+        return pd.DataFrame(columns=COMPLEXITY_COLUMNS)
+
+    missing_columns = set(COMPLEXITY_COLUMNS) - set(measurements.columns)
+    if missing_columns:
+        missing = ", ".join(sorted(missing_columns))
+        raise ValueError(f"Missing complexity column(s): {missing}")
+
+    numeric_columns = [
+        "start_line",
+        "end_line",
+        "nloc",
+        "cyclomatic_complexity",
+        "token_count",
+        "parameter_count",
+        "length",
+    ]
+    for column in numeric_columns:
+        measurements[column] = pd.to_numeric(measurements[column])
+
+    measurements["framework"] = measurements["framework"].str.title()
+    return measurements[COMPLEXITY_COLUMNS].sort_values(
+        ["framework", "file", "start_line"],
+    )
 
 
 def load_measurements(data_dir: Path) -> pd.DataFrame:

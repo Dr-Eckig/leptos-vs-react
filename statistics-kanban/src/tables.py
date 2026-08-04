@@ -47,6 +47,50 @@ def create_dom_mutation_summary_table(
     return [png_path]
 
 
+def create_complexity_summary_table(
+    measurements: pd.DataFrame,
+    output_dir: Path,
+) -> Path | None:
+    if measurements.empty:
+        return None
+
+    summary = summarize_complexity(measurements)
+    display_summary = summary.rename(columns=cfg.COMPLEXITY_TABLE_COLUMN_LABELS)
+    formatted = display_summary.copy()
+    for column in cfg.COMPLEXITY_TABLE_NUMBER_COLUMNS:
+        formatted[column] = formatted[column].map(
+            lambda value: cfg.TABLE_NUMBER_FORMAT.format(value=value)
+        )
+
+    fig, ax = plt.subplots(figsize=cfg.COMPLEXITY_TABLE_FIGURE_SIZE)
+    ax.axis(cfg.TABLE_AXIS_VISIBILITY)
+    table = ax.table(
+        cellText=formatted.astype(str).values.tolist(),
+        colLabels=list(formatted.columns),
+        cellLoc=cfg.TABLE_CELL_ALIGNMENT,
+        colLoc=cfg.TABLE_CELL_ALIGNMENT,
+        loc="center",
+        colWidths=cfg.COMPLEXITY_TABLE_COLUMN_WIDTHS,
+    )
+    table.auto_set_font_size(False)
+    table.set_fontsize(cfg.COMPLEXITY_TABLE_FONT_SIZE)
+    table.scale(*cfg.COMPLEXITY_TABLE_SCALE)
+    style_table(table, display_summary)
+
+    ax.set_title(
+        cfg.COMPLEXITY_TABLE_TITLE,
+        pad=cfg.TABLE_TITLE_PAD,
+        fontsize=cfg.TABLE_TITLE_FONT_SIZE,
+        weight=cfg.TABLE_TITLE_FONT_WEIGHT,
+    )
+    fig.tight_layout()
+
+    output_path = output_dir / cfg.COMPLEXITY_TABLE_FILENAME
+    save_table_figure(fig, output_path)
+    plt.close(fig)
+    return output_path
+
+
 def summarize_performance(measurements: pd.DataFrame) -> pd.DataFrame:
     summary = (
         measurements.groupby(
@@ -67,6 +111,25 @@ def summarize_performance(measurements: pd.DataFrame) -> pd.DataFrame:
         summary[column] = summary[column].round(2)
 
     return sort_summary(summary)[cfg.PERFORMANCE_SUMMARY_COLUMNS]
+
+
+def summarize_complexity(measurements: pd.DataFrame) -> pd.DataFrame:
+    summary = (
+        measurements.groupby("framework", observed=True)["cyclomatic_complexity"]
+        .agg(
+            mean="mean",
+            median="median",
+            min="min",
+            max="max",
+            standardabweichung=lambda values: values.std(ddof=1),
+        )
+        .reindex(cfg.FRAMEWORK_ORDER)
+        .dropna(how="all")
+        .reset_index()
+    )
+    numeric_columns = ["mean", "median", "min", "max", "standardabweichung"]
+    summary[numeric_columns] = summary[numeric_columns].round(2)
+    return summary
 
 
 def summarize_dom_mutations(measurements: pd.DataFrame) -> pd.DataFrame:

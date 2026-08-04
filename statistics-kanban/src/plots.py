@@ -21,6 +21,75 @@ def configure_plot_theme() -> None:
     )
 
 
+def create_complexity_frequency_plot(
+    measurements: pd.DataFrame,
+) -> Path | None:
+    if measurements.empty:
+        return None
+
+    frameworks = ordered_values(
+        measurements["framework"],
+        cfg.FRAMEWORK_ORDER,
+    )
+    complexity_order = list(
+        range(
+            int(measurements["cyclomatic_complexity"].min()),
+            int(measurements["cyclomatic_complexity"].max()) + 1,
+        )
+    )
+    frequency_index = pd.MultiIndex.from_product(
+        [frameworks, complexity_order],
+        names=["framework", "cyclomatic_complexity"],
+    )
+    frequency = (
+        measurements.groupby(
+            ["framework", "cyclomatic_complexity"],
+            observed=True,
+        )
+        .size()
+        .rename("function_count")
+        .reindex(frequency_index, fill_value=0)
+        .reset_index()
+    )
+    frequency["percentage"] = frequency.groupby("framework")[
+        "function_count"
+    ].transform(lambda counts: counts / counts.sum() * 100)
+    fig, ax = plt.subplots(figsize=cfg.COMPLEXITY_DISTRIBUTION_FIGURE_SIZE)
+    sns.barplot(
+        data=frequency,
+        x="cyclomatic_complexity",
+        y="percentage",
+        hue="framework",
+        order=complexity_order,
+        hue_order=cfg.FRAMEWORK_ORDER,
+        palette=cfg.FRAMEWORK_PALETTE,
+        width=cfg.COMPLEXITY_DISTRIBUTION_BAR_WIDTH,
+        errorbar=None,
+        ax=ax,
+    )
+
+    ax.set_title(cfg.COMPLEXITY_DISTRIBUTION_TITLE, pad=cfg.PLOT_TITLE_PAD)
+    ax.set_xlabel(cfg.COMPLEXITY_DISTRIBUTION_X_LABEL)
+    ax.set_ylabel(cfg.COMPLEXITY_DISTRIBUTION_Y_LABEL)
+    ax.set_ylim(bottom=0)
+    configure_value_grid(ax, "y")
+    ax.grid(axis="x", visible=False)
+    ax.legend(
+        title=cfg.PLOT_LEGEND_TITLE,
+        frameon=cfg.PLOT_LEGEND_FRAME,
+    )
+    sns.despine(left=False, bottom=cfg.PLOT_DESPINE_BOTTOM)
+    fig.tight_layout()
+
+    output_path = (
+        cfg.IMPLEMENTATION_RESULTS_DIR
+        / cfg.COMPLEXITY_DISTRIBUTION_FILENAME
+    )
+    save_figure(fig, output_path)
+    plt.close(fig)
+    return output_path
+
+
 def create_browser_boxplot(measurements: pd.DataFrame, browser: str) -> Path:
     browser_measurements = measurements[measurements["browser"] == browser]
     scenario_labels = ordered_values(

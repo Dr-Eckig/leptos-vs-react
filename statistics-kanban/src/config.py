@@ -10,6 +10,7 @@ PERFORMANCE_RESULTS_DIR = RESULTS_DIR / "performance"
 MINIMIZED_PERFORMANCE_RESULTS_DIR = PERFORMANCE_RESULTS_DIR / "minimized"
 BOARD_PERFORMANCE_RESULTS_DIR = PERFORMANCE_RESULTS_DIR / "by-board"
 REACTIVITY_RESULTS_DIR = RESULTS_DIR / "reactivity"
+IMPLEMENTATION_RESULTS_DIR = RESULTS_DIR / "implementation"
 
 DATA_DIR = PROJECT_DIR / "data"
 DOM_MUTATION_DATA_DIR = PROJECT_DIR / "dom-mutations-data"
@@ -204,6 +205,14 @@ DOM_MUTATION_TASK_MANAGEMENT_PLOT_FILENAME = (
     "dom-mutations-task-management.png"
 )
 
+# Cyclomatic-complexity distribution
+COMPLEXITY_DISTRIBUTION_TITLE = "Verteilung der zyklomatischen Komplexität"
+COMPLEXITY_DISTRIBUTION_X_LABEL = "Zyklomatische Komplexität pro Funktion"
+COMPLEXITY_DISTRIBUTION_Y_LABEL = "Anteil der Funktionen in Prozent"
+COMPLEXITY_DISTRIBUTION_FILENAME = "cyclomatic-complexity-frequency.png"
+COMPLEXITY_DISTRIBUTION_FIGURE_SIZE = (9.2, 5.4)
+COMPLEXITY_DISTRIBUTION_BAR_WIDTH = 0.8
+
 # Summary tables
 PERFORMANCE_SUMMARY_COLUMNS = [
     "framework",
@@ -254,6 +263,28 @@ PERFORMANCE_TABLE_COLUMN_WIDTHS = [
 PERFORMANCE_TABLE_FONT_SIZE = 7.5
 PERFORMANCE_TABLE_SCALE = (1, 1.25)
 PERFORMANCE_TABLE_LOCATION = "center"
+
+COMPLEXITY_TABLE_COLUMN_LABELS = {
+    "framework": "Framework",
+    "mean": "Arithm. Mittel",
+    "median": "Median",
+    "min": "Minimum",
+    "max": "Maximum",
+    "standardabweichung": "Standardabweichung",
+}
+COMPLEXITY_TABLE_NUMBER_COLUMNS = [
+    "Arithm. Mittel",
+    "Median",
+    "Minimum",
+    "Maximum",
+    "Standardabweichung",
+]
+COMPLEXITY_TABLE_FILENAME = "cyclomatic-complexity-summary-table.png"
+COMPLEXITY_TABLE_TITLE = "Zyklomatische Komplexität im Vergleich"
+COMPLEXITY_TABLE_FIGURE_SIZE = (10, 3.2)
+COMPLEXITY_TABLE_COLUMN_WIDTHS = [0.18, 0.17, 0.13, 0.13, 0.13, 0.24]
+COMPLEXITY_TABLE_FONT_SIZE = 9
+COMPLEXITY_TABLE_SCALE = (1, 1.4)
 
 DOM_TABLE_COLUMN_LABELS = {
     "framework": "Framework",
