@@ -1,4 +1,6 @@
 from config import (
+    BOARD_PERFORMANCE_RESULTS_DIR,
+    BOARD_PLOT_SPECS,
     BROWSER_ORDER,
     BUNDLE_SIZE_BROWSER,
     BUNDLE_SIZE_DATA_DIR,
@@ -18,6 +20,7 @@ from data import (
 )
 from plots import (
     configure_plot_theme,
+    create_board_boxplot,
     create_browser_boxplot,
     create_bundle_size_barplot,
     create_dom_mutation_barplot,
@@ -32,6 +35,7 @@ def main() -> None:
     measurements = load_measurements(DATA_DIR)
     PERFORMANCE_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     MINIMIZED_PERFORMANCE_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    BOARD_PERFORMANCE_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     REACTIVITY_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
     configure_plot_theme()
@@ -61,6 +65,23 @@ def main() -> None:
         )
     ]
     output_paths.extend(path for path in minimized_plot_paths if path is not None)
+
+    board_plot_paths = [
+        create_board_boxplot(
+            action_measurements,
+            board,
+            board_slug,
+            browser,
+        )
+        for board, board_slug in BOARD_PLOT_SPECS
+        for browser in ordered_values(
+            action_measurements[
+                action_measurements["board"] == board
+            ]["browser"],
+            BROWSER_ORDER,
+        )
+    ]
+    output_paths.extend(path for path in board_plot_paths if path is not None)
 
     initial_load_plot = create_initial_load_boxplot(measurements)
 

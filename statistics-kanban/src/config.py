@@ -8,6 +8,7 @@ os.environ.setdefault("MPLCONFIGDIR", str(PROJECT_DIR / ".matplotlib-cache"))
 RESULTS_DIR = REPO_ROOT / "results"
 PERFORMANCE_RESULTS_DIR = RESULTS_DIR / "performance"
 MINIMIZED_PERFORMANCE_RESULTS_DIR = PERFORMANCE_RESULTS_DIR / "minimized"
+BOARD_PERFORMANCE_RESULTS_DIR = PERFORMANCE_RESULTS_DIR / "by-board"
 REACTIVITY_RESULTS_DIR = RESULTS_DIR / "reactivity"
 
 DATA_DIR = PROJECT_DIR / "data"
@@ -57,6 +58,13 @@ BOARD_ORDER = [
     "Board 3 (100 Tasks)",
     "Board 4 (1000 Tasks)",
 ]
+
+BOARD_PLOT_SPECS = (
+    ("Board 1 (Leer)", "empty-board"),
+    ("Board 2 (10 Tasks)", "board-with-10-tasks"),
+    ("Board 3 (100 Tasks)", "board-with-100-tasks"),
+    ("Board 4 (1000 Tasks)", "board-with-1000-tasks"),
+)
 
 BROWSER_LABELS = {
     "chromium": "Chromium",
@@ -130,6 +138,15 @@ MINIMIZED_PLOT_FILENAME = "performance-boxplots-{group}-{browser}.png"
 MINIMIZED_PLOT_LEGEND_LOCATION = "center left"
 MINIMIZED_PLOT_LEGEND_ANCHOR = (1.01, 0.5)
 MINIMIZED_MILLISECOND_TICKS = [5, 20, 100, 500, 2000]
+
+# One interaction boxplot per board size
+BOARD_PLOT_MIN_HEIGHT = 4.8
+BOARD_PLOT_HEIGHT_PER_ACTION = 0.65
+BOARD_PLOT_WIDTH = 10
+BOARD_PLOT_TITLE = "Kanban-Performance: {board} – {browser}"
+BOARD_PLOT_X_LABEL = "Ausführungsdauer in Millisekunden"
+BOARD_PLOT_Y_LABEL = "Aktion"
+BOARD_PLOT_FILENAME = "performance-boxplots-{board_slug}-{browser}.png"
 
 # Initial-load boxplot
 INITIAL_LOAD_PLOT_HEIGHT = 4.2

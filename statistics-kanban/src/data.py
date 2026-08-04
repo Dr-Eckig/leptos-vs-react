@@ -13,7 +13,11 @@ from config import (
 
 
 def load_measurements(data_dir: Path) -> pd.DataFrame:
-    json_files = sorted(data_dir.rglob("*.json"))
+    json_files = sorted(
+        json_file
+        for json_file in data_dir.rglob("*.json")
+        if "sessions" not in json_file.relative_to(data_dir).parts
+    )
 
     if not json_files:
         raise FileNotFoundError(f"No JSON files found in {data_dir}")

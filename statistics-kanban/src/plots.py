@@ -159,6 +159,89 @@ def create_minimized_boxplot(
     return output_path
 
 
+def create_board_boxplot(
+    measurements: pd.DataFrame,
+    board: str,
+    board_slug: str,
+    browser: str,
+) -> Path | None:
+    board_measurements = measurements[
+        (measurements["board"] == board)
+        & (measurements["browser"] == browser)
+    ].copy()
+
+    if board_measurements.empty:
+        return None
+
+    action_order = [
+        action
+        for action in cfg.ACTION_ORDER
+        if action in set(board_measurements["action"])
+    ]
+    board_measurements["action_label"] = board_measurements["action"].map(
+        cfg.ACTION_LABELS,
+    )
+    action_labels = [cfg.ACTION_LABELS[action] for action in action_order]
+    height = max(
+        cfg.BOARD_PLOT_MIN_HEIGHT,
+        len(action_labels) * cfg.BOARD_PLOT_HEIGHT_PER_ACTION,
+    )
+    grid = sns.catplot(
+        data=board_measurements,
+        kind="box",
+        x="performance_ms",
+        y="action_label",
+        hue="framework",
+        order=action_labels,
+        hue_order=cfg.FRAMEWORK_ORDER,
+        palette=cfg.FRAMEWORK_PALETTE,
+        dodge=cfg.BOXPLOT_DODGE,
+        fliersize=cfg.BOXPLOT_FLIER_SIZE,
+        linewidth=cfg.BOXPLOT_LINEWIDTH,
+        height=height,
+        aspect=cfg.BOARD_PLOT_WIDTH / height,
+    )
+    ax = grid.ax
+    board_label = cfg.BOARD_LABELS.get(board, board)
+    browser_label = cfg.BROWSER_LABELS.get(browser, browser.title())
+    ax.set_title(
+        cfg.BOARD_PLOT_TITLE.format(
+            board=board_label,
+            browser=browser_label,
+        ),
+        pad=cfg.PLOT_TITLE_PAD,
+    )
+    ax.set_xlabel(cfg.BOARD_PLOT_X_LABEL)
+    ax.set_ylabel(cfg.BOARD_PLOT_Y_LABEL)
+    ax.set_xscale(cfg.PLOT_VALUE_SCALE)
+    configure_millisecond_axis(ax)
+    configure_value_grid(ax, "x", which="both")
+    ax.grid(axis="y", visible=False)
+    sns.move_legend(
+        grid,
+        cfg.MINIMIZED_PLOT_LEGEND_LOCATION,
+        title=cfg.PLOT_LEGEND_TITLE,
+        bbox_to_anchor=cfg.MINIMIZED_PLOT_LEGEND_ANCHOR,
+        frameon=cfg.PLOT_LEGEND_FRAME,
+    )
+    sns.despine(
+        left=cfg.PLOT_DESPINE_LEFT,
+        bottom=cfg.PLOT_DESPINE_BOTTOM,
+    )
+    grid.figure.tight_layout()
+
+    output_path = cfg.BOARD_PERFORMANCE_RESULTS_DIR / (
+        cfg.BOARD_PLOT_FILENAME.format(
+            board_slug=board_slug,
+            browser=browser,
+        )
+    )
+    save_figure(grid.figure, output_path)
+    close_grid(grid)
+
+    return output_path
+
+
 def create_initial_load_boxplot(measurements: pd.DataFrame) -> Path | None:
     initial_load_measurements = measurements[
         measurements["action"].isin(cfg.INITIAL_LOAD_ORDER)
