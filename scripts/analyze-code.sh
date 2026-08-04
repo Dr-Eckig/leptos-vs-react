@@ -17,4 +17,4 @@ python3 -m lizard \
   -i -1 \
   -o "../results/implementation/react-complexity.html"
 
-python3 "../shared/decision-density.py"
+python3 "../shared/implementation-metrics.py"

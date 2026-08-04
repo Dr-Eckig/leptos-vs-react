@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# python3 shared/decision-density.py
+# python3 shared/implementation-metrics.py
 
 from __future__ import annotations
 
