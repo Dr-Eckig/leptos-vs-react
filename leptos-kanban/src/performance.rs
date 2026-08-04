@@ -2,10 +2,7 @@ use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
-use leptos::{
-    leptos_dom::{helpers::request_animation_frame, logging::console_log},
-    prelude::GetUntracked,
-};
+use leptos::{leptos_dom::logging::console_log, prelude::GetUntracked};
 use serde::Serialize;
 use wasm_bindgen::{JsCast, JsValue, closure::Closure};
 use web_sys::js_sys;
@@ -132,7 +129,7 @@ pub fn start(
         let action_name = action_name.clone();
         let dom_mutation_measurement_id = dom_mutation_measurement_id.clone();
 
-        after_next_paint(move || {
+        after_dom_update(move || {
             let duration = measure_duration(&performance_api, &label, &start_mark, &end_mark);
             let dom_mutations = finish_dom_mutation_measurement(&dom_mutation_measurement_id);
 
@@ -186,20 +183,28 @@ fn measure_duration(
     Some(entry.duration())
 }
 
-fn after_next_paint(callback: impl FnOnce() + 'static) {
-    request_animation_frame(move || {
-        let Ok(channel) = web_sys::MessageChannel::new() else {
-            callback();
-            return;
-        };
+fn after_dom_update(callback: impl FnOnce() + 'static) {
+    let Ok(channel) = web_sys::MessageChannel::new() else {
+        callback();
+        return;
+    };
 
-        let on_message = Closure::once_into_js(callback);
-        channel
-            .port1()
-            .set_onmessage(Some(on_message.unchecked_ref()));
+    let on_message = Closure::once_into_js(move || {
+        if let Some(document_element) = web_sys::window()
+            .and_then(|window| window.document())
+            .and_then(|document| document.document_element())
+        {
+            let _ = document_element.client_height();
+        }
 
-        let _ = channel.port2().post_message(&JsValue::UNDEFINED);
+        callback();
     });
+
+    channel
+        .port1()
+        .set_onmessage(Some(on_message.unchecked_ref()));
+
+    let _ = channel.port2().post_message(&JsValue::UNDEFINED);
 }
 
 fn clear_performance_entries(

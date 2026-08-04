@@ -98,7 +98,7 @@ export function start(
 
     isFinished = true;
 
-    afterNextPaint(() => {
+    afterDomUpdate(() => {
       let duration: number;
 
       try {
@@ -133,16 +133,21 @@ export function start(
   };
 }
 
-function afterNextPaint(callback: () => void) {
-  window.requestAnimationFrame(() => {
-    const channel = new MessageChannel();
+function afterDomUpdate(callback: () => void) {
+  const channel = new MessageChannel();
 
-    channel.port1.onmessage = () => {
-      callback();
-    };
+  channel.port1.onmessage = () => {
+    channel.port1.close();
+    channel.port2.close();
 
-    channel.port2.postMessage(undefined);
-  });
+    // The message runs after the current event task and its microtasks. Reading
+    // a layout-dependent property also includes pending style/layout work,
+    // without waiting for an arbitrarily distant animation frame.
+    void document.documentElement.clientHeight;
+    callback();
+  };
+
+  channel.port2.postMessage(undefined);
 }
 
 function clearPerformanceEntries(
