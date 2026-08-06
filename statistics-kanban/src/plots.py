@@ -479,6 +479,20 @@ def create_dom_mutation_task_management_barplot(
     )
 
 
+def create_dom_mutation_board_switch_barplot(
+    measurements: pd.DataFrame,
+) -> Path | None:
+    board_switch_measurements = measurements[
+        measurements["action"] == cfg.DOM_MUTATION_BOARD_SWITCH_ACTION
+    ]
+
+    return _create_dom_mutation_barplot(
+        board_switch_measurements,
+        cfg.DOM_MUTATION_BOARD_SWITCH_PLOT_TITLE,
+        cfg.DOM_MUTATION_BOARD_SWITCH_PLOT_FILENAME,
+    )
+
+
 def _create_dom_mutation_barplot(
     measurements: pd.DataFrame,
     title: str,

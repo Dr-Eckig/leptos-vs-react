@@ -205,6 +205,9 @@ DOM_MUTATION_TASK_MANAGEMENT_PLOT_TITLE = (
 DOM_MUTATION_TASK_MANAGEMENT_PLOT_FILENAME = (
     "dom-mutations-task-management.png"
 )
+DOM_MUTATION_BOARD_SWITCH_ACTION = "board-switch"
+DOM_MUTATION_BOARD_SWITCH_PLOT_TITLE = "Erfasste DOM-Änderungen beim Boardwechsel"
+DOM_MUTATION_BOARD_SWITCH_PLOT_FILENAME = "dom-mutations-board-switch.png"
 
 # Cyclomatic-complexity distribution
 COMPLEXITY_DISTRIBUTION_TITLE = (
