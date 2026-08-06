@@ -32,6 +32,7 @@ ipywidgets==8.1.8
 isoduration==20.11.0
 jedi==0.20.0
 Jinja2==3.1.6
+joblib==1.5.3
 json5==0.15.0
 jsonpointer==3.1.1
 jsonschema==4.26.0
@@ -65,11 +66,14 @@ numpy==2.2.6
 overrides==7.7.0
 packaging==26.2
 pandas==2.3.3
+pandas-flavor==0.8.1
 pandocfilters==1.5.1
+patsy==1.0.2
 parso==0.8.7
 pexpect==4.9.0
 pillow==12.2.0
 platformdirs==4.10.0
+pingouin==0.6.1
 prometheus_client==0.25.0
 prompt_toolkit==3.0.52
 psutil==7.2.2
@@ -89,12 +93,17 @@ rfc3339-validator==0.1.4
 rfc3986-validator==0.1.1
 rfc3987-syntax==1.1.0
 rpds-py==0.30.0
+scikit-learn==1.7.2
 seaborn==0.13.2
+scipy==1.15.3
 Send2Trash==2.1.0
 six==1.17.0
 soupsieve==2.8.4
 stack-data==0.6.3
+statsmodels==0.14.6
+tabulate==0.10.0
 terminado==0.18.1
+threadpoolctl==3.6.0
 tinycss2==1.5.1
 tomli==2.4.1
 tornado==6.5.7
@@ -108,3 +117,4 @@ webcolors==25.10.0
 webencodings==0.5.1
 websocket-client==1.9.0
 widgetsnbextension==4.0.15
+xarray==2025.6.1

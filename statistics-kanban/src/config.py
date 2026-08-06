@@ -7,6 +7,7 @@ os.environ.setdefault("MPLCONFIGDIR", str(PROJECT_DIR / ".matplotlib-cache"))
 
 RESULTS_DIR = REPO_ROOT / "results"
 PERFORMANCE_RESULTS_DIR = RESULTS_DIR / "performance"
+SIGNIFICANCE_RESULTS_DIR = PERFORMANCE_RESULTS_DIR / "significance"
 MINIMIZED_PERFORMANCE_RESULTS_DIR = PERFORMANCE_RESULTS_DIR / "minimized"
 BOARD_PERFORMANCE_RESULTS_DIR = PERFORMANCE_RESULTS_DIR / "by-board"
 REACTIVITY_RESULTS_DIR = RESULTS_DIR / "reactivity"
@@ -267,22 +268,20 @@ PERFORMANCE_TABLE_LOCATION = "center"
 COMPLEXITY_TABLE_COLUMN_LABELS = {
     "framework": "Framework",
     "mean": "Arithm. Mittel",
-    "median": "Median",
     "min": "Minimum",
     "max": "Maximum",
     "standardabweichung": "Standardabweichung",
 }
 COMPLEXITY_TABLE_NUMBER_COLUMNS = [
     "Arithm. Mittel",
-    "Median",
     "Minimum",
     "Maximum",
     "Standardabweichung",
 ]
 COMPLEXITY_TABLE_FILENAME = "cyclomatic-complexity-summary-table.png"
 COMPLEXITY_TABLE_TITLE = "Zyklomatische Komplexität im Vergleich"
-COMPLEXITY_TABLE_FIGURE_SIZE = (10, 3.2)
-COMPLEXITY_TABLE_COLUMN_WIDTHS = [0.18, 0.17, 0.13, 0.13, 0.13, 0.24]
+COMPLEXITY_TABLE_FIGURE_SIZE = (9, 3.2)
+COMPLEXITY_TABLE_COLUMN_WIDTHS = [0.2, 0.18, 0.14, 0.14, 0.26]
 COMPLEXITY_TABLE_FONT_SIZE = 9
 COMPLEXITY_TABLE_SCALE = (1, 1.4)
 
@@ -324,3 +323,13 @@ TABLE_TITLE_FONT_SIZE = 14
 TABLE_TITLE_FONT_WEIGHT = "bold"
 TABLE_NUMBER_FORMAT = "{value:.2f}"
 INITIAL_LOAD_BOARD_LABEL = "Initial Load"
+
+# Statistical comparison of performance distributions
+SIGNIFICANCE_ALPHA = 0.05
+CLIFFS_DELTA_SMALL = 0.147
+CLIFFS_DELTA_MEDIUM = 0.33
+CLIFFS_DELTA_LARGE = 0.474
+SIGNIFICANCE_MIN_EFFECT = CLIFFS_DELTA_MEDIUM
+SIGNIFICANCE_RESULTS_FILENAME = "all-tests.csv"
+SIGNIFICANCE_NOTEWORTHY_FILENAME = "noteworthy-tests.csv"
+SIGNIFICANCE_REPORT_FILENAME = "index.html"

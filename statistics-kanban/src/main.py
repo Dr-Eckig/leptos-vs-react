@@ -12,6 +12,7 @@ from config import (
     MINIMIZED_PERFORMANCE_RESULTS_DIR,
     PERFORMANCE_RESULTS_DIR,
     REACTIVITY_RESULTS_DIR,
+    SIGNIFICANCE_RESULTS_DIR,
 )
 from data import (
     load_bundle_size_measurements,
@@ -31,6 +32,7 @@ from plots import (
     create_initial_load_boxplot,
     create_minimized_boxplot,
 )
+from significance import test_performance_differences, write_significance_results
 from tables import (
     create_complexity_summary_table,
     create_dom_mutation_summary_table,
@@ -130,6 +132,10 @@ def main() -> None:
     table_paths = create_performance_summary_table(
         measurements,
         PERFORMANCE_RESULTS_DIR,
+    )
+    significance_results = test_performance_differences(measurements)
+    table_paths.extend(
+        write_significance_results(significance_results, SIGNIFICANCE_RESULTS_DIR)
     )
     table_paths.extend(
         create_dom_mutation_summary_table(

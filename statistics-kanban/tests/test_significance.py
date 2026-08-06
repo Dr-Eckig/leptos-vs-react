@@ -1,0 +1,86 @@
+import sys
+import unittest
+from pathlib import Path
+from unittest.mock import patch
+
+import numpy as np
+import pandas as pd
+
+
+SRC_DIR = Path(__file__).resolve().parents[1] / "src"
+sys.path.insert(0, str(SRC_DIR))
+
+from significance import (  # noqa: E402
+    create_html_report,
+    effect_magnitude,
+    median_speedup,
+    test_performance_differences,
+)
+
+
+class SignificanceTest(unittest.TestCase):
+    def test_effect_magnitude_uses_configured_boundaries(self) -> None:
+        self.assertEqual(effect_magnitude(0.1), "vernachlässigbar")
+        self.assertEqual(effect_magnitude(-0.2), "klein")
+        self.assertEqual(effect_magnitude(0.4), "mittel")
+        self.assertEqual(effect_magnitude(-0.5), "groß")
+
+    def test_median_speedup_reports_direction_and_relative_advantage(self) -> None:
+        framework, speedup = median_speedup(20.0, 50.0)
+
+        self.assertEqual(framework, "Leptos")
+        self.assertEqual(speedup, 60.0)
+
+    @patch("significance.pg.multicomp")
+    @patch("significance.pg.mwu")
+    def test_performance_comparison_uses_pingouin(
+        self,
+        mwu,
+        multicomp,
+    ) -> None:
+        mwu.return_value = pd.DataFrame(
+            {"U_val": [0.0], "p_val": [0.01], "RBC": [-1.0]}
+        )
+        multicomp.return_value = (np.array([True]), np.array([0.01]))
+        measurements = pd.DataFrame(
+            {
+                "browser": ["chromium"] * 4,
+                "action": ["task-create"] * 4,
+                "board": ["Board 1 (Leer)"] * 4,
+                "framework": ["Leptos", "Leptos", "React", "React"],
+                "performance_ms": [1.0, 2.0, 3.0, 4.0],
+            }
+        )
+
+        results = test_performance_differences(measurements)
+
+        np.testing.assert_array_equal(mwu.call_args.args[0], [1.0, 2.0])
+        np.testing.assert_array_equal(mwu.call_args.args[1], [3.0, 4.0])
+        self.assertEqual(
+            mwu.call_args.kwargs,
+            {
+                "alternative": "two-sided",
+                "method": "asymptotic",
+                "use_continuity": True,
+            },
+        )
+        np.testing.assert_array_equal(multicomp.call_args.args[0], [0.01])
+        self.assertEqual(
+            multicomp.call_args.kwargs,
+            {"alpha": 0.05, "method": "holm"},
+        )
+        self.assertEqual(results.iloc[0]["u_statistic"], 0.0)
+        self.assertEqual(results.iloc[0]["p_value"], 0.01)
+        self.assertEqual(results.iloc[0]["cliffs_delta"], -1.0)
+
+    def test_empty_html_report_contains_complete_page(self) -> None:
+        report = create_html_report(pd.DataFrame(columns=[
+            "significant", "noteworthy", "p_value_holm", "cliffs_delta"
+        ]))
+
+        self.assertIn("<!doctype html>", report)
+        self.assertIn("Keine Vergleiche erfüllen beide Kriterien", report)
+
+
+if __name__ == "__main__":
+    unittest.main()

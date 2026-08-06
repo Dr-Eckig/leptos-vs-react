@@ -118,7 +118,6 @@ def summarize_complexity(measurements: pd.DataFrame) -> pd.DataFrame:
         measurements.groupby("framework", observed=True)["cyclomatic_complexity"]
         .agg(
             mean="mean",
-            median="median",
             min="min",
             max="max",
             standardabweichung=lambda values: values.std(ddof=1),
@@ -127,7 +126,7 @@ def summarize_complexity(measurements: pd.DataFrame) -> pd.DataFrame:
         .dropna(how="all")
         .reset_index()
     )
-    numeric_columns = ["mean", "median", "min", "max", "standardabweichung"]
+    numeric_columns = ["mean", "min", "max", "standardabweichung"]
     summary[numeric_columns] = summary[numeric_columns].round(2)
     return summary
 
