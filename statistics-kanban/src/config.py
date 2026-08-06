@@ -207,7 +207,9 @@ DOM_MUTATION_TASK_MANAGEMENT_PLOT_FILENAME = (
 )
 
 # Cyclomatic-complexity distribution
-COMPLEXITY_DISTRIBUTION_TITLE = "Verteilung der zyklomatischen Komplexität"
+COMPLEXITY_DISTRIBUTION_TITLE = (
+    "Verteilung der zyklomatischen Komplexität (Qlty)"
+)
 COMPLEXITY_DISTRIBUTION_X_LABEL = "Zyklomatische Komplexität pro Funktion"
 COMPLEXITY_DISTRIBUTION_Y_LABEL = "Anteil der Funktionen in Prozent"
 COMPLEXITY_DISTRIBUTION_FILENAME = "cyclomatic-complexity-frequency.png"
@@ -279,7 +281,7 @@ COMPLEXITY_TABLE_NUMBER_COLUMNS = [
     "Standardabweichung",
 ]
 COMPLEXITY_TABLE_FILENAME = "cyclomatic-complexity-summary-table.png"
-COMPLEXITY_TABLE_TITLE = "Zyklomatische Komplexität im Vergleich"
+COMPLEXITY_TABLE_TITLE = "Zyklomatische Komplexität im Vergleich (Qlty)"
 COMPLEXITY_TABLE_FIGURE_SIZE = (9, 3.2)
 COMPLEXITY_TABLE_COLUMN_WIDTHS = [0.2, 0.18, 0.14, 0.14, 0.26]
 COMPLEXITY_TABLE_FONT_SIZE = 9

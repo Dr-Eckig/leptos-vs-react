@@ -2,32 +2,21 @@ set -e
 
 cargo install tokei
 
+if ! command -v qlty >/dev/null 2>&1; then
+  echo "Qlty CLI nicht gefunden. Installation: https://docs.qlty.sh/cli/quickstart" >&2
+  exit 1
+fi
+
 mkdir -p "../results/implementation"
 
-python3 -m lizard \
-  -l rust \
-  "../leptos-kanban/src" \
-  -i -1 \
-  -o "../results/implementation/leptos-complexity.html"
-
-python3 "../shared/export-complexity-json.py" \
+python3 "../shared/export_qlty_metrics.py" \
   --framework "Leptos" \
-  --language rust \
   --source "../leptos-kanban/src" \
-  --output "../results/implementation/leptos-complexity.json"
+  --output "../results/implementation/leptos-qlty-metrics.json"
 
-python3 -m lizard \
-  -l typescript \
-  -l tsx \
-  "../react-kanban/src" \
-  -i -1 \
-  -o "../results/implementation/react-complexity.html"
-
-python3 "../shared/export-complexity-json.py" \
+python3 "../shared/export_qlty_metrics.py" \
   --framework "React" \
-  --language typescript \
-  --language tsx \
   --source "../react-kanban/src" \
-  --output "../results/implementation/react-complexity.json"
+  --output "../results/implementation/react-qlty-metrics.json"
 
 python3 "../shared/implementation-metrics.py"

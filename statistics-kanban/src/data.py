@@ -15,22 +15,18 @@ from config import (
 
 COMPLEXITY_COLUMNS = [
     "framework",
-    "language",
     "file",
     "function_name",
-    "long_name",
-    "start_line",
-    "end_line",
+    "fields",
     "nloc",
+    "lines",
     "cyclomatic_complexity",
-    "token_count",
-    "parameter_count",
-    "length",
+    "cognitive_complexity",
 ]
 
 
 def load_complexity_measurements(results_dir: Path) -> pd.DataFrame:
-    json_files = sorted(results_dir.glob("*-complexity.json"))
+    json_files = sorted(results_dir.glob("*-qlty-metrics.json"))
     if not json_files:
         return pd.DataFrame(columns=COMPLEXITY_COLUMNS)
 
@@ -41,18 +37,20 @@ def load_complexity_measurements(results_dir: Path) -> pd.DataFrame:
             raise ValueError(f"Invalid complexity report: {json_file}")
 
         framework = report.get("framework")
-        languages = report.get("languages")
+        tool = report.get("tool")
         functions = report.get("functions")
 
-        if not isinstance(framework, str) or not isinstance(functions, list):
+        if (
+            not isinstance(framework, str)
+            or tool != "qlty"
+            or not isinstance(functions, list)
+        ):
             raise ValueError(f"Invalid complexity report: {json_file}")
 
-        language_label = ", ".join(languages) if isinstance(languages, list) else ""
         for function in functions:
             records.append(
                 {
                     "framework": framework,
-                    "language": language_label,
                     **function,
                 }
             )
@@ -67,20 +65,18 @@ def load_complexity_measurements(results_dir: Path) -> pd.DataFrame:
         raise ValueError(f"Missing complexity column(s): {missing}")
 
     numeric_columns = [
-        "start_line",
-        "end_line",
+        "fields",
         "nloc",
+        "lines",
         "cyclomatic_complexity",
-        "token_count",
-        "parameter_count",
-        "length",
+        "cognitive_complexity",
     ]
     for column in numeric_columns:
         measurements[column] = pd.to_numeric(measurements[column])
 
     measurements["framework"] = measurements["framework"].str.title()
     return measurements[COMPLEXITY_COLUMNS].sort_values(
-        ["framework", "file", "start_line"],
+        ["framework", "file", "function_name"],
     )
 
 
