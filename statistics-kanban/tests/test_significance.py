@@ -1,6 +1,7 @@
 import sys
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import numpy as np
@@ -14,6 +15,7 @@ from significance import (  # noqa: E402
     create_html_report,
     effect_magnitude,
     median_speedup,
+    test_normality,
     test_performance_differences,
 )
 
@@ -80,6 +82,45 @@ class SignificanceTest(unittest.TestCase):
 
         self.assertIn("<!doctype html>", report)
         self.assertIn("Keine Vergleiche erfüllen beide Kriterien", report)
+
+    @patch("significance.pg.multicomp")
+    @patch("significance.shapiro")
+    def test_normality_uses_shapiro_wilk_and_holm_correction(
+        self,
+        shapiro_mock,
+        multicomp,
+    ) -> None:
+        shapiro_mock.side_effect = [
+            SimpleNamespace(statistic=0.98, pvalue=0.4),
+            SimpleNamespace(statistic=0.80, pvalue=0.001),
+        ]
+        multicomp.return_value = (
+            np.array([False, True]),
+            np.array([0.4, 0.002]),
+        )
+        measurements = pd.DataFrame(
+            {
+                "browser": ["chromium"] * 6,
+                "action": ["task-create"] * 6,
+                "board": ["Board 1 (Leer)"] * 6,
+                "framework": ["Leptos"] * 3 + ["React"] * 3,
+                "performance_ms": [1.0, 1.1, 0.9, 2.0, 5.0, 9.0],
+            }
+        )
+
+        results = test_normality(measurements)
+
+        np.testing.assert_array_equal(
+            shapiro_mock.call_args_list[0].args[0],
+            [1.0, 1.1, 0.9],
+        )
+        self.assertEqual(multicomp.call_args.kwargs, {
+            "alpha": 0.05,
+            "method": "holm",
+        })
+        self.assertFalse(results.iloc[0]["normality_rejected"])
+        self.assertTrue(results.iloc[1]["normality_rejected"])
+        self.assertEqual(results.iloc[1]["p_value_holm"], 0.002)
 
 
 if __name__ == "__main__":

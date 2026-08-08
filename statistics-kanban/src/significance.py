@@ -6,6 +6,7 @@ import config as cfg
 import numpy as np
 import pandas as pd
 import pingouin as pg
+from scipy.stats import shapiro
 
 
 GROUP_COLUMNS = ["browser", "action", "board"]
@@ -25,6 +26,16 @@ RESULT_COLUMNS = [
     "effect_magnitude",
     "significant",
     "noteworthy",
+]
+NORMALITY_GROUP_COLUMNS = [*GROUP_COLUMNS, "framework"]
+NORMALITY_RESULT_COLUMNS = [
+    *NORMALITY_GROUP_COLUMNS,
+    "sample_size",
+    "shapiro_w",
+    "p_value",
+    "p_value_holm",
+    "normality_rejected",
+    "assessment",
 ]
 
 
@@ -100,6 +111,55 @@ def test_performance_differences(measurements: pd.DataFrame) -> pd.DataFrame:
     return results[RESULT_COLUMNS]
 
 
+def test_normality(measurements: pd.DataFrame) -> pd.DataFrame:
+    """Run a Shapiro-Wilk test for every individual benchmark sample.
+
+    Each framework/browser/action/board combination is tested separately,
+    because normality is a property of an individual sample rather than of a
+    scenario after pooling frameworks. Holm's method controls the family-wise
+    error rate across all tested samples.
+    """
+    performance = measurements.dropna(subset=["performance_ms"]).copy()
+    records: list[dict[str, object]] = []
+
+    for keys, sample_group in performance.groupby(
+        NORMALITY_GROUP_COLUMNS,
+        observed=True,
+    ):
+        sample = sample_group["performance_ms"].to_numpy(dtype=float)
+        if len(sample) < 3:
+            continue
+
+        test_result = shapiro(sample)
+        records.append(
+            {
+                **dict(zip(NORMALITY_GROUP_COLUMNS, keys)),
+                "sample_size": len(sample),
+                "shapiro_w": float(test_result.statistic),
+                "p_value": float(test_result.pvalue),
+            }
+        )
+
+    if not records:
+        return pd.DataFrame(columns=NORMALITY_RESULT_COLUMNS)
+
+    results = pd.DataFrame.from_records(records)
+    reject, corrected_p_values = pg.multicomp(
+        results["p_value"].to_numpy(),
+        alpha=cfg.NORMALITY_ALPHA,
+        method="holm",
+    )
+    results["p_value_holm"] = corrected_p_values
+    results["normality_rejected"] = reject
+    results["assessment"] = np.where(
+        results["normality_rejected"],
+        "Hinweis gegen Normalverteilung",
+        "Kein Hinweis gegen Normalverteilung",
+    )
+    results = sort_normality_results(results)
+    return results[NORMALITY_RESULT_COLUMNS]
+
+
 def effect_magnitude(delta: float) -> str:
     absolute_delta = abs(delta)
     if absolute_delta < cfg.CLIFFS_DELTA_SMALL:
@@ -122,11 +182,19 @@ def median_speedup(leptos_median: float, react_median: float) -> tuple[str, floa
     return faster, speedup
 
 
-def write_significance_results(results: pd.DataFrame, output_dir: Path) -> list[Path]:
+def write_significance_results(
+    results: pd.DataFrame,
+    output_dir: Path,
+    normality_results: pd.DataFrame | None = None,
+) -> list[Path]:
     output_dir.mkdir(parents=True, exist_ok=True)
     csv_path = output_dir / cfg.SIGNIFICANCE_RESULTS_FILENAME
     noteworthy_path = output_dir / cfg.SIGNIFICANCE_NOTEWORTHY_FILENAME
     report_path = output_dir / cfg.SIGNIFICANCE_REPORT_FILENAME
+    normality_path = output_dir / cfg.NORMALITY_RESULTS_FILENAME
+
+    if normality_results is None:
+        normality_results = pd.DataFrame(columns=NORMALITY_RESULT_COLUMNS)
 
     results.to_csv(csv_path, index=False, float_format="%.8g")
     results[results["noteworthy"].fillna(False).astype(bool)].to_csv(
@@ -134,11 +202,20 @@ def write_significance_results(results: pd.DataFrame, output_dir: Path) -> list[
         index=False,
         float_format="%.8g",
     )
-    report_path.write_text(create_html_report(results), encoding="utf-8")
-    return [csv_path, noteworthy_path, report_path]
+    normality_results.to_csv(normality_path, index=False, float_format="%.8g")
+    report_path.write_text(
+        create_html_report(results, normality_results),
+        encoding="utf-8",
+    )
+    return [csv_path, noteworthy_path, normality_path, report_path]
 
 
-def create_html_report(results: pd.DataFrame) -> str:
+def create_html_report(
+    results: pd.DataFrame,
+    normality_results: pd.DataFrame | None = None,
+) -> str:
+    if normality_results is None:
+        normality_results = pd.DataFrame(columns=NORMALITY_RESULT_COLUMNS)
     noteworthy_mask = results["noteworthy"].fillna(False).astype(bool)
     noteworthy = results[noteworthy_mask].copy()
     noteworthy = noteworthy.sort_values(
@@ -150,6 +227,10 @@ def create_html_report(results: pd.DataFrame) -> str:
     significant_count = int(results["significant"].sum())
     noteworthy_table = html_table(noteworthy)
     all_results_table = html_table(results)
+    normality_table = html_normality_table(normality_results)
+    normality_rejected_count = int(
+        normality_results["normality_rejected"].fillna(False).astype(bool).sum()
+    )
 
     return f"""<!doctype html>
 <html lang="de">
@@ -166,7 +247,7 @@ def create_html_report(results: pd.DataFrame) -> str:
     h1 {{ margin-bottom: .4rem; font-size: clamp(1.8rem, 3vw, 2.7rem); }}
     h2 {{ margin-top: 2.5rem; }}
     .intro {{ max-width: 900px; color: var(--muted); }}
-    .cards {{ display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin: 2rem 0; }}
+    .cards {{ display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin: 2rem 0; }}
     .card {{ padding: 1.1rem 1.25rem; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }}
     .number {{ display: block; font-size: 2rem; font-weight: 750; }}
     .label {{ color: var(--muted); }}
@@ -202,10 +283,12 @@ def create_html_report(results: pd.DataFrame) -> str:
     <div class="card"><span class="number">{len(results)}</span><span class="label">Vergleiche insgesamt</span></div>
     <div class="card"><span class="number">{significant_count}</span><span class="label">Holm-korrigiert signifikant</span></div>
     <div class="card"><span class="number">{len(noteworthy)}</span><span class="label">Aussagekräftige Vergleiche</span></div>
+    <div class="card"><span class="number">{normality_rejected_count} / {len(normality_results)}</span><span class="label">Normalverteilung verworfen</span></div>
   </section>
 
   <p class="downloads"><a href="{cfg.SIGNIFICANCE_NOTEWORTHY_FILENAME}">Aussagekräftige Ergebnisse als CSV</a>
-  <a href="{cfg.SIGNIFICANCE_RESULTS_FILENAME}">Alle Tests als CSV</a></p>
+  <a href="{cfg.SIGNIFICANCE_RESULTS_FILENAME}">Alle Tests als CSV</a>
+  <a href="{cfg.NORMALITY_RESULTS_FILENAME}">Normalitätstests als CSV</a></p>
 
   <h2>Aussagekräftige Ergebnisse</h2>
   {noteworthy_table}
@@ -215,12 +298,27 @@ def create_html_report(results: pd.DataFrame) -> str:
     {all_results_table}
   </details>
 
+  <h2>Prüfung auf Normalverteilung</h2>
+  <p class="intro">Jede Kombination aus Framework, Browser, Aktion und Board wird
+  separat mit dem Shapiro-Wilk-Test geprüft. Die p-Werte werden über alle
+  Normalitätstests nach Holm korrigiert (α = {cfg.NORMALITY_ALPHA:.2f}). Ein
+  korrigierter p-Wert unter α ist ein Hinweis gegen Normalverteilung. Ein
+  größerer p-Wert beweist keine Normalverteilung, sondern bedeutet lediglich,
+  dass sie mit diesen Daten nicht verworfen wird.</p>
+  <details>
+    <summary>Alle {len(normality_results)} Normalitätstests anzeigen</summary>
+    {normality_table}
+  </details>
+
   <h2>Interpretation</h2>
   <p class="note">Ein positives Cliff’s δ bedeutet tendenziell höhere Laufzeiten
   für Leptos, ein negatives δ tendenziell höhere Laufzeiten für React. Der Vorteil
   basiert deskriptiv auf den Medianen; der U-Test prüft die Verteilungen. Die
   Inferenz setzt unabhängige Läufe voraus und gilt für die gemessenen
   Benchmark-Bedingungen. Sie ersetzt keine Replikation in unabhängigen Sitzungen.</p>
+  <p class="note">Der Mann-Whitney-U-Test ist nicht auf normalverteilte Daten
+  angewiesen. Die Normalitätsprüfung dient daher der Beschreibung und
+  Plausibilisierung der gewählten nichtparametrischen Auswertung.</p>
 </main>
 </body>
 </html>
@@ -267,6 +365,43 @@ def html_table(results: pd.DataFrame) -> str:
     )
 
 
+def html_normality_table(results: pd.DataFrame) -> str:
+    if results.empty:
+        return '<p class="note">Keine auswertbaren Messgruppen vorhanden.</p>'
+
+    rows = []
+    for row in results.itertuples(index=False):
+        browser = cfg.BROWSER_LABELS.get(row.browser, row.browser)
+        action = cfg.ACTION_LABELS.get(
+            row.action,
+            cfg.INITIAL_LOAD_LABELS.get(row.action, row.action),
+        )
+        board = cfg.BOARD_LABELS.get(row.board, row.board)
+        rows.append(
+            "<tr>"
+            f"<td>{escape(str(browser))}</td>"
+            f"<td>{escape(str(action))}</td>"
+            f"<td>{escape(str(board))}</td>"
+            f'<td class="{escape(row.framework)}">{escape(row.framework)}</td>'
+            f"<td>{row.sample_size}</td>"
+            f"<td>{row.shapiro_w:.4f}</td>"
+            f"<td>{row.p_value:.3g}</td>"
+            f"<td>{row.p_value_holm:.3g}</td>"
+            f"<td>{'ja' if row.normality_rejected else 'nein'}</td>"
+            "</tr>"
+        )
+
+    return (
+        '<div class="table-wrap"><table><thead><tr>'
+        "<th>Browser</th><th>Aktion</th><th>Board</th><th>Framework</th>"
+        "<th>n</th><th>Shapiro-Wilk W</th><th>p</th><th>p (Holm)</th>"
+        "<th>Normalverteilung verworfen</th>"
+        "</tr></thead><tbody>"
+        + "".join(rows)
+        + "</tbody></table></div>"
+    )
+
+
 def sort_results(results: pd.DataFrame) -> pd.DataFrame:
     results = results.copy()
     results["browser"] = pd.Categorical(
@@ -285,4 +420,14 @@ def sort_results(results: pd.DataFrame) -> pd.DataFrame:
     results = results.sort_values(GROUP_COLUMNS)
     for column in GROUP_COLUMNS:
         results[column] = results[column].astype(str)
+    return results
+
+
+def sort_normality_results(results: pd.DataFrame) -> pd.DataFrame:
+    results = sort_results(results)
+    results["framework"] = pd.Categorical(
+        results["framework"], categories=cfg.FRAMEWORK_ORDER, ordered=True
+    )
+    results = results.sort_values(NORMALITY_GROUP_COLUMNS)
+    results["framework"] = results["framework"].astype(str)
     return results

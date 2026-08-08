@@ -34,7 +34,11 @@ from plots import (
     create_initial_load_browser_boxplot,
     create_minimized_boxplot,
 )
-from significance import test_performance_differences, write_significance_results
+from significance import (
+    test_normality,
+    test_performance_differences,
+    write_significance_results,
+)
 from tables import (
     create_complexity_summary_table,
     create_dom_mutation_summary_table,
@@ -156,8 +160,13 @@ def main() -> None:
         PERFORMANCE_RESULTS_DIR,
     )
     significance_results = test_performance_differences(measurements)
+    normality_results = test_normality(measurements)
     table_paths.extend(
-        write_significance_results(significance_results, SIGNIFICANCE_RESULTS_DIR)
+        write_significance_results(
+            significance_results,
+            SIGNIFICANCE_RESULTS_DIR,
+            normality_results,
+        )
     )
     table_paths.extend(
         create_dom_mutation_summary_table(
