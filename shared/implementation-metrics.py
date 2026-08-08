@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import html
 import json
 import re
@@ -68,6 +69,18 @@ REACT_BUILTIN_HOOKS = frozenset(
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPT_DIR.parent
 HTML_OUTPUT_PATH = REPO_ROOT / "results/implementation/implementation-metrics.html"
+LOC_GROUP_OUTPUT_PATH = REPO_ROOT / "results/implementation/loc-by-area.csv"
+
+LOC_GROUP_ORDER = (
+    "App und Einstieg",
+    "Kanban-Komponenten",
+    "UI-Komponenten",
+    "Drag-and-drop",
+    "Zustand und Reaktivität",
+    "Datenmodelle und Validierung",
+    "Messinstrumentierung",
+    "Sonstiger Glue-Code",
+)
 
 if not (REPO_ROOT / "leptos-kanban/src").is_dir():
     raise RuntimeError(f"Leptos source directory not found below {REPO_ROOT}")
@@ -99,6 +112,10 @@ def main() -> int:
     args = parser.parse_args()
 
     rows = [(project.name, measure_project(project)) for project in DEFAULT_PROJECTS]
+    loc_group_rows = [
+        (project.name, measure_loc_groups(project))
+        for project in DEFAULT_PROJECTS
+    ]
     reactivity_rows = [
         (project.name, measure_reactivity_project(project))
         for project in DEFAULT_PROJECTS
@@ -107,11 +124,14 @@ def main() -> int:
     write_html_report(
         HTML_OUTPUT_PATH,
         rows,
+        loc_group_rows,
         reactivity_rows,
     )
+    write_loc_group_csv(LOC_GROUP_OUTPUT_PATH, loc_group_rows)
 
     if args.console:
         print_table(rows)
+        print_loc_group_table(loc_group_rows)
         print_reactivity_table(reactivity_rows)
         print_state_details(reactivity_rows)
 
@@ -127,6 +147,55 @@ def measure_project(project: ProjectConfig) -> Metrics:
         metrics.components += count_components(path, text)
 
     return metrics
+
+
+def measure_loc_groups(project: ProjectConfig) -> dict[str, int]:
+    grouped_paths: dict[str, list[Path]] = {
+        group: [] for group in LOC_GROUP_ORDER
+    }
+
+    for path in source_files(project):
+        grouped_paths[classify_loc_group(project, path)].append(path)
+
+    group_loc = {
+        group: measure_tokei(paths).loc
+        for group, paths in grouped_paths.items()
+    }
+    total_loc = measure_tokei(source_files(project)).loc
+    if sum(group_loc.values()) != total_loc:
+        raise RuntimeError(
+            f"Grouped LOC for {project.name} do not add up to total LOC"
+        )
+    return group_loc
+
+
+def classify_loc_group(project: ProjectConfig, path: Path) -> str:
+    relative_path = path.relative_to(project.root)
+    parts = relative_path.parts
+
+    if relative_path.name in {"app.rs", "App.tsx", "main.rs", "main.tsx"}:
+        return "App und Einstieg"
+    if parts[:2] == ("components", "kanban"):
+        return "Kanban-Komponenten"
+    if parts[:2] == ("components", "ui"):
+        return "UI-Komponenten"
+    if (
+        parts[:2] == ("components", "drag_and_drop")
+        or parts[:2] == ("types", "drag_and_drop")
+        or relative_path.name == "drag_and_drop.rs"
+    ):
+        return "Drag-and-drop"
+    if (
+        parts[:1] == ("hooks",)
+        or parts[:2] == ("types", "state")
+        or relative_path.name == "app_context.rs"
+    ):
+        return "Zustand und Reaktivität"
+    if parts[:1] == ("types",):
+        return "Datenmodelle und Validierung"
+    if relative_path.stem == "performance":
+        return "Messinstrumentierung"
+    return "Sonstiger Glue-Code"
 
 
 def measure_tokei(paths: list[Path]) -> Metrics:
@@ -341,6 +410,21 @@ def print_reactivity_table(rows: list[tuple[str, ReactivityMetrics]]) -> None:
         print(" | ".join(cell.ljust(widths[index]) for index, cell in enumerate(row)))
 
 
+def print_loc_group_table(rows: list[tuple[str, dict[str, int]]]) -> None:
+    print()
+    print("LOC nach Funktionsbereich:")
+    headers = ("Bereich", *(name for name, _groups in rows))
+    table_rows = loc_group_table_rows(rows, include_comparison=False)
+    widths = [
+        max(len(row[index]) for row in (headers, *table_rows))
+        for index in range(len(headers))
+    ]
+    print(" | ".join(cell.ljust(widths[index]) for index, cell in enumerate(headers)))
+    print("-+-".join("-" * width for width in widths))
+    for row in table_rows:
+        print(" | ".join(cell.ljust(widths[index]) for index, cell in enumerate(row)))
+
+
 def print_state_details(rows: list[tuple[str, ReactivityMetrics]]) -> None:
     print()
     print("State-/Reaktivitäts-Details:")
@@ -420,9 +504,64 @@ def reactivity_table_rows(
     return table_rows
 
 
+def loc_group_table_rows(
+    rows: list[tuple[str, dict[str, int]]],
+    *,
+    include_comparison: bool = True,
+) -> list[tuple[str, ...]]:
+    group_values = {name: groups for name, groups in rows}
+    project_names = [name for name, _groups in rows]
+    table_rows: list[tuple[str, ...]] = []
+
+    for group in LOC_GROUP_ORDER:
+        values = [group_values[name][group] for name in project_names]
+        row = [group, *(str(value) for value in values)]
+        if include_comparison and len(values) == 2:
+            difference = values[0] - values[1]
+            if difference == 0:
+                more_loc = "Gleichstand"
+            else:
+                more_loc = project_names[0] if difference > 0 else project_names[1]
+            row.extend((f"{difference:+d}", more_loc))
+        table_rows.append(tuple(row))
+
+    totals = [sum(group_values[name].values()) for name in project_names]
+    total_row = ["Gesamt", *(str(value) for value in totals)]
+    if include_comparison and len(totals) == 2:
+        difference = totals[0] - totals[1]
+        more_loc = (
+            "Gleichstand"
+            if difference == 0
+            else project_names[0] if difference > 0 else project_names[1]
+        )
+        total_row.extend((f"{difference:+d}", more_loc))
+    table_rows.append(tuple(total_row))
+    return table_rows
+
+
+def write_loc_group_csv(
+    output_path: Path,
+    rows: list[tuple[str, dict[str, int]]],
+) -> None:
+    project_names = [name for name, _groups in rows]
+    table_rows = loc_group_table_rows(rows)
+    headers = [
+        "area",
+        *(f"{name.lower()}_loc" for name in project_names),
+        "difference_leptos_minus_react",
+        "more_loc_framework",
+    ]
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w", encoding="utf-8", newline="") as csv_file:
+        writer = csv.writer(csv_file)
+        writer.writerow(headers)
+        writer.writerows(table_rows)
+
+
 def write_html_report(
     output_path: Path,
     implementation_rows: list[tuple[str, Metrics]],
+    loc_group_rows: list[tuple[str, dict[str, int]]],
     reactivity_rows: list[tuple[str, ReactivityMetrics]],
 ) -> None:
     sections = [
@@ -432,6 +571,28 @@ def write_html_report(
             comparison_table_rows(implementation_rows),
         ),
     ]
+
+    project_names = [name for name, _groups in loc_group_rows]
+    sections.extend(
+        (
+            "<h2>LOC nach Funktionsbereich</h2>",
+            "<p>Die Quelldateien werden nach vergleichbaren fachlichen "
+            "Verantwortlichkeiten gruppiert. Jede Datei gehört genau zu einem "
+            "Bereich; die Gruppen summieren sich auf die Gesamt-LOC. Die "
+            "Differenz ist als Leptos minus React angegeben.</p>",
+            f'<p><a href="{html.escape(LOC_GROUP_OUTPUT_PATH.name)}">'
+            "Gruppierte LOC als CSV herunterladen</a></p>",
+            html_table(
+                (
+                    "Funktionsbereich",
+                    *(f"{name} LOC" for name in project_names),
+                    "Differenz (L−R)",
+                    "Mehr LOC",
+                ),
+                loc_group_table_rows(loc_group_rows),
+            ),
+        )
+    )
 
     sections.extend(
         (
