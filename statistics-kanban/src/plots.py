@@ -703,6 +703,8 @@ def configure_millisecond_axis(
 
     ax.set_xticks(ticks)
     ax.set_xticklabels([format_millisecond_tick(tick) for tick in ticks])
+    ax.xaxis.set_minor_formatter(mticker.NullFormatter())
+    ax.xaxis.get_offset_text().set_visible(False)
 
 
 def configure_linear_millisecond_axis(ax) -> None:
@@ -711,6 +713,8 @@ def configure_linear_millisecond_axis(ax) -> None:
             lambda value, _position: format_millisecond_tick(value),
         )
     )
+    ax.xaxis.set_minor_formatter(mticker.NullFormatter())
+    ax.xaxis.get_offset_text().set_visible(False)
 
 
 def format_millisecond_tick(value: float) -> str:
