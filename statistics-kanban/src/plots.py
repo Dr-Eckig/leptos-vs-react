@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+from matplotlib import ticker as mticker
 import pandas as pd
 
 import config as cfg
@@ -127,6 +128,7 @@ def create_browser_boxplot(measurements: pd.DataFrame, browser: str) -> Path:
     ax.set_ylabel(cfg.PERFORMANCE_PLOT_Y_LABEL)
     ax.set_xscale(cfg.PLOT_VALUE_SCALE)
     configure_millisecond_axis(ax)
+    add_alternating_row_background(ax, len(scenario_labels))
     configure_value_grid(ax, "x", which="both")
     ax.grid(axis="y", visible=False)
     sns.move_legend(
@@ -203,6 +205,7 @@ def create_minimized_boxplot(
     ax.set_ylabel(cfg.MINIMIZED_PLOT_Y_LABEL)
     ax.set_xscale(cfg.PLOT_VALUE_SCALE)
     configure_millisecond_axis(ax, cfg.MINIMIZED_MILLISECOND_TICKS)
+    add_alternating_row_background(ax, len(scenario_labels))
     configure_value_grid(ax, "x", which="both")
     ax.grid(axis="y", visible=False)
 
@@ -284,6 +287,7 @@ def create_board_boxplot(
     ax.set_ylabel(cfg.BOARD_PLOT_Y_LABEL)
     ax.set_xscale(cfg.PLOT_VALUE_SCALE)
     configure_millisecond_axis(ax)
+    add_alternating_row_background(ax, len(action_labels))
     configure_value_grid(ax, "x", which="both")
     ax.grid(axis="y", visible=False)
     sns.move_legend(
@@ -312,23 +316,10 @@ def create_board_boxplot(
 
 
 def create_initial_load_boxplot(measurements: pd.DataFrame) -> Path | None:
-    initial_load_measurements = measurements[
-        measurements["action"].isin(cfg.INITIAL_LOAD_ORDER)
-    ].copy()
+    initial_load_measurements = prepare_initial_load_measurements(measurements)
 
     if initial_load_measurements.empty:
         return None
-
-    initial_load_measurements["metric"] = initial_load_measurements["action"].map(
-        cfg.INITIAL_LOAD_LABELS,
-    )
-    initial_load_measurements["metric"] = pd.Categorical(
-        initial_load_measurements["metric"],
-        categories=[
-            cfg.INITIAL_LOAD_LABELS[action] for action in cfg.INITIAL_LOAD_ORDER
-        ],
-        ordered=True,
-    )
 
     browsers = ordered_values(
         initial_load_measurements["browser"],
@@ -360,6 +351,7 @@ def create_initial_load_boxplot(measurements: pd.DataFrame) -> Path | None:
         ax.set_ylabel(cfg.INITIAL_LOAD_PLOT_Y_LABEL if index == 0 else "")
         ax.set_xscale(cfg.PLOT_VALUE_SCALE)
         configure_millisecond_axis(ax)
+        add_alternating_row_background(ax, len(cfg.INITIAL_LOAD_ORDER))
         configure_value_grid(ax, "x", which="both")
         ax.grid(axis="y", visible=False)
 
@@ -386,6 +378,87 @@ def create_initial_load_boxplot(measurements: pd.DataFrame) -> Path | None:
     close_grid(grid)
 
     return output_path
+
+
+def create_initial_load_browser_boxplot(
+    measurements: pd.DataFrame,
+    browser: str,
+) -> Path | None:
+    browser_measurements = prepare_initial_load_measurements(measurements)
+    browser_measurements = browser_measurements[
+        browser_measurements["browser"] == browser
+    ]
+
+    if browser_measurements.empty:
+        return None
+
+    metric_order = [
+        cfg.INITIAL_LOAD_LABELS[action] for action in cfg.INITIAL_LOAD_ORDER
+    ]
+    grid = sns.catplot(
+        data=browser_measurements,
+        kind="box",
+        x="performance_ms",
+        y="metric",
+        hue="framework",
+        order=metric_order,
+        hue_order=cfg.FRAMEWORK_ORDER,
+        palette=cfg.FRAMEWORK_PALETTE,
+        dodge=cfg.BOXPLOT_DODGE,
+        fliersize=cfg.BOXPLOT_FLIER_SIZE,
+        linewidth=cfg.BOXPLOT_LINEWIDTH,
+        height=cfg.INITIAL_LOAD_BROWSER_PLOT_HEIGHT,
+        aspect=(
+            cfg.INITIAL_LOAD_BROWSER_PLOT_WIDTH
+            / cfg.INITIAL_LOAD_BROWSER_PLOT_HEIGHT
+        ),
+    )
+    ax = grid.ax
+    browser_label = cfg.BROWSER_LABELS.get(browser, browser.title())
+    ax.set_title(
+        cfg.INITIAL_LOAD_BROWSER_PLOT_TITLE.format(browser=browser_label),
+        pad=cfg.PLOT_TITLE_PAD,
+    )
+    ax.set_xlabel(cfg.INITIAL_LOAD_PLOT_X_LABEL)
+    ax.set_ylabel(cfg.INITIAL_LOAD_PLOT_Y_LABEL)
+    configure_linear_millisecond_axis(ax)
+    add_alternating_row_background(ax, len(metric_order))
+    configure_value_grid(ax, "x", which="both")
+    ax.grid(axis="y", visible=False)
+    sns.move_legend(
+        grid,
+        cfg.INITIAL_LOAD_BROWSER_LEGEND_LOCATION,
+        title=cfg.PLOT_LEGEND_TITLE,
+        bbox_to_anchor=cfg.INITIAL_LOAD_BROWSER_LEGEND_ANCHOR,
+        frameon=cfg.PLOT_LEGEND_FRAME,
+    )
+    sns.despine(
+        left=cfg.PLOT_DESPINE_LEFT,
+        bottom=cfg.PLOT_DESPINE_BOTTOM,
+    )
+    grid.figure.tight_layout()
+
+    output_path = cfg.BOARD_PERFORMANCE_RESULTS_DIR / (
+        cfg.INITIAL_LOAD_BROWSER_PLOT_FILENAME.format(browser=browser)
+    )
+    save_figure(grid.figure, output_path)
+    close_grid(grid)
+    return output_path
+
+
+def prepare_initial_load_measurements(measurements: pd.DataFrame) -> pd.DataFrame:
+    prepared = measurements[
+        measurements["action"].isin(cfg.INITIAL_LOAD_ORDER)
+    ].copy()
+    prepared["metric"] = prepared["action"].map(cfg.INITIAL_LOAD_LABELS)
+    prepared["metric"] = pd.Categorical(
+        prepared["metric"],
+        categories=[
+            cfg.INITIAL_LOAD_LABELS[action] for action in cfg.INITIAL_LOAD_ORDER
+        ],
+        ordered=True,
+    )
+    return prepared
 
 
 def create_bundle_size_barplot(measurements: pd.DataFrame) -> Path | None:
@@ -532,6 +605,7 @@ def _create_dom_mutation_barplot(
         max(1, measurements["domMutations"].max())
         * cfg.PLOT_VALUE_LIMIT_FACTOR,
     )
+    add_alternating_row_background(ax, len(scenario_labels))
     configure_value_grid(ax, "x")
     ax.grid(axis="y", visible=False)
     sns.move_legend(
@@ -559,7 +633,7 @@ def prepare_dom_mutation_plot_data(measurements: pd.DataFrame) -> pd.DataFrame:
     prepared = collapse_equal_dom_mutation_boards(measurements)
     prepared["scenario_display"] = prepared.apply(
         lambda row: (
-            cfg.ACTION_LABELS.get(row["action"], row["action"])
+            cfg.SCENARIO_ACTION_LABELS.get(row["action"], row["action"])
             if row["boards_collapsed"]
             else str(row["scenario"])
         ),
@@ -584,6 +658,17 @@ def annotate_bars(ax, decimal_places: int = 0) -> None:
             fmt=value_format,
             padding=cfg.BAR_LABEL_PADDING,
             fontsize=cfg.BAR_LABEL_FONT_SIZE,
+        )
+
+
+def add_alternating_row_background(ax, row_count: int) -> None:
+    for row_index in range(0, row_count, 2):
+        ax.axhspan(
+            row_index - 0.5,
+            row_index + 0.5,
+            color=cfg.PLOT_ROW_BAND_COLOR,
+            alpha=cfg.PLOT_ROW_BAND_ALPHA,
+            zorder=0,
         )
 
 
@@ -618,6 +703,14 @@ def configure_millisecond_axis(
 
     ax.set_xticks(ticks)
     ax.set_xticklabels([format_millisecond_tick(tick) for tick in ticks])
+
+
+def configure_linear_millisecond_axis(ax) -> None:
+    ax.xaxis.set_major_formatter(
+        mticker.FuncFormatter(
+            lambda value, _position: format_millisecond_tick(value),
+        )
+    )
 
 
 def format_millisecond_tick(value: float) -> str:

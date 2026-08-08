@@ -28,6 +28,15 @@ ACTION_LABELS = {
     "board-switch": "Board wechseln",
 }
 
+SCENARIO_ACTION_LABELS = {
+    "task-create": "Task-Erstellung",
+    "task-edit": "Task-Bearbeitung",
+    "task-delete": "Task-Löschung",
+    "task-move-within-column": "Task-Verschiebung innerhalb einer Spalte",
+    "task-move-between-columns": "Task-Verschiebung zwischen Spalten",
+    "board-switch": "Board-Wechsel",
+}
+
 INITIAL_LOAD_LABELS = {
     "initial-load-fcp": "First Contentful Paint",
     "initial-load-lcp": "Largest Contentful Paint",
@@ -38,6 +47,13 @@ BOARD_LABELS = {
     "Board 2 (10 Tasks)": "Board mit 10 Tasks",
     "Board 3 (100 Tasks)": "Board mit 100 Tasks",
     "Board 4 (1000 Tasks)": "Board mit 1000 Tasks",
+}
+
+BOARD_TASK_COUNTS = {
+    "Board 1 (Leer)": 0,
+    "Board 2 (10 Tasks)": 10,
+    "Board 3 (100 Tasks)": 100,
+    "Board 4 (1000 Tasks)": 1000,
 }
 
 ACTION_ORDER = [
@@ -86,13 +102,25 @@ MILLISECOND_TICKS = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000]
 # Shared plot appearance
 PLOT_THEME_STYLE = "whitegrid"
 PLOT_THEME_CONTEXT = "paper"
-PLOT_THEME_RC = {"figure.max_open_warning": 0}
+PLOT_THEME_RC = {
+    "figure.max_open_warning": 0,
+    "font.size": 13,
+    "axes.titlesize": 16,
+    "axes.labelsize": 14,
+    "xtick.labelsize": 12,
+    "ytick.labelsize": 12,
+    "legend.fontsize": 12,
+    "legend.title_fontsize": 13,
+    "figure.titlesize": 17,
+}
 PLOT_DPI = 300
 PLOT_BBOX_INCHES = "tight"
 PLOT_TITLE_PAD = 12
 PLOT_GRID_LINESTYLE = "--"
 PLOT_GRID_LINEWIDTH = 0.5
 PLOT_GRID_ALPHA = 0.55
+PLOT_ROW_BAND_COLOR = "#e9eef3"
+PLOT_ROW_BAND_ALPHA = 0.55
 PLOT_VALUE_LIMIT_FACTOR = 1.18
 PLOT_LEGEND_TITLE = "Framework"
 PLOT_LEGEND_FRAME = True
@@ -100,7 +128,7 @@ PLOT_VALUE_SCALE = "log"
 PLOT_DESPINE_LEFT = True
 PLOT_DESPINE_BOTTOM = False
 BAR_LABEL_PADDING = 3
-BAR_LABEL_FONT_SIZE = 9
+BAR_LABEL_FONT_SIZE = 11
 
 # Scenario boxplots
 SCENARIO_PLOT_MIN_HEIGHT = 7
@@ -111,7 +139,7 @@ BOXPLOT_LINEWIDTH = 1
 BOXPLOT_DODGE = True
 PERFORMANCE_PLOT_TITLE = "Kanban-Performance nach Szenario - {browser}"
 PERFORMANCE_PLOT_X_LABEL = "Ausführungsdauer in Millisekunden"
-PERFORMANCE_PLOT_Y_LABEL = "Szenario: Aktion und Boardgröße"
+PERFORMANCE_PLOT_Y_LABEL = "Szenario (Boardgröße)"
 PERFORMANCE_PLOT_FILENAME = "performance-boxplots-{browser}.png"
 SCENARIO_LEGEND_LOCATION = "center left"
 SCENARIO_LEGEND_ANCHOR = (1.01, 0.5)
@@ -135,7 +163,7 @@ MINIMIZED_PLOT_HEIGHT_PER_ROW = 0.55
 MINIMIZED_PLOT_WIDTH = 10
 MINIMIZED_PLOT_TITLE = "Kanban-Performance: {group} - {browser}"
 MINIMIZED_PLOT_X_LABEL = "Ausführungsdauer in Millisekunden"
-MINIMIZED_PLOT_Y_LABEL = "Szenario: Aktion und Boardgröße"
+MINIMIZED_PLOT_Y_LABEL = "Szenario (Boardgröße)"
 MINIMIZED_PLOT_FILENAME = "performance-boxplots-{group}-{browser}.png"
 MINIMIZED_PLOT_LEGEND_LOCATION = "center left"
 MINIMIZED_PLOT_LEGEND_ANCHOR = (1.01, 0.5)
@@ -163,6 +191,12 @@ INITIAL_LOAD_LEGEND_LOCATION = "center right"
 INITIAL_LOAD_LEGEND_ANCHOR = (1.0, 0.5)
 INITIAL_LOAD_LAYOUT_RECT = (0, 0, 0.91, 1)
 INITIAL_LOAD_PLOT_FILENAME = "initial-load-boxplots.png"
+INITIAL_LOAD_BROWSER_PLOT_HEIGHT = 4.2
+INITIAL_LOAD_BROWSER_PLOT_WIDTH = 8
+INITIAL_LOAD_BROWSER_PLOT_TITLE = "Initial Load: FCP und LCP – {browser}"
+INITIAL_LOAD_BROWSER_PLOT_FILENAME = "initial-load-boxplots-{browser}.png"
+INITIAL_LOAD_BROWSER_LEGEND_LOCATION = "center left"
+INITIAL_LOAD_BROWSER_LEGEND_ANCHOR = (1.01, 0.5)
 
 # Bundle-size plot
 BUNDLE_SIZE_PARTS = (
@@ -174,7 +208,7 @@ BUNDLE_SIZE_PARTS = (
 BUNDLE_SIZE_FIGURE_SIZE = (6.8, 4.8)
 BUNDLE_SIZE_BAR_EDGE_COLOR = "white"
 BUNDLE_SIZE_BAR_LINEWIDTH = 0.7
-BUNDLE_SIZE_TOTAL_FONT_SIZE = 9
+BUNDLE_SIZE_TOTAL_FONT_SIZE = 11
 BUNDLE_SIZE_TOTAL_FONT_WEIGHT = "bold"
 BUNDLE_SIZE_TOTAL_HORIZONTAL_ALIGNMENT = "center"
 BUNDLE_SIZE_TOTAL_VERTICAL_ALIGNMENT = "bottom"
@@ -190,7 +224,7 @@ DOM_MUTATION_PLOT_TITLE = "Erfasste DOM-Änderungen nach Szenario"
 DOM_MUTATION_PLOT_X_LABEL = (
     "Anzahl (Text- und Attributänderungen, hinzugefügte und entfernte Elemente)"
 )
-DOM_MUTATION_PLOT_Y_LABEL = "Szenario"
+DOM_MUTATION_PLOT_Y_LABEL = "Szenario (Boardgröße)"
 DOM_MUTATION_PLOT_FILENAME = "dom-mutations.png"
 DOM_MUTATION_TASK_MANAGEMENT_ACTIONS = (
     "task-create",

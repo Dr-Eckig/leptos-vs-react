@@ -31,6 +31,7 @@ from plots import (
     create_dom_mutation_board_switch_barplot,
     create_dom_mutation_task_management_barplot,
     create_initial_load_boxplot,
+    create_initial_load_browser_boxplot,
     create_minimized_boxplot,
 )
 from significance import test_performance_differences, write_significance_results
@@ -105,6 +106,19 @@ def main() -> None:
 
     if initial_load_plot is not None:
         output_paths.append(initial_load_plot)
+
+    initial_load_browser_plots = [
+        create_initial_load_browser_boxplot(measurements, browser)
+        for browser in ordered_values(
+            measurements[
+                measurements["action"].isin(INITIAL_LOAD_ORDER)
+            ]["browser"],
+            BROWSER_ORDER,
+        )
+    ]
+    output_paths.extend(
+        path for path in initial_load_browser_plots if path is not None
+    )
 
     bundle_size_measurements = load_bundle_size_measurements(BUNDLE_SIZE_DATA_DIR)
     bundle_size_measurements = bundle_size_measurements[

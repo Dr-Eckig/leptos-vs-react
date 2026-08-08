@@ -5,11 +5,11 @@ from typing import Any
 import pandas as pd
 
 from config import (
-    ACTION_LABELS,
     ACTION_ORDER,
-    BOARD_LABELS,
     BOARD_ORDER,
+    BOARD_TASK_COUNTS,
     INITIAL_LOAD_ORDER,
+    SCENARIO_ACTION_LABELS,
 )
 
 
@@ -332,15 +332,15 @@ def remove_suffix(value: str, suffix: str) -> str:
 
 
 def scenario_label(row: pd.Series) -> str:
-    action = ACTION_LABELS.get(row["action"], str(row["action"]))
-    board = BOARD_LABELS.get(row["board"], str(row["board"]))
+    action = SCENARIO_ACTION_LABELS.get(row["action"], str(row["action"]))
+    task_count = BOARD_TASK_COUNTS.get(row["board"], str(row["board"]))
 
-    return f"{action} | {board}"
+    return f"{action} ({task_count})"
 
 
 def scenario_order() -> list[str]:
     return [
-        f"{ACTION_LABELS[action]} | {BOARD_LABELS[board]}"
+        f"{SCENARIO_ACTION_LABELS[action]} ({BOARD_TASK_COUNTS[board]})"
         for action in ACTION_ORDER
         for board in boards_for_action(action)
     ]
