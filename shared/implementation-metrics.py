@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import csv
 import html
 import json
 import re
@@ -69,7 +68,6 @@ REACT_BUILTIN_HOOKS = frozenset(
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPT_DIR.parent
 HTML_OUTPUT_PATH = REPO_ROOT / "results/implementation/implementation-metrics.html"
-LOC_GROUP_OUTPUT_PATH = REPO_ROOT / "results/implementation/loc-by-area.csv"
 
 LOC_GROUP_ORDER = (
     "App und Einstieg",
@@ -127,8 +125,6 @@ def main() -> int:
         loc_group_rows,
         reactivity_rows,
     )
-    write_loc_group_csv(LOC_GROUP_OUTPUT_PATH, loc_group_rows)
-
     if args.console:
         print_table(rows)
         print_loc_group_table(loc_group_rows)
@@ -539,25 +535,6 @@ def loc_group_table_rows(
     return table_rows
 
 
-def write_loc_group_csv(
-    output_path: Path,
-    rows: list[tuple[str, dict[str, int]]],
-) -> None:
-    project_names = [name for name, _groups in rows]
-    table_rows = loc_group_table_rows(rows)
-    headers = [
-        "area",
-        *(f"{name.lower()}_loc" for name in project_names),
-        "difference_leptos_minus_react",
-        "more_loc_framework",
-    ]
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    with output_path.open("w", encoding="utf-8", newline="") as csv_file:
-        writer = csv.writer(csv_file)
-        writer.writerow(headers)
-        writer.writerows(table_rows)
-
-
 def write_html_report(
     output_path: Path,
     implementation_rows: list[tuple[str, Metrics]],
@@ -580,8 +557,6 @@ def write_html_report(
             "Verantwortlichkeiten gruppiert. Jede Datei gehört genau zu einem "
             "Bereich; die Gruppen summieren sich auf die Gesamt-LOC. Die "
             "Differenz ist als Leptos minus React angegeben.</p>",
-            f'<p><a href="{html.escape(LOC_GROUP_OUTPUT_PATH.name)}">'
-            "Gruppierte LOC als CSV herunterladen</a></p>",
             html_table(
                 (
                     "Funktionsbereich",

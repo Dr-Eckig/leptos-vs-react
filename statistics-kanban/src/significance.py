@@ -182,32 +182,22 @@ def median_speedup(leptos_median: float, react_median: float) -> tuple[str, floa
     return faster, speedup
 
 
-def write_significance_results(
+def write_significance_report(
     results: pd.DataFrame,
     output_dir: Path,
     normality_results: pd.DataFrame | None = None,
 ) -> list[Path]:
     output_dir.mkdir(parents=True, exist_ok=True)
-    csv_path = output_dir / cfg.SIGNIFICANCE_RESULTS_FILENAME
-    noteworthy_path = output_dir / cfg.SIGNIFICANCE_NOTEWORTHY_FILENAME
     report_path = output_dir / cfg.SIGNIFICANCE_REPORT_FILENAME
-    normality_path = output_dir / cfg.NORMALITY_RESULTS_FILENAME
 
     if normality_results is None:
         normality_results = pd.DataFrame(columns=NORMALITY_RESULT_COLUMNS)
 
-    results.to_csv(csv_path, index=False, float_format="%.8g")
-    results[results["noteworthy"].fillna(False).astype(bool)].to_csv(
-        noteworthy_path,
-        index=False,
-        float_format="%.8g",
-    )
-    normality_results.to_csv(normality_path, index=False, float_format="%.8g")
     report_path.write_text(
         create_html_report(results, normality_results),
         encoding="utf-8",
     )
-    return [csv_path, noteworthy_path, normality_path, report_path]
+    return [report_path]
 
 
 def create_html_report(
@@ -264,7 +254,6 @@ def create_html_report(
     details {{ margin-top: 2.5rem; }}
     summary {{ cursor: pointer; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; }}
     .note {{ max-width: 1000px; padding: 1rem 1.2rem; border-left: 4px solid #8b98a5; background: var(--panel); }}
-    .downloads a {{ margin-right: 1rem; }}
     @media (max-width: 700px) {{ .cards {{ grid-template-columns: 1fr; }} main {{ margin-top: 1.5rem; }} }}
   </style>
 </head>
@@ -285,10 +274,6 @@ def create_html_report(
     <div class="card"><span class="number">{len(noteworthy)}</span><span class="label">Aussagekräftige Vergleiche</span></div>
     <div class="card"><span class="number">{normality_rejected_count} / {len(normality_results)}</span><span class="label">Normalverteilung verworfen</span></div>
   </section>
-
-  <p class="downloads"><a href="{cfg.SIGNIFICANCE_NOTEWORTHY_FILENAME}">Aussagekräftige Ergebnisse als CSV</a>
-  <a href="{cfg.SIGNIFICANCE_RESULTS_FILENAME}">Alle Tests als CSV</a>
-  <a href="{cfg.NORMALITY_RESULTS_FILENAME}">Normalitätstests als CSV</a></p>
 
   <h2>Aussagekräftige Ergebnisse</h2>
   {noteworthy_table}

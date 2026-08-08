@@ -37,7 +37,7 @@ from plots import (
 from significance import (
     test_normality,
     test_performance_differences,
-    write_significance_results,
+    write_significance_report,
 )
 from tables import (
     create_complexity_summary_table,
@@ -162,7 +162,7 @@ def main() -> None:
     significance_results = test_performance_differences(measurements)
     normality_results = test_normality(measurements)
     table_paths.extend(
-        write_significance_results(
+        write_significance_report(
             significance_results,
             SIGNIFICANCE_RESULTS_DIR,
             normality_results,
