@@ -25,6 +25,7 @@ class ProjectConfig:
 class Metrics:
     files: int = 0
     loc: int = 0
+    code_loc: int = 0
     non_empty_loc: int = 0
     comment_lines: int = 0
     components: int = 0
@@ -154,10 +155,10 @@ def measure_loc_groups(project: ProjectConfig) -> dict[str, int]:
         grouped_paths[classify_loc_group(project, path)].append(path)
 
     group_loc = {
-        group: measure_tokei(paths).loc
+        group: measure_tokei(paths).code_loc
         for group, paths in grouped_paths.items()
     }
-    total_loc = measure_tokei(source_files(project)).loc
+    total_loc = measure_tokei(source_files(project)).code_loc
     if sum(group_loc.values()) != total_loc:
         raise RuntimeError(
             f"Grouped LOC for {project.name} do not add up to total LOC"
@@ -227,6 +228,7 @@ def measure_tokei(paths: list[Path]) -> Metrics:
     return Metrics(
         files=len(file_names),
         loc=code + comments + blanks,
+        code_loc=code,
         non_empty_loc=code + comments,
         comment_lines=comments,
     )
@@ -408,7 +410,7 @@ def print_reactivity_table(rows: list[tuple[str, ReactivityMetrics]]) -> None:
 
 def print_loc_group_table(rows: list[tuple[str, dict[str, int]]]) -> None:
     print()
-    print("LOC nach Funktionsbereich:")
+    print("Code-LOC nach Funktionsbereich (ohne Leer- und Kommentarzeilen):")
     headers = ("Bereich", *(name for name, _groups in rows))
     table_rows = loc_group_table_rows(rows, include_comparison=False)
     widths = [
@@ -552,15 +554,17 @@ def write_html_report(
     project_names = [name for name, _groups in loc_group_rows]
     sections.extend(
         (
-            "<h2>LOC nach Funktionsbereich</h2>",
+            "<h2>Code-LOC nach Funktionsbereich</h2>",
             "<p>Die Quelldateien werden nach vergleichbaren fachlichen "
             "Verantwortlichkeiten gruppiert. Jede Datei gehört genau zu einem "
-            "Bereich; die Gruppen summieren sich auf die Gesamt-LOC. Die "
+            "Bereich. Gezählt werden ausschließlich Codezeilen, also keine "
+            "Leer- oder Kommentarzeilen. Die Gruppen summieren sich auf die "
+            "gesamten Code-LOC. Die "
             "Differenz ist als Leptos minus React angegeben.</p>",
             html_table(
                 (
                     "Funktionsbereich",
-                    *(f"{name} LOC" for name in project_names),
+                    *(f"{name} Code-LOC" for name in project_names),
                     "Differenz (L−R)",
                     "Mehr LOC",
                 ),

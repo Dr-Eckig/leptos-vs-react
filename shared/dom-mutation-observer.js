@@ -20,6 +20,7 @@
       }
 
       activeMeasurement.records.push(...records);
+      finishActiveMeasurementIfReady();
     });
 
     observer.observe(document.body, {
@@ -44,6 +45,7 @@
     activeMeasurement = {
       id: nextMeasurementId,
       records: [],
+      finishCallback: null,
     };
     nextMeasurementId += 1;
 
@@ -62,6 +64,52 @@
     activeMeasurement = null;
 
     return summary;
+  }
+
+  function finishMeasurementWhenReady(id, callback) {
+    if (
+      !activeMeasurement ||
+      activeMeasurement.id !== id ||
+      !observer ||
+      typeof callback !== "function"
+    ) {
+      return false;
+    }
+
+    activeMeasurement.finishCallback = callback;
+    activeMeasurement.records.push(...observer.takeRecords());
+    finishActiveMeasurementIfReady();
+    return true;
+  }
+
+  function finishActiveMeasurementIfReady() {
+    if (
+      !activeMeasurement?.finishCallback ||
+      !hasRelevantRecords(activeMeasurement.records)
+    ) {
+      return;
+    }
+
+    const measurement = activeMeasurement;
+    activeMeasurement = null;
+    measurement.finishCallback(summarizeRecords(measurement.records));
+  }
+
+  function cancelMeasurement(id) {
+    if (!activeMeasurement || activeMeasurement.id !== id) {
+      return;
+    }
+
+    observer?.takeRecords();
+    activeMeasurement = null;
+  }
+
+  function hasRelevantRecords(records) {
+    return records.some(
+      (record) =>
+        record.type !== "attributes" ||
+        record.attributeName !== "data-testid",
+    );
   }
 
   function summarizeRecords(records) {
@@ -123,5 +171,7 @@
   window[GLOBAL_NAME] = {
     startMeasurement,
     finishMeasurement,
+    finishMeasurementWhenReady,
+    cancelMeasurement,
   };
 })();

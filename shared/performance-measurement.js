@@ -1,5 +1,6 @@
 (function () {
   const GLOBAL_NAME = "KanbanPerformanceMetrics";
+  const DOM_UPDATE_TIMEOUT_MS = 1000000;
 
   if (typeof window === "undefined" || window[GLOBAL_NAME]) {
     return;
@@ -61,14 +62,38 @@
     }
 
     measurement.finishing = true;
-    afterDomUpdate(() => completeMeasurement(measurement));
+    measurement.timeoutId = window.setTimeout(
+      () => abortMeasurement(measurement, "No DOM mutation was observed"),
+      DOM_UPDATE_TIMEOUT_MS,
+    );
+
+    const waitingForDomUpdate =
+      window.KanbanDomMutationMetrics?.finishMeasurementWhenReady(
+        measurement.domMutationMeasurementId,
+        (domMutations) => completeMeasurement(measurement, domMutations),
+      ) ?? false;
+
+    if (!waitingForDomUpdate) {
+      abortMeasurement(
+        measurement,
+        "DOM mutation completion is unavailable",
+      );
+    }
   }
 
-  function completeMeasurement(measurement) {
+  function completeMeasurement(measurement, domMutations) {
+    if (!measurements.has(measurement.id)) {
+      return;
+    }
+
+    window.clearTimeout(measurement.timeoutId);
     measurements.delete(measurement.id);
 
     let duration;
     try {
+      // Reading a layout-dependent property synchronously applies pending
+      // style and layout work for the DOM mutation before the end mark.
+      void document.documentElement.clientHeight;
       window.performance.mark(measurement.endMark);
       duration = window.performance.measure(
         measurement.label,
@@ -76,18 +101,11 @@
         measurement.endMark,
       ).duration;
     } catch {
-      window.KanbanDomMutationMetrics?.finishMeasurement(
-        measurement.domMutationMeasurementId,
-      );
       clearPerformanceEntries(measurement);
       return;
     }
 
     const performance = `${duration.toFixed(2)} ms`;
-    const domMutations =
-      window.KanbanDomMutationMetrics?.finishMeasurement(
-        measurement.domMutationMeasurementId,
-      ) ?? emptyDomMutationSummary();
 
     console.log(
       `${measurement.session.logPrefix} ${measurement.label} - ${performance} - ${domMutationConsoleSummary(domMutations)}`,
@@ -104,23 +122,20 @@
     clearPerformanceEntries(measurement);
   }
 
-  function afterDomUpdate(callback) {
-    if (typeof MessageChannel === "undefined") {
-      callback();
+  function abortMeasurement(measurement, reason) {
+    if (!measurements.has(measurement.id)) {
       return;
     }
 
-    const channel = new MessageChannel();
-    channel.port1.onmessage = () => {
-      channel.port1.close();
-      channel.port2.close();
-
-      // The task runs after current microtasks. The layout read also includes
-      // pending style and layout work without waiting for another frame.
-      void document.documentElement.clientHeight;
-      callback();
-    };
-    channel.port2.postMessage(undefined);
+    window.clearTimeout(measurement.timeoutId);
+    measurements.delete(measurement.id);
+    window.KanbanDomMutationMetrics?.cancelMeasurement(
+      measurement.domMutationMeasurementId,
+    );
+    clearPerformanceEntries(measurement);
+    console.warn(
+      `${measurement.session.logPrefix} Aborted ${measurement.label}: ${reason}`,
+    );
   }
 
   function clearPerformanceEntries(measurement) {
@@ -168,16 +183,6 @@
 
   function sanitizeLogSegment(value) {
     return value.replace(/[\n\r]/g, "_");
-  }
-
-  function emptyDomMutationSummary() {
-    return {
-      mutationRecords: 0,
-      textChanges: 0,
-      attributeChanges: 0,
-      addedElements: 0,
-      removedElements: 0,
-    };
   }
 
   function domMutationConsoleSummary(domMutations) {
