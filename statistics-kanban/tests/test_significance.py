@@ -35,11 +35,14 @@ class SignificanceTest(unittest.TestCase):
 
     @patch("significance.pg.multicomp")
     @patch("significance.pg.mwu")
-    def test_performance_comparison_uses_pingouin(
+    @patch("significance.calculate_cliffs_delta")
+    def test_performance_comparison_uses_pingouin_and_cliffs_delta(
         self,
+        calculate_cliffs_delta,
         mwu,
         multicomp,
     ) -> None:
+        calculate_cliffs_delta.return_value = (-1.0, "large")
         mwu.return_value = pd.DataFrame(
             {"U_val": [0.0], "p_val": [0.01], "RBC": [-1.0]}
         )
@@ -58,6 +61,14 @@ class SignificanceTest(unittest.TestCase):
 
         np.testing.assert_array_equal(mwu.call_args.args[0], [1.0, 2.0])
         np.testing.assert_array_equal(mwu.call_args.args[1], [3.0, 4.0])
+        np.testing.assert_array_equal(
+            calculate_cliffs_delta.call_args.args[0],
+            [1.0, 2.0],
+        )
+        np.testing.assert_array_equal(
+            calculate_cliffs_delta.call_args.args[1],
+            [3.0, 4.0],
+        )
         self.assertEqual(
             mwu.call_args.kwargs,
             {

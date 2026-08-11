@@ -10,6 +10,7 @@ from config import (
     IMPLEMENTATION_RESULTS_DIR,
     MINIMIZED_ACTION_GROUPS,
     MINIMIZED_PERFORMANCE_RESULTS_DIR,
+    NORMALITY_HISTOGRAM_RESULTS_DIR,
     PERFORMANCE_RESULTS_DIR,
     REACTIVITY_RESULTS_DIR,
     SIGNIFICANCE_RESULTS_DIR,
@@ -33,6 +34,7 @@ from plots import (
     create_initial_load_boxplot,
     create_initial_load_browser_boxplot,
     create_minimized_boxplot,
+    create_normality_histograms,
 )
 from significance import (
     test_normality,
@@ -51,6 +53,7 @@ def main() -> None:
     PERFORMANCE_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     MINIMIZED_PERFORMANCE_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     BOARD_PERFORMANCE_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    NORMALITY_HISTOGRAM_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     REACTIVITY_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     IMPLEMENTATION_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -65,6 +68,7 @@ def main() -> None:
         (measurements["metric_unit"] == "ms")
         & ~measurements["action"].isin(INITIAL_LOAD_ORDER)
     ]
+    normality_results = test_normality(measurements)
 
     output_paths = [
         create_browser_boxplot(action_measurements, browser)
@@ -72,6 +76,9 @@ def main() -> None:
     ]
     if complexity_plot is not None:
         output_paths.append(complexity_plot)
+    output_paths.extend(
+        create_normality_histograms(measurements, normality_results)
+    )
 
     minimized_plot_paths = [
         create_minimized_boxplot(
@@ -160,7 +167,6 @@ def main() -> None:
         PERFORMANCE_RESULTS_DIR,
     )
     significance_results = test_performance_differences(measurements)
-    normality_results = test_normality(measurements)
     table_paths.extend(
         write_significance_report(
             significance_results,

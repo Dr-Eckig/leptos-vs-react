@@ -6,6 +6,7 @@ import config as cfg
 import numpy as np
 import pandas as pd
 import pingouin as pg
+from cliffs_delta import cliffs_delta as calculate_cliffs_delta
 from scipy.stats import shapiro
 
 
@@ -69,9 +70,8 @@ def test_performance_differences(measurements: pd.DataFrame) -> pd.DataFrame:
         test_row = test_result.iloc[0]
         u_statistic = float(test_row["U_val"])
         p_value = float(test_row["p_val"])
-        # For two independent samples, Pingouin's rank-biserial correlation is
-        # algebraically identical to Cliff's delta with the same sample order.
-        cliffs_delta = float(test_row["RBC"])
+        cliffs_delta, _magnitude = calculate_cliffs_delta(leptos, react)
+        cliffs_delta = float(cliffs_delta)
         leptos_median = float(np.median(leptos))
         react_median = float(np.median(react))
         faster_framework, speedup = median_speedup(leptos_median, react_median)

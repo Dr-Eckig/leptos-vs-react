@@ -2,6 +2,7 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 from matplotlib import ticker as mticker
+import numpy as np
 import pandas as pd
 
 import config as cfg
@@ -20,6 +21,232 @@ def configure_plot_theme() -> None:
         context=cfg.PLOT_THEME_CONTEXT,
         rc=cfg.PLOT_THEME_RC,
     )
+
+
+def create_normality_histograms(
+    measurements: pd.DataFrame,
+    normality_results: pd.DataFrame,
+) -> list[Path]:
+    """Create one normality overview per browser/action combination."""
+    performance = measurements.dropna(subset=["performance_ms"]).copy()
+    output_paths: list[Path] = []
+    action_order = [*cfg.ACTION_ORDER, *cfg.INITIAL_LOAD_ORDER]
+
+    for browser in ordered_values(performance["browser"], cfg.BROWSER_ORDER):
+        browser_measurements = performance[performance["browser"] == browser]
+        for action in ordered_values(browser_measurements["action"], action_order):
+            action_measurements = browser_measurements[
+                browser_measurements["action"] == action
+            ]
+            output_path = create_normality_histogram(
+                action_measurements,
+                normality_results,
+                browser,
+                action,
+            )
+            if output_path is not None:
+                output_paths.append(output_path)
+
+    return output_paths
+
+
+def create_normality_histogram(
+    measurements: pd.DataFrame,
+    normality_results: pd.DataFrame,
+    browser: str,
+    action: str,
+) -> Path | None:
+    if measurements.empty:
+        return None
+
+    preferred_boards = [*cfg.BOARD_ORDER, cfg.INITIAL_LOAD_BOARD_LABEL]
+    boards = ordered_values(measurements["board"], preferred_boards)
+    frameworks = ordered_values(measurements["framework"], cfg.FRAMEWORK_ORDER)
+    height = max(
+        cfg.NORMALITY_HISTOGRAM_MIN_HEIGHT,
+        len(boards) * cfg.NORMALITY_HISTOGRAM_HEIGHT_PER_BOARD,
+    )
+    fig, axes = plt.subplots(
+        len(boards),
+        len(frameworks),
+        figsize=(cfg.NORMALITY_HISTOGRAM_WIDTH, height),
+        squeeze=False,
+    )
+
+    for row_index, board in enumerate(boards):
+        board_label = cfg.BOARD_LABELS.get(board, board)
+        for column_index, framework in enumerate(frameworks):
+            ax = axes[row_index, column_index]
+            sample = measurements[
+                (measurements["board"] == board)
+                & (measurements["framework"] == framework)
+            ]["performance_ms"].to_numpy(dtype=float)
+
+            if len(sample) == 0:
+                ax.set_visible(False)
+                continue
+
+            color = cfg.FRAMEWORK_PALETTE.get(framework, "#64748b")
+            sns.histplot(
+                sample,
+                bins=cfg.NORMALITY_HISTOGRAM_BINS,
+                stat="density",
+                color=color,
+                alpha=cfg.NORMALITY_HISTOGRAM_BAR_ALPHA,
+                edgecolor=cfg.NORMALITY_HISTOGRAM_BAR_EDGE_COLOR,
+                ax=ax,
+                label="Histogramm",
+            )
+            add_fitted_normal_curve(ax, sample)
+
+            mean = float(np.mean(sample))
+            median = float(np.median(sample))
+            ax.axvline(
+                mean,
+                color=cfg.NORMALITY_HISTOGRAM_MEAN_COLOR,
+                linestyle="--",
+                linewidth=1.3,
+                label="Mittelwert",
+            )
+            ax.axvline(
+                median,
+                color=cfg.NORMALITY_HISTOGRAM_MEDIAN_COLOR,
+                linestyle=":",
+                linewidth=1.6,
+                label="Median",
+            )
+            add_normality_assessment(
+                ax,
+                normality_results,
+                browser,
+                action,
+                board,
+                framework,
+                len(sample),
+            )
+
+            ax.set_title(framework)
+            ax.set_xlabel(cfg.NORMALITY_HISTOGRAM_X_LABEL)
+            ax.set_ylabel(
+                f"{board_label}\n{cfg.NORMALITY_HISTOGRAM_Y_LABEL}"
+                if column_index == 0
+                else cfg.NORMALITY_HISTOGRAM_Y_LABEL
+            )
+            configure_histogram_millisecond_axis(ax)
+            configure_value_grid(ax, "y")
+            ax.grid(axis="x", visible=False)
+            sns.despine(ax=ax)
+
+    browser_label = cfg.BROWSER_LABELS.get(browser, browser.title())
+    action_label = cfg.ACTION_LABELS.get(
+        action,
+        cfg.INITIAL_LOAD_LABELS.get(action, action),
+    )
+    fig.suptitle(
+        cfg.NORMALITY_HISTOGRAM_TITLE.format(
+            action=action_label,
+            browser=browser_label,
+        ),
+        y=0.995,
+    )
+    handles, labels = axes[0, 0].get_legend_handles_labels()
+    if handles:
+        fig.legend(
+            handles,
+            labels,
+            loc="lower center",
+            bbox_to_anchor=(0.5, 0.045),
+            ncol=len(handles),
+            frameon=cfg.PLOT_LEGEND_FRAME,
+        )
+    fig.text(
+        0.5,
+        0.012,
+        cfg.NORMALITY_HISTOGRAM_FOOTNOTE,
+        ha="center",
+        fontsize=9,
+    )
+    bottom_margin = min(0.24, 1.0 / height)
+    fig.tight_layout(rect=(0, bottom_margin, 1, 0.97))
+
+    output_path = cfg.NORMALITY_HISTOGRAM_RESULTS_DIR / browser / (
+        cfg.NORMALITY_HISTOGRAM_FILENAME.format(action=action, browser=browser)
+    )
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    save_figure(fig, output_path)
+    plt.close(fig)
+    return output_path
+
+
+def add_fitted_normal_curve(ax, sample: np.ndarray) -> None:
+    standard_deviation = float(np.std(sample, ddof=1))
+    if not np.isfinite(standard_deviation) or standard_deviation <= 0:
+        return
+
+    lower = float(np.min(sample))
+    upper = float(np.max(sample))
+    x_values = np.linspace(lower, upper, 300)
+    mean = float(np.mean(sample))
+    y_values = (
+        np.exp(-0.5 * ((x_values - mean) / standard_deviation) ** 2)
+        / (standard_deviation * np.sqrt(2 * np.pi))
+    )
+    ax.plot(
+        x_values,
+        y_values,
+        color=cfg.NORMALITY_HISTOGRAM_NORMAL_COLOR,
+        linewidth=1.8,
+        label="Angepasste Normalverteilung",
+    )
+
+
+def add_normality_assessment(
+    ax,
+    normality_results: pd.DataFrame,
+    browser: str,
+    action: str,
+    board: str,
+    framework: str,
+    sample_size: int,
+) -> None:
+    result = normality_results[
+        (normality_results["browser"] == browser)
+        & (normality_results["action"] == action)
+        & (normality_results["board"] == board)
+        & (normality_results["framework"] == framework)
+    ]
+    if result.empty:
+        assessment = f"n = {sample_size}\nShapiro-Wilk: nicht verfügbar"
+        face_color = "#f1f5f9"
+    else:
+        row = result.iloc[0]
+        rejected = bool(row["normality_rejected"])
+        decision = "Normalverteilung verworfen" if rejected else "Nicht verworfen"
+        p_value = format_probability_expression(float(row["p_value_holm"]))
+        assessment = f"n = {sample_size}\np$_{{Holm}}$ {p_value}\n{decision}"
+        face_color = "#fee2e2" if rejected else "#dcfce7"
+
+    ax.text(
+        0.98,
+        0.96,
+        assessment,
+        transform=ax.transAxes,
+        ha="right",
+        va="top",
+        fontsize=8.5,
+        bbox={
+            "boxstyle": "round,pad=0.35",
+            "facecolor": face_color,
+            "edgecolor": "#94a3b8",
+            "alpha": 0.92,
+        },
+    )
+
+
+def format_probability_expression(value: float) -> str:
+    if value < 0.001:
+        return "< 0,001"
+    return f"= {value:.3f}".replace(".", ",")
 
 
 def create_complexity_frequency_plot(
@@ -711,6 +938,23 @@ def configure_linear_millisecond_axis(ax) -> None:
     ax.xaxis.set_major_formatter(
         mticker.FuncFormatter(
             lambda value, _position: format_millisecond_tick(value),
+        )
+    )
+    ax.xaxis.set_minor_formatter(mticker.NullFormatter())
+    ax.xaxis.get_offset_text().set_visible(False)
+
+
+def configure_histogram_millisecond_axis(ax) -> None:
+    lower, upper = ax.get_xlim()
+    span = upper - lower
+    decimal_places = 2 if span < 1 else 1 if span < 10 else 0
+
+    ax.xaxis.set_major_locator(mticker.MaxNLocator(nbins=6, min_n_ticks=4))
+    ax.xaxis.set_major_formatter(
+        mticker.FuncFormatter(
+            lambda value, _position: (
+                f"{value:.{decimal_places}f} ms".replace(".", ",")
+            ),
         )
     )
     ax.xaxis.set_minor_formatter(mticker.NullFormatter())
