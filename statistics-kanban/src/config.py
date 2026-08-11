@@ -147,6 +147,17 @@ SCENARIO_LEGEND_ANCHOR = (1.01, 0.5)
 # Focused performance boxplots
 MINIMIZED_ACTION_GROUPS = (
     (
+        "task-management-and-movement",
+        (
+            "task-create",
+            "task-edit",
+            "task-delete",
+            "task-move-within-column",
+            "task-move-between-columns",
+        ),
+        "Aufgaben verwalten und verschieben",
+    ),
+    (
         "task-management",
         ("task-create", "task-edit", "task-delete"),
         "Aufgaben erstellen, bearbeiten und löschen",
