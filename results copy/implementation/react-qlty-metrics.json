@@ -1,0 +1,1384 @@
+{
+  "framework": "React",
+  "tool": "qlty",
+  "source": "react-kanban/src",
+  "functions": [
+    {
+      "function_name": "App",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 9,
+      "nloc": 8,
+      "file": "react-kanban/src/App.tsx"
+    },
+    {
+      "function_name": "DraggableItem",
+      "fields": 0,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 3,
+      "lines": 40,
+      "nloc": 34,
+      "file": "react-kanban/src/components/drag_and_drop/DraggableItem.tsx"
+    },
+    {
+      "function_name": "handleDragEnd",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 4,
+      "nloc": 4,
+      "file": "react-kanban/src/components/drag_and_drop/DraggableItem.tsx"
+    },
+    {
+      "function_name": "handleDragStart",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 2,
+      "lines": 12,
+      "nloc": 10,
+      "file": "react-kanban/src/components/drag_and_drop/DraggableItem.tsx"
+    },
+    {
+      "function_name": "DropZone",
+      "fields": 0,
+      "cyclomatic_complexity": 13,
+      "cognitive_complexity": 15,
+      "lines": 74,
+      "nloc": 61,
+      "file": "react-kanban/src/components/drag_and_drop/DropZone.tsx"
+    },
+    {
+      "function_name": "handleDragEnter",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 1,
+      "lines": 7,
+      "nloc": 6,
+      "file": "react-kanban/src/components/drag_and_drop/DropZone.tsx"
+    },
+    {
+      "function_name": "handleDragLeave",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 3,
+      "lines": 10,
+      "nloc": 9,
+      "file": "react-kanban/src/components/drag_and_drop/DropZone.tsx"
+    },
+    {
+      "function_name": "handleDragOver",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 2,
+      "lines": 6,
+      "nloc": 5,
+      "file": "react-kanban/src/components/drag_and_drop/DropZone.tsx"
+    },
+    {
+      "function_name": "handleDrop",
+      "fields": 0,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 3,
+      "lines": 12,
+      "nloc": 10,
+      "file": "react-kanban/src/components/drag_and_drop/DropZone.tsx"
+    },
+    {
+      "function_name": "readDraggedItem",
+      "fields": 0,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 3,
+      "lines": 7,
+      "nloc": 6,
+      "file": "react-kanban/src/components/drag_and_drop/DropZone.tsx"
+    },
+    {
+      "function_name": "Board",
+      "fields": 0,
+      "cyclomatic_complexity": 6,
+      "cognitive_complexity": 1,
+      "lines": 26,
+      "nloc": 25,
+      "file": "react-kanban/src/components/kanban/Board.tsx"
+    },
+    {
+      "function_name": "TaskColumn",
+      "fields": 0,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 1,
+      "lines": 38,
+      "nloc": 34,
+      "file": "react-kanban/src/components/kanban/Column.tsx"
+    },
+    {
+      "function_name": "TaskColumnHeader",
+      "fields": 0,
+      "cyclomatic_complexity": 5,
+      "cognitive_complexity": 3,
+      "lines": 45,
+      "nloc": 43,
+      "file": "react-kanban/src/components/kanban/Column.tsx"
+    },
+    {
+      "function_name": "TaskDropTarget",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 47,
+      "nloc": 45,
+      "file": "react-kanban/src/components/kanban/Column.tsx"
+    },
+    {
+      "function_name": "movePerformanceAction",
+      "fields": 0,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 1,
+      "lines": 8,
+      "nloc": 8,
+      "file": "react-kanban/src/components/kanban/Column.tsx"
+    },
+    {
+      "function_name": "moveTask",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 1,
+      "lines": 22,
+      "nloc": 21,
+      "file": "react-kanban/src/components/kanban/Column.tsx"
+    },
+    {
+      "function_name": "moveTaskToColumnEnd",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "react-kanban/src/components/kanban/Column.tsx"
+    },
+    {
+      "function_name": "onClick",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "react-kanban/src/components/kanban/Column.tsx"
+    },
+    {
+      "function_name": "onClick",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "react-kanban/src/components/kanban/Column.tsx"
+    },
+    {
+      "function_name": "onDelete",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "react-kanban/src/components/kanban/Column.tsx"
+    },
+    {
+      "function_name": "onDrop",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 9,
+      "nloc": 9,
+      "file": "react-kanban/src/components/kanban/Column.tsx"
+    },
+    {
+      "function_name": "onEdit",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "react-kanban/src/components/kanban/Column.tsx"
+    },
+    {
+      "function_name": "Sidebar",
+      "fields": 0,
+      "cyclomatic_complexity": 5,
+      "cognitive_complexity": 3,
+      "lines": 49,
+      "nloc": 46,
+      "file": "react-kanban/src/components/kanban/Sidebar.tsx"
+    },
+    {
+      "function_name": "SidebarItem",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 3,
+      "lines": 43,
+      "nloc": 40,
+      "file": "react-kanban/src/components/kanban/Sidebar.tsx"
+    },
+    {
+      "function_name": "onClick",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "react-kanban/src/components/kanban/Sidebar.tsx"
+    },
+    {
+      "function_name": "onClick",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 4,
+      "nloc": 4,
+      "file": "react-kanban/src/components/kanban/Sidebar.tsx"
+    },
+    {
+      "function_name": "onClick",
+      "fields": 0,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 2,
+      "lines": 12,
+      "nloc": 11,
+      "file": "react-kanban/src/components/kanban/Sidebar.tsx"
+    },
+    {
+      "function_name": "onEdit",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "react-kanban/src/components/kanban/Sidebar.tsx"
+    },
+    {
+      "function_name": "TaskActionsDropdown",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 59,
+      "nloc": 57,
+      "file": "react-kanban/src/components/kanban/TaskCard.tsx"
+    },
+    {
+      "function_name": "TaskCard",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 20,
+      "nloc": 20,
+      "file": "react-kanban/src/components/kanban/TaskCard.tsx"
+    },
+    {
+      "function_name": "TaskCardContent",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 2,
+      "lines": 13,
+      "nloc": 12,
+      "file": "react-kanban/src/components/kanban/TaskCard.tsx"
+    },
+    {
+      "function_name": "TaskCardHeader",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 21,
+      "nloc": 21,
+      "file": "react-kanban/src/components/kanban/TaskCard.tsx"
+    },
+    {
+      "function_name": "deleteTask",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 9,
+      "nloc": 9,
+      "file": "react-kanban/src/components/kanban/TaskCard.tsx"
+    },
+    {
+      "function_name": "editTask",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 4,
+      "nloc": 4,
+      "file": "react-kanban/src/components/kanban/TaskCard.tsx"
+    },
+    {
+      "function_name": "onClick",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 1,
+      "nloc": 1,
+      "file": "react-kanban/src/components/kanban/TaskCard.tsx"
+    },
+    {
+      "function_name": "priorityBorderClass",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 1,
+      "lines": 10,
+      "nloc": 10,
+      "file": "react-kanban/src/components/kanban/TaskCard.tsx"
+    },
+    {
+      "function_name": "priorityColor",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 1,
+      "lines": 10,
+      "nloc": 10,
+      "file": "react-kanban/src/components/kanban/TaskCard.tsx"
+    },
+    {
+      "function_name": "BoardFormFields",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 10,
+      "nloc": 10,
+      "file": "react-kanban/src/components/kanban/modals/BoardModal.tsx"
+    },
+    {
+      "function_name": "BoardModal",
+      "fields": 0,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 3,
+      "lines": 33,
+      "nloc": 28,
+      "file": "react-kanban/src/components/kanban/modals/BoardModal.tsx"
+    },
+    {
+      "function_name": "closeModal",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 1,
+      "nloc": 1,
+      "file": "react-kanban/src/components/kanban/modals/BoardModal.tsx"
+    },
+    {
+      "function_name": "saveBoard",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 2,
+      "lines": 12,
+      "nloc": 10,
+      "file": "react-kanban/src/components/kanban/modals/BoardModal.tsx"
+    },
+    {
+      "function_name": "saveValidatedBoard",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 2,
+      "lines": 11,
+      "nloc": 11,
+      "file": "react-kanban/src/components/kanban/modals/BoardModal.tsx"
+    },
+    {
+      "function_name": "updateBoard",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 7,
+      "nloc": 7,
+      "file": "react-kanban/src/components/kanban/modals/BoardModal.tsx"
+    },
+    {
+      "function_name": "ColumnFormFields",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 12,
+      "nloc": 12,
+      "file": "react-kanban/src/components/kanban/modals/ColumnModal.tsx"
+    },
+    {
+      "function_name": "ColumnModal",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 2,
+      "lines": 31,
+      "nloc": 27,
+      "file": "react-kanban/src/components/kanban/modals/ColumnModal.tsx"
+    },
+    {
+      "function_name": "closeModal",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 1,
+      "nloc": 1,
+      "file": "react-kanban/src/components/kanban/modals/ColumnModal.tsx"
+    },
+    {
+      "function_name": "saveColumn",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 2,
+      "lines": 12,
+      "nloc": 10,
+      "file": "react-kanban/src/components/kanban/modals/ColumnModal.tsx"
+    },
+    {
+      "function_name": "updateColumn",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 7,
+      "nloc": 7,
+      "file": "react-kanban/src/components/kanban/modals/ColumnModal.tsx"
+    },
+    {
+      "function_name": "TaskFormFields",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 47,
+      "nloc": 43,
+      "file": "react-kanban/src/components/kanban/modals/TaskModal.tsx"
+    },
+    {
+      "function_name": "TaskModal",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 3,
+      "lines": 42,
+      "nloc": 37,
+      "file": "react-kanban/src/components/kanban/modals/TaskModal.tsx"
+    },
+    {
+      "function_name": "closeModal",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 1,
+      "nloc": 1,
+      "file": "react-kanban/src/components/kanban/modals/TaskModal.tsx"
+    },
+    {
+      "function_name": "onClick",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 1,
+      "nloc": 1,
+      "file": "react-kanban/src/components/kanban/modals/TaskModal.tsx"
+    },
+    {
+      "function_name": "saveTask",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 2,
+      "lines": 19,
+      "nloc": 17,
+      "file": "react-kanban/src/components/kanban/modals/TaskModal.tsx"
+    },
+    {
+      "function_name": "saveValidatedTask",
+      "fields": 0,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 2,
+      "lines": 27,
+      "nloc": 25,
+      "file": "react-kanban/src/components/kanban/modals/TaskModal.tsx"
+    },
+    {
+      "function_name": "setValue",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 1,
+      "nloc": 1,
+      "file": "react-kanban/src/components/kanban/modals/TaskModal.tsx"
+    },
+    {
+      "function_name": "startTaskMeasurement",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 9,
+      "nloc": 9,
+      "file": "react-kanban/src/components/kanban/modals/TaskModal.tsx"
+    },
+    {
+      "function_name": "updateTask",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 10,
+      "nloc": 10,
+      "file": "react-kanban/src/components/kanban/modals/TaskModal.tsx"
+    },
+    {
+      "function_name": "Button",
+      "fields": 0,
+      "cyclomatic_complexity": 7,
+      "cognitive_complexity": 1,
+      "lines": 45,
+      "nloc": 42,
+      "file": "react-kanban/src/components/ui/Button.tsx"
+    },
+    {
+      "function_name": "DownloadLogsButton",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 19,
+      "nloc": 17,
+      "file": "react-kanban/src/components/ui/DownloadLogsButton.tsx"
+    },
+    {
+      "function_name": "downloadFile",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 11,
+      "nloc": 9,
+      "file": "react-kanban/src/components/ui/DownloadLogsButton.tsx"
+    },
+    {
+      "function_name": "handleClick",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 6,
+      "nloc": 5,
+      "file": "react-kanban/src/components/ui/DownloadLogsButton.tsx"
+    },
+    {
+      "function_name": "Dropdown",
+      "fields": 0,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 1,
+      "lines": 27,
+      "nloc": 24,
+      "file": "react-kanban/src/components/ui/Dropdown.tsx"
+    },
+    {
+      "function_name": "IconButton",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 0,
+      "lines": 36,
+      "nloc": 34,
+      "file": "react-kanban/src/components/ui/IconButton.tsx"
+    },
+    {
+      "function_name": "IconText",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 1,
+      "lines": 32,
+      "nloc": 28,
+      "file": "react-kanban/src/components/ui/IconText.tsx"
+    },
+    {
+      "function_name": "Input",
+      "fields": 0,
+      "cyclomatic_complexity": 6,
+      "cognitive_complexity": 2,
+      "lines": 35,
+      "nloc": 32,
+      "file": "react-kanban/src/components/ui/Input.tsx"
+    },
+    {
+      "function_name": "onChange",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 1,
+      "nloc": 1,
+      "file": "react-kanban/src/components/ui/Input.tsx"
+    },
+    {
+      "function_name": "Modal",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 3,
+      "lines": 73,
+      "nloc": 65,
+      "file": "react-kanban/src/components/ui/Modal.tsx"
+    },
+    {
+      "function_name": "Select",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 2,
+      "lines": 33,
+      "nloc": 30,
+      "file": "react-kanban/src/components/ui/Select.tsx"
+    },
+    {
+      "function_name": "onChange",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 1,
+      "nloc": 1,
+      "file": "react-kanban/src/components/ui/Select.tsx"
+    },
+    {
+      "function_name": "Tag",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 1,
+      "lines": 23,
+      "nloc": 22,
+      "file": "react-kanban/src/components/ui/Tag.tsx"
+    },
+    {
+      "function_name": "Textarea",
+      "fields": 0,
+      "cyclomatic_complexity": 5,
+      "cognitive_complexity": 1,
+      "lines": 35,
+      "nloc": 31,
+      "file": "react-kanban/src/components/ui/Textarea.tsx"
+    },
+    {
+      "function_name": "onChange",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 1,
+      "nloc": 1,
+      "file": "react-kanban/src/components/ui/Textarea.tsx"
+    },
+    {
+      "function_name": "AppContextProvider",
+      "fields": 0,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 2,
+      "lines": 124,
+      "nloc": 105,
+      "file": "react-kanban/src/hooks/AppContextProvider.tsx"
+    },
+    {
+      "function_name": "addBoard",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "react-kanban/src/hooks/AppContextProvider.tsx"
+    },
+    {
+      "function_name": "addTaskToCurrentBoard",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 5,
+      "nloc": 5,
+      "file": "react-kanban/src/hooks/AppContextProvider.tsx"
+    },
+    {
+      "function_name": "deleteTaskFromCurrentBoard",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 5,
+      "nloc": 5,
+      "file": "react-kanban/src/hooks/AppContextProvider.tsx"
+    },
+    {
+      "function_name": "moveTaskInCurrentBoard",
+      "fields": 0,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 2,
+      "lines": 20,
+      "nloc": 17,
+      "file": "react-kanban/src/hooks/AppContextProvider.tsx"
+    },
+    {
+      "function_name": "setCurrentBoard",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "react-kanban/src/hooks/AppContextProvider.tsx"
+    },
+    {
+      "function_name": "updateBoardTitle",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 5,
+      "nloc": 5,
+      "file": "react-kanban/src/hooks/AppContextProvider.tsx"
+    },
+    {
+      "function_name": "updateColumnWipLimit",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 5,
+      "nloc": 5,
+      "file": "react-kanban/src/hooks/AppContextProvider.tsx"
+    },
+    {
+      "function_name": "updateTaskOnCurrentBoard",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 5,
+      "nloc": 5,
+      "file": "react-kanban/src/hooks/AppContextProvider.tsx"
+    },
+    {
+      "function_name": "requiredContext",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 1,
+      "lines": 7,
+      "nloc": 6,
+      "file": "react-kanban/src/hooks/appContext.ts"
+    },
+    {
+      "function_name": "useAppContext",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 16,
+      "nloc": 16,
+      "file": "react-kanban/src/hooks/appContext.ts"
+    },
+    {
+      "function_name": "useBoardsActions",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "react-kanban/src/hooks/appContext.ts"
+    },
+    {
+      "function_name": "useBoardsState",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "react-kanban/src/hooks/appContext.ts"
+    },
+    {
+      "function_name": "useDragAndDropActions",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 6,
+      "nloc": 6,
+      "file": "react-kanban/src/hooks/appContext.ts"
+    },
+    {
+      "function_name": "useDragAndDropState",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 6,
+      "nloc": 6,
+      "file": "react-kanban/src/hooks/appContext.ts"
+    },
+    {
+      "function_name": "useModalsActions",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "react-kanban/src/hooks/appContext.ts"
+    },
+    {
+      "function_name": "useModalsState",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "react-kanban/src/hooks/appContext.ts"
+    },
+    {
+      "function_name": "handleClickOutside",
+      "fields": 0,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 2,
+      "lines": 8,
+      "nloc": 8,
+      "file": "react-kanban/src/hooks/useClickOutside.ts"
+    },
+    {
+      "function_name": "useClickOutside",
+      "fields": 0,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 4,
+      "lines": 20,
+      "nloc": 16,
+      "file": "react-kanban/src/hooks/useClickOutside.ts"
+    },
+    {
+      "function_name": "initPerformanceLogSession",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "react-kanban/src/performance.ts"
+    },
+    {
+      "function_name": "performanceContextFromBoard",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 0,
+      "lines": 7,
+      "nloc": 7,
+      "file": "react-kanban/src/performance.ts"
+    },
+    {
+      "function_name": "performanceLogFileContent",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "react-kanban/src/performance.ts"
+    },
+    {
+      "function_name": "performanceLogFileName",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 0,
+      "lines": 4,
+      "nloc": 4,
+      "file": "react-kanban/src/performance.ts"
+    },
+    {
+      "function_name": "start",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 1,
+      "lines": 18,
+      "nloc": 16,
+      "file": "react-kanban/src/performance.ts"
+    },
+    {
+      "function_name": "formatDatePart",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "react-kanban/src/types/date.ts"
+    },
+    {
+      "function_name": "formatDateToDisplay",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 7,
+      "nloc": 7,
+      "file": "react-kanban/src/types/date.ts"
+    },
+    {
+      "function_name": "formatDateToString",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "react-kanban/src/types/date.ts"
+    },
+    {
+      "function_name": "parseDateFromString",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 2,
+      "lines": 11,
+      "nloc": 10,
+      "file": "react-kanban/src/types/date.ts"
+    },
+    {
+      "function_name": "createDraggableItemDto",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 9,
+      "nloc": 9,
+      "file": "react-kanban/src/types/drag_and_drop.ts"
+    },
+    {
+      "function_name": "draggableItemFromPayload",
+      "fields": 0,
+      "cyclomatic_complexity": 5,
+      "cognitive_complexity": 3,
+      "lines": 18,
+      "nloc": 16,
+      "file": "react-kanban/src/types/drag_and_drop.ts"
+    },
+    {
+      "function_name": "draggableItemToPayload",
+      "fields": 0,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 1,
+      "lines": 7,
+      "nloc": 7,
+      "file": "react-kanban/src/types/drag_and_drop.ts"
+    },
+    {
+      "function_name": "clearError",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 1,
+      "nloc": 1,
+      "file": "react-kanban/src/types/modals/board.ts"
+    },
+    {
+      "function_name": "openBoardModal",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "react-kanban/src/types/modals/board.ts"
+    },
+    {
+      "function_name": "openBoardModalWithBoard",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "react-kanban/src/types/modals/board.ts"
+    },
+    {
+      "function_name": "setValidationError",
+      "fields": 0,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 2,
+      "lines": 7,
+      "nloc": 7,
+      "file": "react-kanban/src/types/modals/board.ts"
+    },
+    {
+      "function_name": "useBoardForm",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 2,
+      "lines": 23,
+      "nloc": 21,
+      "file": "react-kanban/src/types/modals/board.ts"
+    },
+    {
+      "function_name": "userBoard",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 1,
+      "nloc": 1,
+      "file": "react-kanban/src/types/modals/board.ts"
+    },
+    {
+      "function_name": "clearError",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 1,
+      "nloc": 1,
+      "file": "react-kanban/src/types/modals/column.ts"
+    },
+    {
+      "function_name": "openColumnModalWithColumn",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "react-kanban/src/types/modals/column.ts"
+    },
+    {
+      "function_name": "setValidationError",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "react-kanban/src/types/modals/column.ts"
+    },
+    {
+      "function_name": "useColumnForm",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 0,
+      "lines": 22,
+      "nloc": 20,
+      "file": "react-kanban/src/types/modals/column.ts"
+    },
+    {
+      "function_name": "userColumn",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 4,
+      "nloc": 4,
+      "file": "react-kanban/src/types/modals/column.ts"
+    },
+    {
+      "function_name": "clearErrors",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 5,
+      "nloc": 5,
+      "file": "react-kanban/src/types/modals/task.ts"
+    },
+    {
+      "function_name": "openTaskModal",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 6,
+      "nloc": 6,
+      "file": "react-kanban/src/types/modals/task.ts"
+    },
+    {
+      "function_name": "openTaskModalWithTask",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 9,
+      "nloc": 9,
+      "file": "react-kanban/src/types/modals/task.ts"
+    },
+    {
+      "function_name": "setValidationError",
+      "fields": 0,
+      "cyclomatic_complexity": 7,
+      "cognitive_complexity": 5,
+      "lines": 11,
+      "nloc": 11,
+      "file": "react-kanban/src/types/modals/task.ts"
+    },
+    {
+      "function_name": "useTaskForm",
+      "fields": 0,
+      "cyclomatic_complexity": 11,
+      "cognitive_complexity": 6,
+      "lines": 48,
+      "nloc": 46,
+      "file": "react-kanban/src/types/modals/task.ts"
+    },
+    {
+      "function_name": "userTask",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 1,
+      "nloc": 1,
+      "file": "react-kanban/src/types/modals/task.ts"
+    },
+    {
+      "function_name": "createBoard",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 0,
+      "lines": 7,
+      "nloc": 7,
+      "file": "react-kanban/src/types/serialize/board.ts"
+    },
+    {
+      "function_name": "createDefaultBoard",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 7,
+      "nloc": 7,
+      "file": "react-kanban/src/types/serialize/board.ts"
+    },
+    {
+      "function_name": "createColumn",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 11,
+      "nloc": 11,
+      "file": "react-kanban/src/types/serialize/column.ts"
+    },
+    {
+      "function_name": "createDefaultColumns",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 7,
+      "nloc": 7,
+      "file": "react-kanban/src/types/serialize/column.ts"
+    },
+    {
+      "function_name": "deserializeAllBoards",
+      "fields": 0,
+      "cyclomatic_complexity": 8,
+      "cognitive_complexity": 2,
+      "lines": 13,
+      "nloc": 12,
+      "file": "react-kanban/src/types/serialize/index.ts"
+    },
+    {
+      "function_name": "deserializeBoard",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 1,
+      "lines": 9,
+      "nloc": 9,
+      "file": "react-kanban/src/types/serialize/index.ts"
+    },
+    {
+      "function_name": "deserializeColumn",
+      "fields": 0,
+      "cyclomatic_complexity": 6,
+      "cognitive_complexity": 0,
+      "lines": 8,
+      "nloc": 8,
+      "file": "react-kanban/src/types/serialize/index.ts"
+    },
+    {
+      "function_name": "deserializeDueDate",
+      "fields": 0,
+      "cyclomatic_complexity": 6,
+      "cognitive_complexity": 3,
+      "lines": 14,
+      "nloc": 12,
+      "file": "react-kanban/src/types/serialize/index.ts"
+    },
+    {
+      "function_name": "deserializeTask",
+      "fields": 0,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 0,
+      "lines": 9,
+      "nloc": 9,
+      "file": "react-kanban/src/types/serialize/index.ts"
+    },
+    {
+      "function_name": "createTask",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 14,
+      "nloc": 14,
+      "file": "react-kanban/src/types/serialize/task.ts"
+    },
+    {
+      "function_name": "addBoardToAllBoards",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 9,
+      "nloc": 9,
+      "file": "react-kanban/src/types/state/all_boards.ts"
+    },
+    {
+      "function_name": "addTaskToCurrentBoard",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 9,
+      "nloc": 9,
+      "file": "react-kanban/src/types/state/all_boards.ts"
+    },
+    {
+      "function_name": "canMoveTaskInCurrentBoard",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 1,
+      "lines": 12,
+      "nloc": 11,
+      "file": "react-kanban/src/types/state/all_boards.ts"
+    },
+    {
+      "function_name": "deleteTaskFromCurrentBoard",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 8,
+      "nloc": 8,
+      "file": "react-kanban/src/types/state/all_boards.ts"
+    },
+    {
+      "function_name": "getCurrentBoard",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 0,
+      "lines": 6,
+      "nloc": 6,
+      "file": "react-kanban/src/types/state/all_boards.ts"
+    },
+    {
+      "function_name": "moveTaskInCurrentBoard",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 10,
+      "nloc": 10,
+      "file": "react-kanban/src/types/state/all_boards.ts"
+    },
+    {
+      "function_name": "setCurrentBoard",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 9,
+      "nloc": 9,
+      "file": "react-kanban/src/types/state/all_boards.ts"
+    },
+    {
+      "function_name": "updateAllBoardsBoardTitle",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 2,
+      "lines": 12,
+      "nloc": 12,
+      "file": "react-kanban/src/types/state/all_boards.ts"
+    },
+    {
+      "function_name": "updateCurrentBoard",
+      "fields": 0,
+      "cyclomatic_complexity": 7,
+      "cognitive_complexity": 4,
+      "lines": 17,
+      "nloc": 15,
+      "file": "react-kanban/src/types/state/all_boards.ts"
+    },
+    {
+      "function_name": "updateCurrentBoardColumnWipLimit",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 3,
+      "lines": 12,
+      "nloc": 12,
+      "file": "react-kanban/src/types/state/all_boards.ts"
+    },
+    {
+      "function_name": "updateTaskOnCurrentBoard",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 9,
+      "nloc": 9,
+      "file": "react-kanban/src/types/state/all_boards.ts"
+    },
+    {
+      "function_name": "addTaskToBoardColumn",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 2,
+      "lines": 14,
+      "nloc": 14,
+      "file": "react-kanban/src/types/state/board.ts"
+    },
+    {
+      "function_name": "canMoveBoardTask",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 0,
+      "lines": 8,
+      "nloc": 8,
+      "file": "react-kanban/src/types/state/board.ts"
+    },
+    {
+      "function_name": "deleteBoardTask",
+      "fields": 0,
+      "cyclomatic_complexity": 7,
+      "cognitive_complexity": 3,
+      "lines": 15,
+      "nloc": 12,
+      "file": "react-kanban/src/types/state/board.ts"
+    },
+    {
+      "function_name": "getMoveTaskContext",
+      "fields": 0,
+      "cyclomatic_complexity": 14,
+      "cognitive_complexity": 5,
+      "lines": 36,
+      "nloc": 31,
+      "file": "react-kanban/src/types/state/board.ts"
+    },
+    {
+      "function_name": "moveBoardTask",
+      "fields": 0,
+      "cyclomatic_complexity": 18,
+      "cognitive_complexity": 14,
+      "lines": 48,
+      "nloc": 40,
+      "file": "react-kanban/src/types/state/board.ts"
+    },
+    {
+      "function_name": "updateBoardTask",
+      "fields": 0,
+      "cyclomatic_complexity": 7,
+      "cognitive_complexity": 6,
+      "lines": 19,
+      "nloc": 16,
+      "file": "react-kanban/src/types/state/board.ts"
+    },
+    {
+      "function_name": "canColumnAcceptTaskFrom",
+      "fields": 0,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 1,
+      "lines": 10,
+      "nloc": 9,
+      "file": "react-kanban/src/types/state/column.ts"
+    },
+    {
+      "function_name": "isColumnWipLimitReached",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 1,
+      "lines": 3,
+      "nloc": 3,
+      "file": "react-kanban/src/types/state/column.ts"
+    },
+    {
+      "function_name": "createId",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 1,
+      "nloc": 1,
+      "file": "react-kanban/src/types/utility.ts"
+    },
+    {
+      "function_name": "validateBoard",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 2,
+      "lines": 18,
+      "nloc": 15,
+      "file": "react-kanban/src/types/validation/board.ts"
+    },
+    {
+      "function_name": "validateColumn",
+      "fields": 0,
+      "cyclomatic_complexity": 8,
+      "cognitive_complexity": 4,
+      "lines": 31,
+      "nloc": 26,
+      "file": "react-kanban/src/types/validation/column.ts"
+    },
+    {
+      "function_name": "validateTask",
+      "fields": 0,
+      "cyclomatic_complexity": 9,
+      "cognitive_complexity": 7,
+      "lines": 33,
+      "nloc": 28,
+      "file": "react-kanban/src/types/validation/task.ts"
+    }
+  ]
+}

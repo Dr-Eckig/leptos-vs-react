@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Implementierungsmetriken</title>
+  <style>
+    :root { color-scheme: light; font-family: Inter, system-ui, sans-serif; }
+    body { margin: 0 auto; max-width: 1100px; padding: 2rem; color: #1f2937; background: #f8fafc; }
+    h1, h2, h3 { color: #111827; }
+    h2 { margin-top: 2.5rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; background: #fff; box-shadow: 0 1px 3px #0000001a; }
+    th, td { padding: .7rem .85rem; border: 1px solid #dbe2ea; text-align: left; }
+    th { background: #e8eef5; font-weight: 650; }
+    tbody tr:nth-child(even) { background: #f8fafc; }
+    .details { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+    .card { padding: 1rem 1.2rem; border: 1px solid #dbe2ea; border-radius: .5rem; background: #fff; box-shadow: 0 1px 3px #00000012; }
+    .card h3 { margin-top: 0; }
+    .card table { box-shadow: none; font-size: .92rem; }
+    code { padding: .1rem .25rem; border-radius: .2rem; background: #e8eef5; }
+  </style>
+</head>
+<body>
+  <h1>Implementierungsmetriken</h1><table><thead><tr><th>Kriterium</th><th>Leptos</th><th>React</th></tr></thead><tbody><tr><td>Quell-Dateien</td><td>49</td><td>51</td></tr><tr><td>LOC gesamt</td><td>2883</td><td>2994</td></tr><tr><td>Nicht-leere LOC</td><td>2516</td><td>2643</td></tr><tr><td>Komponenten</td><td>29</td><td>30</td></tr></tbody></table><h2>Code-LOC nach Funktionsbereich</h2><p>Die Quelldateien werden nach vergleichbaren fachlichen Verantwortlichkeiten gruppiert. Jede Datei gehört genau zu einem Bereich. Gezählt werden ausschließlich Codezeilen, also keine Leer- oder Kommentarzeilen. Die Gruppen summieren sich auf die gesamten Code-LOC. Die Differenz ist als Leptos minus React angegeben.</p><table><thead><tr><th>Funktionsbereich</th><th>Leptos Code-LOC</th><th>React Code-LOC</th><th>Differenz (L−R)</th><th>Mehr LOC</th></tr></thead><tbody><tr><td>App und Einstieg</td><td>26</td><td>24</td><td>+2</td><td>Leptos</td></tr><tr><td>Kanban-Komponenten</td><td>809</td><td>787</td><td>+22</td><td>Leptos</td></tr><tr><td>UI-Komponenten</td><td>426</td><td>477</td><td>-51</td><td>React</td></tr><tr><td>Drag-and-drop</td><td>162</td><td>124</td><td>+38</td><td>Leptos</td></tr><tr><td>Zustand und Reaktivität</td><td>307</td><td>583</td><td>-276</td><td>React</td></tr><tr><td>Datenmodelle und Validierung</td><td>698</td><td>588</td><td>+110</td><td>Leptos</td></tr><tr><td>Messinstrumentierung</td><td>79</td><td>45</td><td>+34</td><td>Leptos</td></tr><tr><td>Sonstiger Glue-Code</td><td>6</td><td>12</td><td>-6</td><td>React</td></tr><tr><td>Gesamt</td><td>2513</td><td>2640</td><td>-127</td><td>React</td></tr></tbody></table><h2>State-/Reaktivitäts-Metriken</h2><table><thead><tr><th>Kriterium</th><th>Leptos</th><th>React</th></tr></thead><tbody><tr><td>State-Objekte</td><td>4</td><td>4</td></tr><tr><td>Hook-Definitionen</td><td>0</td><td>10</td></tr><tr><td>Hook-Aufrufe</td><td>0</td><td>47</td></tr><tr><td>Signal-Konstruktionen</td><td>65</td><td>0</td></tr></tbody></table><h2>State-/Reaktivitäts-Details</h2><div class="details"><section class="card"><h3>Leptos</h3><p><strong>State-Objekte:</strong> 4 gesamt<br>AllBoardsState, BoardState, ColumnState, TaskState</p><p><strong>Signal-Konstruktionen:</strong> 65 gesamt</p><h4>Signal-Konstruktionen nach Typ</h4><table><thead><tr><th>Name</th><th>Anzahl</th></tr></thead><tbody><tr><td>Signal::derive</td><td>35</td></tr><tr><td>RwSignal::new</td><td>29</td></tr><tr><td>Signal::from</td><td>1</td></tr></tbody></table></section><section class="card"><h3>React</h3><p><strong>State-Objekte:</strong> 4 gesamt<br>AllBoards, Board, Column, Task</p><p><strong>Hook-Aufrufe:</strong> 47 gesamt, 17 Built-in, 30 Custom</p><h4>Hook-Aufrufe nach Name</h4><table><thead><tr><th>Name</th><th>Anzahl</th></tr></thead><tbody><tr><td>useState</td><td>9</td></tr><tr><td>useBoardsActions</td><td>7</td></tr><tr><td>useBoardsState</td><td>7</td></tr><tr><td>useModalsActions</td><td>7</td></tr><tr><td>useContext</td><td>6</td></tr><tr><td>useDragAndDropActions</td><td>2</td></tr><tr><td>useDragAndDropState</td><td>2</td></tr><tr><td>useModalsState</td><td>2</td></tr><tr><td>useBoardForm</td><td>1</td></tr><tr><td>useColumnForm</td><td>1</td></tr><tr><td>useEffect</td><td>1</td></tr><tr><td>useRef</td><td>1</td></tr><tr><td>useTaskForm</td><td>1</td></tr></tbody></table><p><strong>Hook-Definitionen:</strong> useAppContext, useBoardForm, useBoardsActions, useBoardsState, useColumnForm, useDragAndDropActions, useDragAndDropState, useModalsActions, useModalsState, useTaskForm</p></section></div>
+</body>
+</html>

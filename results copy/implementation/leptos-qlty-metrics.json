@@ -1,0 +1,1285 @@
+{
+  "framework": "Leptos",
+  "tool": "qlty",
+  "source": "leptos-kanban/src",
+  "functions": [
+    {
+      "function_name": "App",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 10,
+      "nloc": 8,
+      "file": "leptos-kanban/src/app.rs"
+    },
+    {
+      "function_name": "DraggableItem",
+      "fields": 0,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 5,
+      "lines": 46,
+      "nloc": 39,
+      "file": "leptos-kanban/src/components/drag_and_drop/draggable_item.rs"
+    },
+    {
+      "function_name": "DropZone",
+      "fields": 0,
+      "cyclomatic_complexity": 8,
+      "cognitive_complexity": 10,
+      "lines": 96,
+      "nloc": 82,
+      "file": "leptos-kanban/src/components/drag_and_drop/drop_zone.rs"
+    },
+    {
+      "function_name": "Board",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 0,
+      "lines": 37,
+      "nloc": 34,
+      "file": "leptos-kanban/src/components/kanban/board.rs"
+    },
+    {
+      "function_name": "TaskColumn",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 0,
+      "lines": 48,
+      "nloc": 41,
+      "file": "leptos-kanban/src/components/kanban/column.rs"
+    },
+    {
+      "function_name": "TaskColumnHeader",
+      "fields": 0,
+      "cyclomatic_complexity": 5,
+      "cognitive_complexity": 8,
+      "lines": 66,
+      "nloc": 58,
+      "file": "leptos-kanban/src/components/kanban/column.rs"
+    },
+    {
+      "function_name": "TaskDropTarget",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 57,
+      "nloc": 50,
+      "file": "leptos-kanban/src/components/kanban/column.rs"
+    },
+    {
+      "function_name": "move_performance_action",
+      "fields": 0,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 2,
+      "lines": 10,
+      "nloc": 10,
+      "file": "leptos-kanban/src/components/kanban/column.rs"
+    },
+    {
+      "function_name": "move_task",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 1,
+      "lines": 19,
+      "nloc": 18,
+      "file": "leptos-kanban/src/components/kanban/column.rs"
+    },
+    {
+      "function_name": "BoardFormFields",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 9,
+      "nloc": 8,
+      "file": "leptos-kanban/src/components/kanban/modals/board_modal.rs"
+    },
+    {
+      "function_name": "BoardModal",
+      "fields": 0,
+      "cyclomatic_complexity": 6,
+      "cognitive_complexity": 6,
+      "lines": 52,
+      "nloc": 45,
+      "file": "leptos-kanban/src/components/kanban/modals/board_modal.rs"
+    },
+    {
+      "function_name": "save_validated_board",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 2,
+      "lines": 8,
+      "nloc": 8,
+      "file": "leptos-kanban/src/components/kanban/modals/board_modal.rs"
+    },
+    {
+      "function_name": "update_board",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/components/kanban/modals/board_modal.rs"
+    },
+    {
+      "function_name": "ColumnFormFields",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 11,
+      "nloc": 10,
+      "file": "leptos-kanban/src/components/kanban/modals/column_modal.rs"
+    },
+    {
+      "function_name": "ColumnModal",
+      "fields": 0,
+      "cyclomatic_complexity": 6,
+      "cognitive_complexity": 6,
+      "lines": 51,
+      "nloc": 44,
+      "file": "leptos-kanban/src/components/kanban/modals/column_modal.rs"
+    },
+    {
+      "function_name": "update_column",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/components/kanban/modals/column_modal.rs"
+    },
+    {
+      "function_name": "TaskFormFields",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 37,
+      "nloc": 30,
+      "file": "leptos-kanban/src/components/kanban/modals/task_modal.rs"
+    },
+    {
+      "function_name": "TaskModal",
+      "fields": 0,
+      "cyclomatic_complexity": 7,
+      "cognitive_complexity": 9,
+      "lines": 69,
+      "nloc": 61,
+      "file": "leptos-kanban/src/components/kanban/modals/task_modal.rs"
+    },
+    {
+      "function_name": "save_validated_task",
+      "fields": 0,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 3,
+      "lines": 19,
+      "nloc": 19,
+      "file": "leptos-kanban/src/components/kanban/modals/task_modal.rs"
+    },
+    {
+      "function_name": "start_task_measurement",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 9,
+      "nloc": 9,
+      "file": "leptos-kanban/src/components/kanban/modals/task_modal.rs"
+    },
+    {
+      "function_name": "update_task",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 8,
+      "nloc": 8,
+      "file": "leptos-kanban/src/components/kanban/modals/task_modal.rs"
+    },
+    {
+      "function_name": "Sidebar",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 63,
+      "nloc": 52,
+      "file": "leptos-kanban/src/components/kanban/sidebar.rs"
+    },
+    {
+      "function_name": "SidebarItem",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 3,
+      "lines": 54,
+      "nloc": 49,
+      "file": "leptos-kanban/src/components/kanban/sidebar.rs"
+    },
+    {
+      "function_name": "TaskActionsDropdown",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 61,
+      "nloc": 55,
+      "file": "leptos-kanban/src/components/kanban/task_card.rs"
+    },
+    {
+      "function_name": "TaskCard",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 25,
+      "nloc": 24,
+      "file": "leptos-kanban/src/components/kanban/task_card.rs"
+    },
+    {
+      "function_name": "TaskCardContent",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 0,
+      "lines": 25,
+      "nloc": 23,
+      "file": "leptos-kanban/src/components/kanban/task_card.rs"
+    },
+    {
+      "function_name": "TaskCardHeader",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 21,
+      "nloc": 20,
+      "file": "leptos-kanban/src/components/kanban/task_card.rs"
+    },
+    {
+      "function_name": "priority_border_class",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 1,
+      "lines": 7,
+      "nloc": 7,
+      "file": "leptos-kanban/src/components/kanban/task_card.rs"
+    },
+    {
+      "function_name": "priority_color",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 1,
+      "lines": 7,
+      "nloc": 7,
+      "file": "leptos-kanban/src/components/kanban/task_card.rs"
+    },
+    {
+      "function_name": "Button",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 46,
+      "nloc": 43,
+      "file": "leptos-kanban/src/components/ui/button.rs"
+    },
+    {
+      "function_name": "DownloadLogsButton",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 20,
+      "nloc": 16,
+      "file": "leptos-kanban/src/components/ui/download_logs.rs"
+    },
+    {
+      "function_name": "download_file",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 16,
+      "nloc": 12,
+      "file": "leptos-kanban/src/components/ui/download_logs.rs"
+    },
+    {
+      "function_name": "Dropdown",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 24,
+      "nloc": 22,
+      "file": "leptos-kanban/src/components/ui/dropdown.rs"
+    },
+    {
+      "function_name": "IconButton",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 39,
+      "nloc": 35,
+      "file": "leptos-kanban/src/components/ui/icon_button.rs"
+    },
+    {
+      "function_name": "IconText",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 26,
+      "nloc": 24,
+      "file": "leptos-kanban/src/components/ui/icon_text.rs"
+    },
+    {
+      "function_name": "as_fontawesome",
+      "fields": 0,
+      "cyclomatic_complexity": 9,
+      "cognitive_complexity": 1,
+      "lines": 12,
+      "nloc": 12,
+      "file": "leptos-kanban/src/components/ui/icons.rs"
+    },
+    {
+      "function_name": "Input",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 2,
+      "lines": 40,
+      "nloc": 37,
+      "file": "leptos-kanban/src/components/ui/input.rs"
+    },
+    {
+      "function_name": "Modal",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 63,
+      "nloc": 59,
+      "file": "leptos-kanban/src/components/ui/modal.rs"
+    },
+    {
+      "function_name": "Select",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 38,
+      "nloc": 34,
+      "file": "leptos-kanban/src/components/ui/select.rs"
+    },
+    {
+      "function_name": "Tag",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 21,
+      "nloc": 20,
+      "file": "leptos-kanban/src/components/ui/tag.rs"
+    },
+    {
+      "function_name": "Textarea",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 29,
+      "nloc": 27,
+      "file": "leptos-kanban/src/components/ui/textarea.rs"
+    },
+    {
+      "function_name": "main",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 5,
+      "nloc": 5,
+      "file": "leptos-kanban/src/main.rs"
+    },
+    {
+      "function_name": "as_str",
+      "fields": 0,
+      "cyclomatic_complexity": 7,
+      "cognitive_complexity": 1,
+      "lines": 10,
+      "nloc": 10,
+      "file": "leptos-kanban/src/performance.rs"
+    },
+    {
+      "function_name": "call_shared",
+      "fields": 0,
+      "cyclomatic_complexity": 5,
+      "cognitive_complexity": 0,
+      "lines": 9,
+      "nloc": 8,
+      "file": "leptos-kanban/src/performance.rs"
+    },
+    {
+      "function_name": "from_board",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 0,
+      "lines": 7,
+      "nloc": 6,
+      "file": "leptos-kanban/src/performance.rs"
+    },
+    {
+      "function_name": "init_performance_log_session",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 6,
+      "nloc": 6,
+      "file": "leptos-kanban/src/performance.rs"
+    },
+    {
+      "function_name": "performance_log_file_content",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 5,
+      "nloc": 5,
+      "file": "leptos-kanban/src/performance.rs"
+    },
+    {
+      "function_name": "performance_log_file_name",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 5,
+      "nloc": 5,
+      "file": "leptos-kanban/src/performance.rs"
+    },
+    {
+      "function_name": "start",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 17,
+      "nloc": 16,
+      "file": "leptos-kanban/src/performance.rs"
+    },
+    {
+      "function_name": "new",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 7,
+      "nloc": 7,
+      "file": "leptos-kanban/src/types/app_context.rs"
+    },
+    {
+      "function_name": "new",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 5,
+      "nloc": 5,
+      "file": "leptos-kanban/src/types/app_context.rs"
+    },
+    {
+      "function_name": "new",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 7,
+      "nloc": 7,
+      "file": "leptos-kanban/src/types/app_context.rs"
+    },
+    {
+      "function_name": "from_payload",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/drag_and_drop.rs"
+    },
+    {
+      "function_name": "new",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 6,
+      "nloc": 6,
+      "file": "leptos-kanban/src/types/drag_and_drop.rs"
+    },
+    {
+      "function_name": "to_payload",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/drag_and_drop.rs"
+    },
+    {
+      "function_name": "format_date_to_display",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 5,
+      "nloc": 4,
+      "file": "leptos-kanban/src/types/mod.rs"
+    },
+    {
+      "function_name": "format_date_to_string",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 5,
+      "nloc": 4,
+      "file": "leptos-kanban/src/types/mod.rs"
+    },
+    {
+      "function_name": "normalize_optional_string",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 2,
+      "lines": 9,
+      "nloc": 8,
+      "file": "leptos-kanban/src/types/mod.rs"
+    },
+    {
+      "function_name": "parse_date_from_string",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 5,
+      "nloc": 4,
+      "file": "leptos-kanban/src/types/mod.rs"
+    },
+    {
+      "function_name": "clear_error",
+      "fields": 1,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/modals/board.rs"
+    },
+    {
+      "function_name": "new",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/modals/board.rs"
+    },
+    {
+      "function_name": "new",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 8,
+      "nloc": 8,
+      "file": "leptos-kanban/src/types/modals/board.rs"
+    },
+    {
+      "function_name": "new_with_board",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/modals/board.rs"
+    },
+    {
+      "function_name": "set_board",
+      "fields": 1,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 0,
+      "lines": 8,
+      "nloc": 8,
+      "file": "leptos-kanban/src/types/modals/board.rs"
+    },
+    {
+      "function_name": "set_validation_error",
+      "fields": 1,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 1,
+      "lines": 10,
+      "nloc": 9,
+      "file": "leptos-kanban/src/types/modals/board.rs"
+    },
+    {
+      "function_name": "user_board",
+      "fields": 1,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 5,
+      "nloc": 5,
+      "file": "leptos-kanban/src/types/modals/board.rs"
+    },
+    {
+      "function_name": "clear_error",
+      "fields": 1,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/modals/column.rs"
+    },
+    {
+      "function_name": "new",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 8,
+      "nloc": 8,
+      "file": "leptos-kanban/src/types/modals/column.rs"
+    },
+    {
+      "function_name": "new_with_column",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/modals/column.rs"
+    },
+    {
+      "function_name": "set_column",
+      "fields": 1,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 0,
+      "lines": 9,
+      "nloc": 9,
+      "file": "leptos-kanban/src/types/modals/column.rs"
+    },
+    {
+      "function_name": "set_validation_error",
+      "fields": 1,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 4,
+      "nloc": 4,
+      "file": "leptos-kanban/src/types/modals/column.rs"
+    },
+    {
+      "function_name": "user_column",
+      "fields": 1,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 6,
+      "nloc": 6,
+      "file": "leptos-kanban/src/types/modals/column.rs"
+    },
+    {
+      "function_name": "clear_errors",
+      "fields": 3,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 5,
+      "nloc": 5,
+      "file": "leptos-kanban/src/types/modals/task.rs"
+    },
+    {
+      "function_name": "new",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 6,
+      "nloc": 6,
+      "file": "leptos-kanban/src/types/modals/task.rs"
+    },
+    {
+      "function_name": "new",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 13,
+      "nloc": 13,
+      "file": "leptos-kanban/src/types/modals/task.rs"
+    },
+    {
+      "function_name": "new_with_task",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 6,
+      "nloc": 6,
+      "file": "leptos-kanban/src/types/modals/task.rs"
+    },
+    {
+      "function_name": "set_task",
+      "fields": 4,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 0,
+      "lines": 20,
+      "nloc": 20,
+      "file": "leptos-kanban/src/types/modals/task.rs"
+    },
+    {
+      "function_name": "set_validation_error",
+      "fields": 3,
+      "cyclomatic_complexity": 5,
+      "cognitive_complexity": 1,
+      "lines": 16,
+      "nloc": 16,
+      "file": "leptos-kanban/src/types/modals/task.rs"
+    },
+    {
+      "function_name": "user_task",
+      "fields": 4,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 8,
+      "nloc": 8,
+      "file": "leptos-kanban/src/types/modals/task.rs"
+    },
+    {
+      "function_name": "as_vec",
+      "fields": 1,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/serialize/board.rs"
+    },
+    {
+      "function_name": "columns",
+      "fields": 1,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/serialize/board.rs"
+    },
+    {
+      "function_name": "default",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 8,
+      "nloc": 8,
+      "file": "leptos-kanban/src/types/serialize/board.rs"
+    },
+    {
+      "function_name": "default",
+      "fields": 0,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 0,
+      "lines": 8,
+      "nloc": 8,
+      "file": "leptos-kanban/src/types/serialize/board.rs"
+    },
+    {
+      "function_name": "id",
+      "fields": 1,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/serialize/board.rs"
+    },
+    {
+      "function_name": "new",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 7,
+      "nloc": 7,
+      "file": "leptos-kanban/src/types/serialize/board.rs"
+    },
+    {
+      "function_name": "title",
+      "fields": 1,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/serialize/board.rs"
+    },
+    {
+      "function_name": "all",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 7,
+      "nloc": 7,
+      "file": "leptos-kanban/src/types/serialize/column.rs"
+    },
+    {
+      "function_name": "column_type",
+      "fields": 1,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/serialize/column.rs"
+    },
+    {
+      "function_name": "display_name",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 1,
+      "lines": 7,
+      "nloc": 7,
+      "file": "leptos-kanban/src/types/serialize/column.rs"
+    },
+    {
+      "function_name": "fmt",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/serialize/column.rs"
+    },
+    {
+      "function_name": "id",
+      "fields": 1,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/serialize/column.rs"
+    },
+    {
+      "function_name": "name",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 1,
+      "lines": 7,
+      "nloc": 7,
+      "file": "leptos-kanban/src/types/serialize/column.rs"
+    },
+    {
+      "function_name": "new",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 8,
+      "nloc": 8,
+      "file": "leptos-kanban/src/types/serialize/column.rs"
+    },
+    {
+      "function_name": "tasks",
+      "fields": 1,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/serialize/column.rs"
+    },
+    {
+      "function_name": "wip_limit",
+      "fields": 1,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/serialize/column.rs"
+    },
+    {
+      "function_name": "boards",
+      "fields": 1,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/serialize/mod.rs"
+    },
+    {
+      "function_name": "current_board_id",
+      "fields": 1,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/serialize/mod.rs"
+    },
+    {
+      "function_name": "as_str",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 1,
+      "lines": 7,
+      "nloc": 7,
+      "file": "leptos-kanban/src/types/serialize/task.rs"
+    },
+    {
+      "function_name": "description",
+      "fields": 1,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/serialize/task.rs"
+    },
+    {
+      "function_name": "due_date",
+      "fields": 1,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/serialize/task.rs"
+    },
+    {
+      "function_name": "fmt",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/serialize/task.rs"
+    },
+    {
+      "function_name": "from_str",
+      "fields": 0,
+      "cyclomatic_complexity": 5,
+      "cognitive_complexity": 1,
+      "lines": 8,
+      "nloc": 8,
+      "file": "leptos-kanban/src/types/serialize/task.rs"
+    },
+    {
+      "function_name": "id",
+      "fields": 1,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/serialize/task.rs"
+    },
+    {
+      "function_name": "new",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 8,
+      "nloc": 8,
+      "file": "leptos-kanban/src/types/serialize/task.rs"
+    },
+    {
+      "function_name": "priority",
+      "fields": 1,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/serialize/task.rs"
+    },
+    {
+      "function_name": "title",
+      "fields": 1,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/serialize/task.rs"
+    },
+    {
+      "function_name": "with_id",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 9,
+      "nloc": 9,
+      "file": "leptos-kanban/src/types/serialize/task.rs"
+    },
+    {
+      "function_name": "add_board",
+      "fields": 1,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 4,
+      "nloc": 4,
+      "file": "leptos-kanban/src/types/state/all_boards.rs"
+    },
+    {
+      "function_name": "add_task_to_current_board",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 1,
+      "lines": 5,
+      "nloc": 5,
+      "file": "leptos-kanban/src/types/state/all_boards.rs"
+    },
+    {
+      "function_name": "current_board",
+      "fields": 2,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 0,
+      "lines": 8,
+      "nloc": 8,
+      "file": "leptos-kanban/src/types/state/all_boards.rs"
+    },
+    {
+      "function_name": "delete_task_from_current_board",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 1,
+      "lines": 5,
+      "nloc": 5,
+      "file": "leptos-kanban/src/types/state/all_boards.rs"
+    },
+    {
+      "function_name": "from",
+      "fields": 0,
+      "cyclomatic_complexity": 6,
+      "cognitive_complexity": 0,
+      "lines": 14,
+      "nloc": 12,
+      "file": "leptos-kanban/src/types/state/all_boards.rs"
+    },
+    {
+      "function_name": "from_all_boards",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/state/all_boards.rs"
+    },
+    {
+      "function_name": "move_task_in_current_board",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 0,
+      "lines": 10,
+      "nloc": 10,
+      "file": "leptos-kanban/src/types/state/all_boards.rs"
+    },
+    {
+      "function_name": "set_current_board",
+      "fields": 1,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/state/all_boards.rs"
+    },
+    {
+      "function_name": "add_task_to_column",
+      "fields": 1,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 1,
+      "lines": 12,
+      "nloc": 11,
+      "file": "leptos-kanban/src/types/state/board.rs"
+    },
+    {
+      "function_name": "delete_task",
+      "fields": 1,
+      "cyclomatic_complexity": 6,
+      "cognitive_complexity": 1,
+      "lines": 15,
+      "nloc": 14,
+      "file": "leptos-kanban/src/types/state/board.rs"
+    },
+    {
+      "function_name": "find_column_by_type",
+      "fields": 1,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 0,
+      "lines": 8,
+      "nloc": 8,
+      "file": "leptos-kanban/src/types/state/board.rs"
+    },
+    {
+      "function_name": "find_column_containing_task",
+      "fields": 1,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 0,
+      "lines": 8,
+      "nloc": 8,
+      "file": "leptos-kanban/src/types/state/board.rs"
+    },
+    {
+      "function_name": "from",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 0,
+      "lines": 7,
+      "nloc": 7,
+      "file": "leptos-kanban/src/types/state/board.rs"
+    },
+    {
+      "function_name": "from_board",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/state/board.rs"
+    },
+    {
+      "function_name": "move_task",
+      "fields": 0,
+      "cyclomatic_complexity": 6,
+      "cognitive_complexity": 3,
+      "lines": 32,
+      "nloc": 26,
+      "file": "leptos-kanban/src/types/state/board.rs"
+    },
+    {
+      "function_name": "can_accept_task_from",
+      "fields": 1,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 1,
+      "lines": 7,
+      "nloc": 6,
+      "file": "leptos-kanban/src/types/state/column.rs"
+    },
+    {
+      "function_name": "from",
+      "fields": 0,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 0,
+      "lines": 8,
+      "nloc": 8,
+      "file": "leptos-kanban/src/types/state/column.rs"
+    },
+    {
+      "function_name": "has_task",
+      "fields": 1,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 0,
+      "lines": 4,
+      "nloc": 4,
+      "file": "leptos-kanban/src/types/state/column.rs"
+    },
+    {
+      "function_name": "insert_task",
+      "fields": 1,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 0,
+      "lines": 9,
+      "nloc": 8,
+      "file": "leptos-kanban/src/types/state/column.rs"
+    },
+    {
+      "function_name": "move_task",
+      "fields": 1,
+      "cyclomatic_complexity": 5,
+      "cognitive_complexity": 0,
+      "lines": 19,
+      "nloc": 15,
+      "file": "leptos-kanban/src/types/state/column.rs"
+    },
+    {
+      "function_name": "remove_task",
+      "fields": 1,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 2,
+      "lines": 11,
+      "nloc": 9,
+      "file": "leptos-kanban/src/types/state/column.rs"
+    },
+    {
+      "function_name": "wip_limit_reached",
+      "fields": 2,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 1,
+      "lines": 6,
+      "nloc": 6,
+      "file": "leptos-kanban/src/types/state/column.rs"
+    },
+    {
+      "function_name": "from",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 9,
+      "nloc": 9,
+      "file": "leptos-kanban/src/types/state/task.rs"
+    },
+    {
+      "function_name": "from_task",
+      "fields": 0,
+      "cyclomatic_complexity": 1,
+      "cognitive_complexity": 0,
+      "lines": 3,
+      "nloc": 3,
+      "file": "leptos-kanban/src/types/state/task.rs"
+    },
+    {
+      "function_name": "as_class",
+      "fields": 0,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 1,
+      "lines": 6,
+      "nloc": 6,
+      "file": "leptos-kanban/src/types/ui.rs"
+    },
+    {
+      "function_name": "as_class",
+      "fields": 0,
+      "cyclomatic_complexity": 3,
+      "cognitive_complexity": 1,
+      "lines": 6,
+      "nloc": 6,
+      "file": "leptos-kanban/src/types/ui.rs"
+    },
+    {
+      "function_name": "as_class",
+      "fields": 0,
+      "cyclomatic_complexity": 5,
+      "cognitive_complexity": 1,
+      "lines": 8,
+      "nloc": 8,
+      "file": "leptos-kanban/src/types/ui.rs"
+    },
+    {
+      "function_name": "as_class",
+      "fields": 0,
+      "cyclomatic_complexity": 14,
+      "cognitive_complexity": 1,
+      "lines": 17,
+      "nloc": 17,
+      "file": "leptos-kanban/src/types/ui.rs"
+    },
+    {
+      "function_name": "as_html_type",
+      "fields": 0,
+      "cyclomatic_complexity": 6,
+      "cognitive_complexity": 1,
+      "lines": 9,
+      "nloc": 9,
+      "file": "leptos-kanban/src/types/ui.rs"
+    },
+    {
+      "function_name": "as_text_color_class",
+      "fields": 0,
+      "cyclomatic_complexity": 14,
+      "cognitive_complexity": 1,
+      "lines": 17,
+      "nloc": 17,
+      "file": "leptos-kanban/src/types/ui.rs"
+    },
+    {
+      "function_name": "validate",
+      "fields": 1,
+      "cyclomatic_complexity": 2,
+      "cognitive_complexity": 0,
+      "lines": 4,
+      "nloc": 4,
+      "file": "leptos-kanban/src/types/validation/board.rs"
+    },
+    {
+      "function_name": "validate_title_value",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 2,
+      "lines": 11,
+      "nloc": 9,
+      "file": "leptos-kanban/src/types/validation/board.rs"
+    },
+    {
+      "function_name": "validate",
+      "fields": 2,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 1,
+      "lines": 11,
+      "nloc": 9,
+      "file": "leptos-kanban/src/types/validation/column.rs"
+    },
+    {
+      "function_name": "validate",
+      "fields": 4,
+      "cyclomatic_complexity": 6,
+      "cognitive_complexity": 1,
+      "lines": 17,
+      "nloc": 14,
+      "file": "leptos-kanban/src/types/validation/task.rs"
+    },
+    {
+      "function_name": "validate_title_value",
+      "fields": 0,
+      "cyclomatic_complexity": 4,
+      "cognitive_complexity": 2,
+      "lines": 11,
+      "nloc": 9,
+      "file": "leptos-kanban/src/types/validation/task.rs"
+    }
+  ]
+}
