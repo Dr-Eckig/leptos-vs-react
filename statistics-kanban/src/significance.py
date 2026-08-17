@@ -41,7 +41,7 @@ NORMALITY_RESULT_COLUMNS = [
 
 
 def test_performance_differences(measurements: pd.DataFrame) -> pd.DataFrame:
-    """Compare Leptos and React for every browser/action/board scenario.
+    """Compare React and Leptos for every browser/action/board scenario.
 
     Runs are independent samples. A two-sided Mann-Whitney U test is used with
     tie correction and continuity correction. Holm's method controls the
@@ -61,8 +61,8 @@ def test_performance_differences(measurements: pd.DataFrame) -> pd.DataFrame:
             continue
 
         test_result = pg.mwu(
-            leptos,
             react,
+            leptos,
             alternative="two-sided",
             method="asymptotic",
             use_continuity=True,
@@ -70,7 +70,7 @@ def test_performance_differences(measurements: pd.DataFrame) -> pd.DataFrame:
         test_row = test_result.iloc[0]
         u_statistic = float(test_row["U_val"])
         p_value = float(test_row["p_val"])
-        cliffs_delta, _magnitude = calculate_cliffs_delta(leptos, react)
+        cliffs_delta, _magnitude = calculate_cliffs_delta(react, leptos)
         cliffs_delta = float(cliffs_delta)
         leptos_median = float(np.median(leptos))
         react_median = float(np.median(react))
@@ -297,7 +297,7 @@ def create_html_report(
 
   <h2>Interpretation</h2>
   <p class="note">Ein positives Cliff’s δ bedeutet tendenziell höhere Laufzeiten
-  für Leptos, ein negatives δ tendenziell höhere Laufzeiten für React. Der Vorteil
+  für React, ein negatives δ tendenziell höhere Laufzeiten für Leptos. Der Vorteil
   basiert deskriptiv auf den Medianen; der U-Test prüft die Verteilungen. Die
   Inferenz setzt unabhängige Läufe voraus und gilt für die gemessenen
   Benchmark-Bedingungen. Sie ersetzt keine Replikation in unabhängigen Sitzungen.</p>
@@ -327,8 +327,8 @@ def html_table(results: pd.DataFrame) -> str:
             f"<td>{escape(str(browser))}</td>"
             f"<td>{escape(str(action))}</td>"
             f"<td>{escape(str(board))}</td>"
-            f"<td>{row.median_leptos_ms:.2f} ms</td>"
             f"<td>{row.median_react_ms:.2f} ms</td>"
+            f"<td>{row.median_leptos_ms:.2f} ms</td>"
             f'<td class="{escape(row.faster_framework)}">{escape(row.faster_framework)}</td>'
             f"<td>{row.median_speedup_percent:.1f} %</td>"
             f"<td>{row.cliffs_delta:.3f}</td>"
@@ -341,7 +341,7 @@ def html_table(results: pd.DataFrame) -> str:
     return (
         '<div class="table-wrap"><table><thead><tr>'
         "<th>Browser</th><th>Aktion</th><th>Board</th>"
-        "<th>Median Leptos</th><th>Median React</th><th>Schneller</th>"
+        "<th>Median React</th><th>Median Leptos</th><th>Schneller</th>"
         "<th>Vorteil</th><th>Cliff’s δ</th><th>Effekt</th>"
         "<th>p (Holm)</th><th>Signifikant</th>"
         "</tr></thead><tbody>"

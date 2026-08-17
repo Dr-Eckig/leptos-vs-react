@@ -42,9 +42,9 @@ class SignificanceTest(unittest.TestCase):
         mwu,
         multicomp,
     ) -> None:
-        calculate_cliffs_delta.return_value = (-1.0, "large")
+        calculate_cliffs_delta.return_value = (1.0, "large")
         mwu.return_value = pd.DataFrame(
-            {"U_val": [0.0], "p_val": [0.01], "RBC": [-1.0]}
+            {"U_val": [4.0], "p_val": [0.01], "RBC": [1.0]}
         )
         multicomp.return_value = (np.array([True]), np.array([0.01]))
         measurements = pd.DataFrame(
@@ -59,15 +59,15 @@ class SignificanceTest(unittest.TestCase):
 
         results = test_performance_differences(measurements)
 
-        np.testing.assert_array_equal(mwu.call_args.args[0], [1.0, 2.0])
-        np.testing.assert_array_equal(mwu.call_args.args[1], [3.0, 4.0])
+        np.testing.assert_array_equal(mwu.call_args.args[0], [3.0, 4.0])
+        np.testing.assert_array_equal(mwu.call_args.args[1], [1.0, 2.0])
         np.testing.assert_array_equal(
             calculate_cliffs_delta.call_args.args[0],
-            [1.0, 2.0],
+            [3.0, 4.0],
         )
         np.testing.assert_array_equal(
             calculate_cliffs_delta.call_args.args[1],
-            [3.0, 4.0],
+            [1.0, 2.0],
         )
         self.assertEqual(
             mwu.call_args.kwargs,
@@ -82,9 +82,9 @@ class SignificanceTest(unittest.TestCase):
             multicomp.call_args.kwargs,
             {"alpha": 0.05, "method": "holm"},
         )
-        self.assertEqual(results.iloc[0]["u_statistic"], 0.0)
+        self.assertEqual(results.iloc[0]["u_statistic"], 4.0)
         self.assertEqual(results.iloc[0]["p_value"], 0.01)
-        self.assertEqual(results.iloc[0]["cliffs_delta"], -1.0)
+        self.assertEqual(results.iloc[0]["cliffs_delta"], 1.0)
 
     def test_empty_html_report_contains_complete_page(self) -> None:
         report = create_html_report(pd.DataFrame(columns=[
