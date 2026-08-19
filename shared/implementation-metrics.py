@@ -113,7 +113,7 @@ def main() -> int:
     rows = [(project.name, measure_project(project)) for project in DEFAULT_PROJECTS]
     loc_group_rows = [
         (project.name, measure_loc_groups(project))
-        for project in DEFAULT_PROJECTS
+        for project in reversed(DEFAULT_PROJECTS)
     ]
     reactivity_rows = [
         (project.name, measure_reactivity_project(project))
@@ -560,12 +560,12 @@ def write_html_report(
             "Bereich. Gezählt werden ausschließlich Codezeilen, also keine "
             "Leer- oder Kommentarzeilen. Die Gruppen summieren sich auf die "
             "gesamten Code-LOC. Die "
-            "Differenz ist als Leptos minus React angegeben.</p>",
+            "Differenz ist als React minus Leptos angegeben.</p>",
             html_table(
                 (
                     "Funktionsbereich",
                     *(f"{name} Code-LOC" for name in project_names),
-                    "Differenz (L−R)",
+                    "Differenz (R−L)",
                     "Mehr LOC",
                 ),
                 loc_group_table_rows(loc_group_rows),
