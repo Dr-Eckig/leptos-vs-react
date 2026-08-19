@@ -1,11 +1,11 @@
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 
-cd ../statistics-kanban
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
+
+cd "$PROJECT_ROOT/statistics-kanban"
 
 python3 -m venv .venv
-source .venv/bin/activate
-
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-
-python src/main.py
+.venv/bin/python -m pip install --requirement requirements.txt
+.venv/bin/python src/main.py

@@ -1,5 +1,10 @@
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 
-cd ../playwright-kanban
-npm install
-npx playwright test
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
+
+cd "$PROJECT_ROOT/playwright-kanban"
+npm ci
+npx --no-install playwright install
+npx --no-install playwright test
