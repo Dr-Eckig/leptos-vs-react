@@ -135,10 +135,11 @@ bleiben. Danach können sie jeweils mit `Ctrl+C` beendet werden.
 
 ```text
 leptos-kanban/       Leptos-/Rust-Implementierung
+leptos-book/         Used Leptos Documentation
 react-kanban/        React-/TypeScript-Implementierung
 playwright-kanban/   automatisierte Browser- und Performance-Tests
 statistics-kanban/   statistische Auswertung der Messdaten
-shared/              gemeinsam verwendete Assets und Hilfsskripte
+shared/              gemeinsam verwendete Assets und Funktionen
 scripts/             Start-, Mess- und Auswertungsskripte
 results/             neu erzeugte Auswertungen
 results-for-thesis/  für die Bachelorarbeit verwendete Ergebnisse
