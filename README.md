@@ -16,7 +16,7 @@ Für die Ausführung werden folgende Programme benötigt:
 - Node.js und npm
 - Rust und Cargo
 - Python 3 mit dem Modul `venv`
-- `curl` und `xz`
+- `curl` zur Installation von Qlty
 
 Die projektspezifischen Versionen von Tokei, Qlty und Trunk sind in
 `scripts/tool-versions.sh` festgelegt. Die Skripte installieren diese Werkzeuge
@@ -120,6 +120,8 @@ resultierenden Berichte befinden sich anschließend unter
 
 ## Kompletter Ablauf
 
+![Workflow zum Starten der Anwendungen sowie zum Ausführen der Tests und Analysen](workflow.png)
+
 ```text
 Terminal 1: ./scripts/start-npm.sh
 Terminal 2: ./scripts/start-trunk.sh
@@ -135,7 +137,7 @@ bleiben. Danach können sie jeweils mit `Ctrl+C` beendet werden.
 
 ```text
 leptos-kanban/       Leptos-/Rust-Implementierung
-leptos-book/         Used Leptos Documentation
+leptos-book/         verwendete Leptos Documentation
 react-kanban/        React-/TypeScript-Implementierung
 playwright-kanban/   automatisierte Browser- und Performance-Tests
 statistics-kanban/   statistische Auswertung der Messdaten
