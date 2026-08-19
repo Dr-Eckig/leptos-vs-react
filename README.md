@@ -1,88 +1,87 @@
-# Vergleich einer Kanban-Anwendung mit React und Leptos
+# Leptos vs. React: Comparison of Performance and Reactivity Using a Kanban Board
 
-Dieses Repository enthält zwei funktional vergleichbare Kanban-Anwendungen:
+This repository contains two functionally comparable Kanban applications:
 
-- `react-kanban`: Implementierung mit React und TypeScript
-- `leptos-kanban`: Implementierung mit Leptos und Rust/WASM
+- `react-kanban`: implementation using React and TypeScript
+- `leptos-kanban`: implementation using Leptos and Rust/WASM
 
-Zusätzlich enthält das Projekt automatisierte Playwright-Messungen sowie
-Python-Skripte zur statistischen Auswertung und Visualisierung der Ergebnisse.
+The project also includes automated Playwright measurements and Python scripts
+for the statistical analysis and visualization of the results.
 
-## Voraussetzungen
+## Prerequisites
 
-Für die Ausführung werden folgende Programme benötigt:
+The following software is required:
 
 - Bash
-- Node.js und npm
-- Rust und Cargo
-- Python 3 mit dem Modul `venv`
-- `curl` zur Installation von Qlty
+- Node.js and npm
+- Rust and Cargo
+- Python 3 with the `venv` module
+- `curl` for installing Qlty
 
-Die projektspezifischen Versionen von Tokei, Qlty und Trunk sind in
-`scripts/tool-versions.sh` festgelegt. Die Skripte installieren diese Werkzeuge
-automatisch und projektlokal unter `.tools/bin`. Node-Abhängigkeiten werden über
-die vorhandenen `package-lock.json`-Dateien installiert.
+The project-specific versions of Tokei, Qlty, and Trunk are defined in
+`scripts/tool-versions.sh`. The scripts install these tools automatically in the
+project-local `.tools/bin` directory. Node.js dependencies are installed using
+the existing `package-lock.json` files.
 
-Alle folgenden Befehle werden im Wurzelverzeichnis dieses Repositorys
-ausgeführt.
+All commands below must be run from the root directory of this repository.
 
-## Anwendungen starten
+## Starting the Applications
 
-Für React und Leptos werden zwei getrennte Terminals benötigt.
+React and Leptos must be started in two separate terminals.
 
-### 1. React starten
+### 1. Start React
 
-Im ersten Terminal:
+Run the following command in the first terminal:
 
 ```bash
 ./scripts/start-npm.sh
 ```
 
-Das Skript installiert die festgeschriebenen npm-Abhängigkeiten, erstellt einen
-Produktions-Build und startet die Anwendung unter:
+The script installs the locked npm dependencies, creates a production build,
+and starts the application at:
 
 ```text
 http://localhost:4173
 ```
 
-### 2. Leptos starten
+### 2. Start Leptos
 
-Im zweiten Terminal:
+Run the following command in the second terminal:
 
 ```bash
 ./scripts/start-trunk.sh
 ```
 
-Das Skript installiert die festgelegte Trunk-Version, erstellt einen
-Release-Build und startet die Anwendung unter:
+The script installs the specified Trunk version, creates a release build, and
+starts the application at:
 
 ```text
 http://localhost:8080
 ```
 
-Beim ersten Start können Installation und Kompilierung einige Minuten dauern.
-Beide Server bleiben aktiv, bis sie im jeweiligen Terminal mit `Ctrl+C` beendet
-werden.
+The initial installation and compilation may take several minutes. Both servers
+remain active until they are stopped with `Ctrl+C` in their respective
+terminals.
 
-## Performance-Messungen ausführen
+## Running the Performance Measurements
 
-Beide Anwendungen müssen bereits laufen. Anschließend wird in einem dritten
-Terminal ausgeführt:
+Both applications must already be running. Then execute the following command
+in a third terminal:
 
 ```bash
 ./scripts/playwright.sh
 ```
 
-Das Skript installiert die im Lockfile festgelegte Playwright-Version und die
-dazugehörigen Browser. Danach werden die Tests mit Chromium, Firefox und WebKit
-ausgeführt. Die Rohdaten werden in folgenden Verzeichnissen gespeichert:
+The script installs the Playwright version specified in the lockfile and the
+corresponding browsers. It then runs the tests using Chromium, Firefox, and
+WebKit. The raw data is stored in the following directories:
 
-- `statistics-kanban/data`: Performance-Messwerte
-- `statistics-kanban/dom-mutations-data`: DOM-Mutationsmessungen
-- `statistics-kanban/bundle-size-data`: gemessene Bundle-Größen
+- `statistics-kanban/data`: performance measurements
+- `statistics-kanban/dom-mutations-data`: DOM mutation measurements
+- `statistics-kanban/bundle-size-data`: measured bundle sizes
 
-Falls auf einem Linux-System Browserbibliotheken fehlen, können sie einmalig mit
-Systemrechten installiert werden:
+If browser libraries are missing on a Linux system, they can be installed once
+with system privileges:
 
 ```bash
 cd playwright-kanban
@@ -90,37 +89,36 @@ npx --no-install playwright install --with-deps
 cd ..
 ```
 
-## Diagramme und Tabellen erzeugen
+## Generating Charts and Tables
 
-Nach Abschluss der Playwright-Messungen:
+After the Playwright measurements have finished, run:
 
 ```bash
 ./scripts/generate-plots.sh
 ```
 
-Das Skript erstellt eine virtuelle Python-Umgebung unter
-`statistics-kanban/.venv`, installiert die exakt festgelegten Abhängigkeiten aus
-`statistics-kanban/requirements.txt` und erzeugt die Auswertungen unter:
+The script creates a Python virtual environment in `statistics-kanban/.venv`,
+installs the exact dependencies specified in
+`statistics-kanban/requirements.txt`, and generates the results in:
 
 - `results/performance`
 - `results/reactivity`
 - `results/implementation`
 
-## Implementierungsmetriken erzeugen
+## Generating Implementation Metrics
 
-Die statischen Implementierungsmetriken werden separat erzeugt:
+The static implementation metrics are generated separately:
 
 ```bash
 ./scripts/analyze-code.sh
 ```
 
-Hierfür werden Tokei `14.0.0` und Qlty `0.640.0` projektlokal installiert. Die
-resultierenden Berichte befinden sich anschließend unter
-`results/implementation`.
+This installs Tokei `14.0.0` and Qlty `0.640.0` locally within the project. The
+generated reports are then available in `results/implementation`.
 
-## Kompletter Ablauf
+## Complete Workflow
 
-![Workflow zum Starten der Anwendungen sowie zum Ausführen der Tests und Analysen](workflow.png)
+![Workflow for starting the applications and running the tests and analyses](workflow.png)
 
 ```text
 Terminal 1: ./scripts/start-npm.sh
@@ -130,19 +128,19 @@ Terminal 3: ./scripts/playwright.sh
             ./scripts/analyze-code.sh
 ```
 
-Die beiden Server müssen während der Playwright-Messungen durchgehend aktiv
-bleiben. Danach können sie jeweils mit `Ctrl+C` beendet werden.
+Both servers must remain active throughout the Playwright measurements. They can
+be stopped afterward with `Ctrl+C` in their respective terminals.
 
-## Projektstruktur
+## Project Structure
 
 ```text
-leptos-kanban/       Leptos-/Rust-Implementierung
-leptos-book/         verwendete Leptos Documentation
-react-kanban/        React-/TypeScript-Implementierung
-playwright-kanban/   automatisierte Browser- und Performance-Tests
-statistics-kanban/   statistische Auswertung der Messdaten
-shared/              gemeinsam verwendete Assets und Funktionen
-scripts/             Start-, Mess- und Auswertungsskripte
-results/             neu erzeugte Auswertungen
-results-for-thesis/  für die Bachelorarbeit verwendete Ergebnisse
+leptos-kanban/       Leptos/Rust implementation
+leptos-book/         Leptos documentation used by the project
+react-kanban/        React/TypeScript implementation
+playwright-kanban/   automated browser and performance tests
+statistics-kanban/   statistical analysis of the measurement data
+shared/              shared assets and functions
+scripts/             startup, measurement, and analysis scripts
+results/             newly generated results
+results-for-thesis/  results used in the bachelor's thesis
 ```
